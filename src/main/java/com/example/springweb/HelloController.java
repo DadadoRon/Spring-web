@@ -21,13 +21,14 @@ public class HelloController {
 
     @GetMapping("/user")
     public User findUser() {
-        return new User(1, "Vadim", "Lazuk");
+        return new User(1, "Vadim", "Lazuk", "dad@mail.com", "124", Role.USER);
     }
 
     @GetMapping("/users")
     public List<User> findAllUsers() {
 
-        return List.of(new User(1, "Vadim", "Lazuk"), new User(2, "Dasha", "Dubik"));
+        return List.of(new User(1, "Vadim", "Lazuk", "dad@mail.com", "124", Role.USER),
+                new User(2, "Dasha", "Dubik", "dad@mail.com", "124", Role.USER));
     }
 }
 
