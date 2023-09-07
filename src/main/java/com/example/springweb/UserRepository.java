@@ -1,2 +1,4 @@
-package com.example.springweb;public class UserRepository {
+package com.example.springweb;
+
+public class UserRepository {
 }
