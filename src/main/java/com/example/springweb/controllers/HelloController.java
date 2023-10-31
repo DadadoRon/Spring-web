@@ -1,4 +1,4 @@
-package com.example.springweb;
+package com.example.springweb.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

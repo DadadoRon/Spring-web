@@ -1,3 +1,4 @@
+
 export default {
     template: '#login',
     data() {
@@ -28,6 +29,10 @@ export default {
         },
         registration(){
             this.$router.push({path: '/create'})
-        }
-    }
-}
+        },
+        first(){
+            this.$router.push({path: '/'})
+        },
+    },
+
+ }
