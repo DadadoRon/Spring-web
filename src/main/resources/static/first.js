@@ -3,18 +3,7 @@ export default {
     template: '#first',
     data() {
         return {
-            reveal: false,
-            cards: [
-                { title: 'Карбокситерапия', src: 'img/n1.png', flex: 4,  description: 'vdnvkn' },
-                { title: 'Favorite road trips', src: 'img/n2.jpg', flex: 4 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 4 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 4 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 4 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 4 },
-            ],
-            reveals: [
-                false, false,false, false, false, false
-            ],
+            products:[],
             cards2: [
                 { title: 'Домашний уход за кожей вокруг глаз', src: 'img/n1.png', flex: 3,  description: 'vdnvkn' },
                 { title: 'Favorite road trips', src: 'img/n2.jpg', flex: 3 },
@@ -57,4 +46,11 @@ export default {
             this.mainContentNumber = 3
         }
     },
+    async created() {
+        const response = await axios.get('/products')
+        this.products = response.data
+        for (let i = 0; i < this.products.length; i++) {
+            this.products[i].reveal = false;
+        }
+    }
 }

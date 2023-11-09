@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet id="create_table_products" author="DadadoRon">
+        <createTable tableName="products">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text" />
+            <column name="price" type="numeric(10, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_name" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet id="insert_data_into_products" author="DadadoRon">
+        <insert tableName="products">
+            <column name="name" value="Good"/>
+            <column name="description" value="Description"/>
+            <column name="price" value="100"/>
+            <column name="image_name" value="img/n3.jpg"/>
+        </insert>
+    </changeSet>
+    <changeSet id="addUniqueConstraint" author="DadadoRon">
+        <addUniqueConstraint tableName="products" columnNames="name" constraintName="unique_name_constraint"/>
+    </changeSet>
+    <changeSet id="create_table_users" author="DadadoRon">
+        <createTable tableName="users">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="insert_data_into_users" author="DadadoRon">
+        <insert tableName="users">
+            <column name="first_name" value="Dasha"/>
+            <column name="last_name" value="Black"/>
+            <column name="email" value="black@mai.com"/>
+            <column name="password" value="123"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Dasha"/>
+            <column name="last_name" value="White"/>
+            <column name="email" value="white@mai.com"/>
+            <column name="password" value="124"/>
+            <column name="role" value="user"/>
+        </insert>
+    </changeSet>
+    <changeSet id="update_role_to_USER" author="DadadoRon">
+        <update tableName="users">
+            <column name="role" value="USER"/>
+            <where>role = 'user'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

@@ -17,11 +17,13 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> findAll() {
+
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
     public User findAll(@PathVariable Integer id) {
+
         return userService.getUserById(id);
     }
 

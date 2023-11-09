@@ -61,20 +61,20 @@
            <v-container  v-if="mainContentNumber==2" >
                <v-row>
                    <v-col
-                    v-for="(card, i) in cards"
+                    v-for="(product, i) in products"
                            :key="i"
-                           :cols="card.flex"
+                           :cols="4"
                    >
                        <v-card class="mx-auto">
                            <v-img
-                                   :src="card.src"
+                                   :src="product.imageName"
                                    class="align-end"
                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                                    height="200px"
                                    cover
                            >
                            </v-img>
-                           <v-card-title class="text-black" v-text="card.title"></v-card-title>
+                           <v-card-title class="text-black" v-text="product.name"></v-card-title>
 
                            <v-card-actions class="justify-space-between">
                                <v-btn variant="tonal"  color="indigo-darken-2" @click="create" type="submit" >записаться</v-btn>
@@ -82,21 +82,21 @@
                            </v-card-actions>
 
                            <v-card-actions>
-                               <v-btn variant="text" color="indigo-darken-2" @click="reveals[i] = true">
+                               <v-btn variant="text" color="indigo-darken-2" @click="product.reveal = true">
                                    Подробно
                                </v-btn>
                            </v-card-actions>
 
                            <v-expand-transition>
-                               <v-card v-if="reveals [i]" class="v-card--reveal" style="height: 100%;">
+                               <v-card v-if="product.reveal" class="v-card--reveal" style="height: 100%;">
                                    <v-card-text class="pb-0">
                                        <p class="text-h6 text--primary">
-                                           {{ card.title }}
+                                           {{ product.name }}
                                        </p>
-                                       <p>{{ card.description }}</p>
+                                       <p>{{ product.description }}</p>
                                    </v-card-text>
                                    <v-card-actions class="pt-0">
-                                       <v-btn variant="text" color="teal-accent-4" @click="reveals[i] = false">
+                                       <v-btn variant="text" color="teal-accent-4" @click="product.reveal = false">
                                            Закрыть
                                        </v-btn>
                                    </v-card-actions>
