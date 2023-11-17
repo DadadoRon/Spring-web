@@ -8,25 +8,39 @@ export default {
         }
     },
     methods: {
-        async login(){
-            const response = await axios.get('/users')
-            const users = response.data
-            let isUserExists = false
-            users.forEach((user) => {
-                if (user.email === this.userEmail && user.password === this.userPassword) {
-                    isUserExists = true
-                    localStorage.setItem("currentUser", JSON.stringify(user))
-                    if (user.role === "ADMIN") {
-                        this.$router.push({path: '/admins'})
-                    } else {
-                        this.$router.push({path: '/users'})
-                    }
+        async login() {
+
+                const authToken = 'Basic ' + btoa(`${this.userEmail}:${this.userPassword}`)
+                var response
+                try {
+                     response = await axios.get('/api/v1/users/profile', {
+                        headers: {
+                            Authorization: `${authToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                } catch (e) {
+                    alert("User with such email and password doesn't exist")
+                    return
                 }
-            })
-            if (!isUserExists) {
-                alert("User with such email and password doesn't exist");
-            }
+
+                const user = response.data;
+
+                localStorage.setItem("currentUser", JSON.stringify(user))
+                localStorage.setItem("authToken", authToken)
+
+                if (user.role === "USER") {
+                    this.$router.push({ path: '/users' });
+                } else {
+                    this.$router.push({ path: '/admins' });
+                }
+
+
+
+            // alert("User with such email and password doesn't exist");
+
         },
+
         registration(){
             this.$router.push({path: '/create'})
         },

@@ -35,14 +35,13 @@ export default {
             this.$router.push({path: '/'})
         },
 
-        toHome() {
+        toProducts() {
             this.mainContentNumber = 1
-
         },
-        toRecents() {
+        toGoods() {
             this.mainContentNumber = 2
         },
-        toFavorites() {
+        toPublications() {
             this.mainContentNumber = 3
         }
     },

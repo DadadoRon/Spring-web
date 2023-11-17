@@ -2,6 +2,8 @@ export default {
     template: '#admins',
     data() {
         return {
+            user:  JSON.parse(localStorage.getItem("currentUser")),
+            mainContentNumber: 1,
             model: 'tab-2',
             dialog: false,
             dialogDelete: false,
@@ -18,6 +20,17 @@ export default {
 
             ],
             users: [],
+            headersProducts: [
+                { title: '#', key: 'index' },
+                { title: 'ID', key: 'id' },
+                { title: 'Name', key: 'name' },
+                { title: 'Description', key: 'description' },
+                { title: 'Price', key: 'price' },
+                { title: 'ImageName', key: 'imageName' },
+                { title: 'Actions', key: 'actions', sortable: false},
+
+            ],
+            products:[],
             editedIndex: -1,
             editedItem: {
             },
@@ -31,6 +44,9 @@ export default {
         },
         numberedItems() {
             return this.users.map((item, index) => ({ ...item, index: index + 1 }));
+        },
+        numberedProducts() {
+            return this.products.map((item, index) => ({ ...item, index: index + 1 }));
         },
     },
     watch: {
@@ -53,10 +69,20 @@ export default {
             this.dialogDelete = true
         },
         async deleteItemConfirm() {
-            // this.users.splice(this.editedIndex - 1, 1)
-            // this.closeDelete()
-            await axios.delete(`/users/${this.editedItem.id}`)
-            const response = await axios.get('/users')
+            const authToken = localStorage.getItem("authToken")
+            await axios.delete(`/api/v1/users/${this.editedItem.id}`, {
+                headers: {
+                    Authorization: `${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+                }
+            )
+            const response = await axios.get('/api/v1/users', {
+                headers: {
+                    Authorization: `${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
             this.users = response.data
             this.closeDelete()
         },
@@ -77,31 +103,61 @@ export default {
             })
         },
         async save() {
+            const authToken = localStorage.getItem("authToken")
             if (this.editedIndex > -1) {
-                await axios.put('/users', this.editedItem)
+                await axios.put('/api/v1/users', this.editedItem, {
+                    headers: {
+                        Authorization: `${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
             } else {
-                await axios.post('/users', this.editedItem)
+                await axios.post('/api/v1/users', this.editedItem, {
+                    headers: {
+                        Authorization: `${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+            }
+            const response = await axios.get('/api/v1/users', {
+                headers: {
+                    Authorization: `${authToken}`,
+                    'Content-Type': 'application/json'
                 }
-            const response = await axios.get('/users')
+            })
             this.users = response.data;
             this.close()
         },
-
-        update: function (userId) {
-            this.$router.push({path: '/edit/' + userId})
+        toHome() {
+            this.mainContentNumber = 1;
         },
+        async toUsersTable() {
+            this.mainContentNumber = 2;
+            const authToken = localStorage.getItem("authToken")
+            const usersResponse = await axios.get('/api/v1/users' , {
+                headers: {
+                    Authorization: `${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            this.users = usersResponse.data
 
-        remove: async function (userId) {
-            await axios.delete('/users/' + userId)
-            const response = await axios.get('/users')
-            this.users = response.data
-        }
+        },
+        async toProductsTable() {
+            this.mainContentNumber = 3;
+            const productsResponse = await axios.get('/api/v1/products')
+            this.products = productsResponse.data
+            for (let i = 0; i < this.products.length; i++) {
+                this.products[i].reveal = false;
+            }
+
+        },
     },
     async created() {
-        const response = await axios.get('/users')
-        this.users = response.data
+
     }
 }
+
 
 
 

@@ -16,7 +16,7 @@ export default {
     // },
     methods: {
         async create(){
-            await axios.post('/users', this.user)
+            await axios.post('/api/v1/users', this.user)
             this.$router.push({path: '/login'})
         },
     }
