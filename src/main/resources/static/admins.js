@@ -133,13 +133,15 @@ export default {
         },
         async toUsersTable() {
             this.mainContentNumber = 2;
-            const authToken = localStorage.getItem("authToken")
+            /*const authToken = localStorage.getItem("authToken")
             const usersResponse = await axios.get('/api/v1/users' , {
                 headers: {
                     Authorization: `${authToken}`,
                     'Content-Type': 'application/json'
                 }
-            })
+            })*/
+
+            const usersResponse = await ax.get('/api/v1/users')
             this.users = usersResponse.data
 
         },
