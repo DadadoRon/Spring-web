@@ -39,6 +39,8 @@ public class ApplicationSecurity {
                         .requestMatchers(HttpMethod.POST,"/api/v1/products").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT,"/api/v1/products").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/products/{id}").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET,"/api/v1/user-appointments").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET,"/api/v1/user-appointments/personal").hasAuthority(Role.USER.name())
                         .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

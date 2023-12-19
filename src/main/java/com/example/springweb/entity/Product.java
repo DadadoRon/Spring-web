@@ -1,10 +1,15 @@
 package com.example.springweb.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +20,6 @@ import lombok.NoArgsConstructor;
 public class Product {
     @Id
     @Column(name = "id")
-//    @SequenceGenerator(name = "productsIdSeq", sequenceName = "products_id_seq", allocationSize = 1)
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productsIdSeq")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "name")
@@ -27,4 +30,5 @@ public class Product {
     private double price;
     @Column(name = "image_name")
     private String imageName;
+
 }

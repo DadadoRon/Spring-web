@@ -1,11 +1,12 @@
 package com.example.springweb.entity;
 
-import com.example.springweb.entity.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "users")
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
     @Id
     @Column(name = "id")
@@ -30,4 +30,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+
+
 }

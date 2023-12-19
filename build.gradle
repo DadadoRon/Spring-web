@@ -21,6 +21,9 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    mapstructVersion = '1.5.5.Final'
+}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -32,6 +35,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation "org.liquibase:liquibase-core"
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "org.mapstruct:mapstruct:$mapstructVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 }
 
 tasks.named('test') {
