@@ -34,18 +34,13 @@ public class UserController {
 
     @GetMapping("/profile")
     public User findProfile() {
+
         return UserContextHolder.getUser();
     }
 
     @GetMapping("/{id}")
     public UserDto findAll(@PathVariable Integer id) {
         User user = userService.getUserById(id);
-        return userMapper.toDto(user);
-    }
-
-    @GetMapping("/{email}")
-    public UserDto findAll(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
         return userMapper.toDto(user);
     }
 
