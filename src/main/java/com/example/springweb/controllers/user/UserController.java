@@ -34,7 +34,6 @@ public class UserController {
 
     @GetMapping("/profile")
     public User findProfile() {
-
         return UserContextHolder.getUser();
     }
 
