@@ -1,6 +1,7 @@
 package com.example.springweb.service;
 
 import com.example.springweb.entity.Role;
+import com.example.springweb.exceptions.UserNotFoundException;
 import com.example.springweb.repository.UserRepository;
 import com.example.springweb.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -16,23 +17,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-
         return userRepository.findAll();
     }
 
     @Override
     public User getUserById(Integer userId) {
-
-        return userRepository.findById(userId).get();
+        return userRepository.findByIdRequired(userId);
     }
 
     @Override
     public User getUserByEmail(String userEmail) {
-
-        return userRepository.findByEmail(userEmail);
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(()-> new UserNotFoundException("User with email"  + userEmail +  "not found"));
     }
-
-
     @Override
     public User createUser(User user) {
         user.setRole(Role.USER);
@@ -41,17 +38,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        if (userRepository.existsById(user.getId())) {
+        Integer userId = user.getId();
+        userRepository.checkIfExistsById(userId);
             return userRepository.save(user);
-        } else {
-            return null;
-        }
     }
 
     @Override
     public void deleteUser(Integer userId) {
-
+        userRepository.checkIfExistsById(userId);
         userRepository.deleteById(userId);
     }
 }
+
 

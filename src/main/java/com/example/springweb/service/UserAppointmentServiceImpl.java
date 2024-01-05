@@ -3,12 +3,13 @@ package com.example.springweb.service;
 import com.example.springweb.entity.Product;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserAppointment;
+import com.example.springweb.exceptions.UserAppointmentNotFoundException;
+import com.example.springweb.exceptions.UserNotFoundException;
 import com.example.springweb.repository.UserAppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,11 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     public List<UserAppointment> getAllUserAppointments() {
         return userAppointmentRepository.findAll();
     }
+    @Override
+    public UserAppointment getUserAppointmentById(Integer userAppointmentId) {
+        return userAppointmentRepository.findByIdRequired(userAppointmentId);
+
+    }
 
     @Override
     public List<UserAppointment> getAllUserAppointmentsByUserId(Integer userId) {
@@ -32,30 +38,27 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     @Override
     public UserAppointment createUserAppointment(UserAppointment userAppointment, Integer userId, Integer productId) {
         User user = userService.getUserById(userId);
-        Product product = productService.getProductById(productId);
         userAppointment.setUser(user);
+        Product product = productService.getProductById(productId);
         userAppointment.setProduct(product);
         return  userAppointmentRepository.save(userAppointment);
     }
 
     @Override
     public UserAppointment updateUserAppointment(UserAppointment userAppointment) {
-        if (!userAppointmentRepository.existsById(userAppointment.getId())) {
-//            return null;
-            throw new RuntimeException("User not found");
-        }
-        Integer userId = userAppointment.getId();
-        Optional<UserAppointment> byId = userAppointmentRepository.findById(userId);
-        User user = byId.get().getUser();
-        Product product = byId.get().getProduct();
+        Integer userAppointmentId = userAppointment.getId();
+        UserAppointment byId = getUserAppointmentById(userAppointmentId);
+        User user = byId.getUser();
+        Product product = byId.getProduct();
         userAppointment.setUser(user);
         userAppointment.setProduct(product);
         return userAppointmentRepository.save(userAppointment);
+
     }
 
     @Override
     public void deleteUserAppointment(Integer userAppointmentId) {
+        userAppointmentRepository.checkIfExistsById(userAppointmentId);
         userAppointmentRepository.deleteById(userAppointmentId);
     }
-
 }

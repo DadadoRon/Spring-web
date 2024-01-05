@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UserAppointmentService {
     List<UserAppointment> getAllUserAppointments();
 
+    UserAppointment getUserAppointmentById(Integer userAppointmentId);
+
     List<UserAppointment> getAllUserAppointmentsByUserId(Integer userId);
 
     UserAppointment createUserAppointment(UserAppointment userAppointment, Integer userId, Integer productId);

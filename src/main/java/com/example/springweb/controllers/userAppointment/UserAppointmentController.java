@@ -31,66 +31,38 @@ public class UserAppointmentController {
 
     @GetMapping
     public List<UserAppointmentDto> findAll() {
-            return userAppointmentService.getAllUserAppointments().stream()
-                    .map(userAppointmentMapper::toDto)
-                    .toList();
-
+        return userAppointmentService.getAllUserAppointments().stream()
+            .map(userAppointmentMapper::toDto)
+            .toList();
     }
+
     @GetMapping("/personal")
     public List<UserAppointmentDto> findAllForUser() {
-            Integer userId = UserContextHolder.getUser().getId();
-            return userAppointmentService.getAllUserAppointmentsByUserId(userId).stream()
-                    .map(userAppointmentMapper::toDto)
-                    .sorted(Comparator.comparing(UserAppointmentDto::getDate))
-                    .toList();
-        }
+        Integer userId = UserContextHolder.getUser().getId();
+        return userAppointmentService.getAllUserAppointmentsByUserId(userId).stream()
+            .map(userAppointmentMapper::toDto)
+            .sorted(Comparator.comparing(UserAppointmentDto::getDate))
+            .toList();
+    }
+
     @PostMapping
     public UserAppointmentDto create(@RequestBody UserAppointmentCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
-                userAppointmentMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
+            userAppointmentMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
         );
         return userAppointmentMapper.toDto(userAppointment);
     }
+
     @PutMapping
     public UserAppointmentDto update(@RequestBody UserAppointmentUpdateDto updateDto) {
         UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
-                userAppointmentMapper.toUserAppointmentForUpdate(updateDto));
+            userAppointmentMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentMapper.toDto(userAppointment);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUserAppointmentById(@PathVariable Integer id) {
-
         userAppointmentService.deleteUserAppointment(id);
     }
 
-
-//    public UserAppointmentDto toDto(UserAppointment userAppointment) {
-//        return UserAppointmentDto.builder()
-//                .id(userAppointment.getId())
-//                .date(userAppointment.getDate())
-//                .time(userAppointment.getTime())
-//                .user(UserDto.builder()
-//                        .id(userAppointment.getUser().getId())
-//                        .firstName(userAppointment.getUser().getFirstName())
-//                        .lastName(userAppointment.getUser().getLastName())
-//                        .email(userAppointment.getUser().getEmail())
-//                        .password(userAppointment.getUser().getPassword())
-//                        .role(userAppointment.getUser().getRole())
-//                        .build())
-//                .product(ProductDto.builder()
-//                        .id(userAppointment.getProduct().getId())
-//                        .name(userAppointment.getProduct().getName())
-//                        .description(userAppointment.getProduct().getDescription())
-//                        .price(userAppointment.getProduct().getPrice())
-//                        .imageName(userAppointment.getProduct().getImageName())
-//                        .build())
-//                .build();
-//    }
-//    public UserAppointment toUserAppointmentForCreate(UserAppointmentCreateDto createDto) {
-//        return UserAppointment.builder()
-//                .date(createDto.getDate())
-//                .time(createDto.getTime())
-//                .build();
-//    }
 }

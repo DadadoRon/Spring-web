@@ -43,12 +43,6 @@ public class UserController {
         return userMapper.toDto(user);
     }
 
-    @GetMapping("/{email}")
-    public UserDto findAll(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
-        return userMapper.toDto(user);
-    }
-
     @PostMapping
     public UserDto create(@RequestBody UserCreateDto createDto) {
         User user = userService.createUser(userMapper.toUserForCreate(createDto));
