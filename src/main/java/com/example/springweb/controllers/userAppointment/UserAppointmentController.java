@@ -1,15 +1,11 @@
 package com.example.springweb.controllers.userAppointment;
 
 
-import com.example.springweb.controllers.product.ProductDto;
-import com.example.springweb.controllers.user.UserDto;
-import com.example.springweb.controllers.user.UserUpdateDto;
-import com.example.springweb.entity.Role;
-import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.mapper.UserAppointmentMapper;
 import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserAppointmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +21,6 @@ import static com.example.springweb.controllers.userAppointment.UserAppointmentC
 public class UserAppointmentController {
 
     public static final String REQUEST_MAPPING = "/api/v1/user-appointments";
-
     private final UserAppointmentService userAppointmentService;
     private final UserAppointmentMapper userAppointmentMapper;
 
@@ -46,7 +41,7 @@ public class UserAppointmentController {
     }
 
     @PostMapping
-    public UserAppointmentDto create(@RequestBody UserAppointmentCreateDto createDto) {
+    public UserAppointmentDto create(@Valid @RequestBody UserAppointmentCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
             userAppointmentMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
         );
@@ -54,7 +49,7 @@ public class UserAppointmentController {
     }
 
     @PutMapping
-    public UserAppointmentDto update(@RequestBody UserAppointmentUpdateDto updateDto) {
+    public UserAppointmentDto update(@Valid @RequestBody UserAppointmentUpdateDto updateDto) {
         UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
             userAppointmentMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentMapper.toDto(userAppointment);
@@ -64,5 +59,4 @@ public class UserAppointmentController {
     public void deleteUserAppointmentById(@PathVariable Integer id) {
         userAppointmentService.deleteUserAppointment(id);
     }
-
 }

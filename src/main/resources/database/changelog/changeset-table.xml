@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <changeSet id="create_table_products" author="DadadoRon">
         <createTable tableName="products">
             <column name="id" type="serial">
@@ -108,6 +108,14 @@
         <column name="time"/>
     </createIndex>
     </changeSet>
-
-
+    <changeSet id="addUniqueConstraintToEmail" author="DadadoRon">
+        <addUniqueConstraint
+                tableName="users"
+                columnNames="email"
+                constraintName="unique_email_constraint"/>
+    </changeSet>
+    <changeSet id="dropUniqueConstraintToEmail" author="DadadoRon">
+        <dropUniqueConstraint tableName="users"
+                              constraintName="unique_email_constraint"/>
+    </changeSet>
 </databaseChangeLog>
