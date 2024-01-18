@@ -33,7 +33,6 @@ public class ApplicationSecurity {
                 .addFilterAt(authenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.GET,"/api/v1/users").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST,"/api/v1/users").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT,"/api/v1/users").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST,"/api/v1/products").hasAuthority(Role.ADMIN.name())

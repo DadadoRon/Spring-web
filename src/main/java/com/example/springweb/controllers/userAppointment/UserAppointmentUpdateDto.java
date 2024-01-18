@@ -1,6 +1,7 @@
 package com.example.springweb.controllers.userAppointment;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,9 @@ import java.time.LocalTime;
 @Builder
 public class UserAppointmentUpdateDto {
     private Integer id;
+    @NotNull(message = "Date cannot be empty")
+    @FutureOrPresent(message = "Date should be in the present or future")
     private LocalDate date;
+    @NotNull(message = "Date cannot be empty")
     private LocalTime time;
 }
