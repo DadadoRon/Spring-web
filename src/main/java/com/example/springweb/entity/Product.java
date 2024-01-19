@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class Product {
     @Column(name = "description")
     private String description;
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
     @Column(name = "image_name")
     private String imageName;
 
