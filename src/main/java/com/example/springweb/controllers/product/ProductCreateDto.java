@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +21,7 @@ public class ProductCreateDto {
     private String description;
     @DecimalMin(value = "0.0", inclusive = false)
     @Digits(integer=3, fraction=2)
-    private double price;
+    private BigDecimal price;
     @NotBlank(message = "Image name cannot be empty")
     private String imageName;
 }
