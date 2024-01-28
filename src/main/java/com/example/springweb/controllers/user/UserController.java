@@ -4,6 +4,7 @@ import com.example.springweb.entity.User;
 import com.example.springweb.mapper.UserMapper;
 import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import static com.example.springweb.controllers.user.UserController.REQUEST_MAPP
 
 
 @RestController
+@Tag(name = "Users API")
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
 public class UserController {

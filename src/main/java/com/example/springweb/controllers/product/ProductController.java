@@ -3,6 +3,7 @@ package com.example.springweb.controllers.product;
 import com.example.springweb.entity.Product;
 import com.example.springweb.mapper.ProductMapper;
 import com.example.springweb.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import static com.example.springweb.controllers.product.ProductController.REQUES
 
 
 @RestController
+@Tag(name = "Products API")
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
 public class ProductController {
