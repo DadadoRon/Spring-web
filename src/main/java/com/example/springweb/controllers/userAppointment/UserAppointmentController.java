@@ -5,6 +5,7 @@ import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.mapper.UserAppointmentMapper;
 import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserAppointmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import static com.example.springweb.controllers.userAppointment.UserAppointmentC
 
 
 @RestController
+@Tag(name = "UserAppointments API")
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
 public class UserAppointmentController {
