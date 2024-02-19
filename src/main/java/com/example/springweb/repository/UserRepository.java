@@ -21,5 +21,4 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             throw new UserNotFoundException("User not found with id: " + id);
         }
     }
-
 }
