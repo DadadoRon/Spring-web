@@ -1,9 +1,10 @@
 package com.example.springweb.service;
 
 import com.example.springweb.entity.Role;
+import com.example.springweb.entity.User;
+import com.example.springweb.entity.UserSearch;
 import com.example.springweb.exceptions.UserNotFoundException;
 import com.example.springweb.repository.UserRepository;
-import com.example.springweb.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
+
     @Override
     public User getUserById(Integer userId) {
         return userRepository.findByIdRequired(userId);
@@ -34,6 +36,11 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user) {
         user.setRole(Role.USER);
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> search(UserSearch search) {
+        return userRepository.findAllByAnyFieldsIgnoreCaseContaining(search);
     }
 
     @Override

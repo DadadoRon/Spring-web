@@ -17,6 +17,17 @@ label {
     margin: 0.4rem 0;
 }
 
+.v-field--center-affix .v-label.v-field-label {
+    top: 37%;
+    transform: translateY(-50%);
+    margin-left: 0px;
+}
+
+.v-text-field .v-field {
+    cursor: text;
+    padding-left: 0;
+}
+
 
 
 

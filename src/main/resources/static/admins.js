@@ -58,6 +58,10 @@ export default {
             editedIndex: -1,
             editedItem: {},
             defaultItem: {},
+            firstNameSearchTerm: '',
+            lastNameSearchTerm: '',
+            emailSearchTerm: '',
+
         }
     },
     computed: {
@@ -81,6 +85,7 @@ export default {
         dialogDelete(val) {
             val || this.closeDelete()
         },
+
     },
     methods: {
         selectTime(time) {
@@ -193,8 +198,15 @@ export default {
             this.users = userResponse.data
             const productResponse = await ax.get('/api/v1/products')
             this.products = productResponse.data
+        },
 
-
+        async search() {
+            const response = await ax.post('/api/v1/users/search', {
+                lastName: this.lastNameSearchTerm,
+                email: this.emailSearchTerm,
+                firstName: this.firstNameSearchTerm,
+            })
+            this.users = response.data
         }
     },
     async created() {
