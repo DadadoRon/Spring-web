@@ -44,10 +44,18 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody  UserCreateDto createDto) {
+    public UserDto create(@Valid @RequestBody UserCreateDto createDto) {
         User user = userService.createUser(userMapper.toUserForCreate(createDto));
         return userMapper.toDto(user);
     }
+
+    @PostMapping("/search")
+    public List<UserDto> search(@RequestBody UserSearchDto searchDto) {
+        return userService.search(userMapper.toUserForSearch(searchDto)).stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
+
 
     @PutMapping
     public UserDto update(@Valid @RequestBody UserUpdateDto updateDto) {

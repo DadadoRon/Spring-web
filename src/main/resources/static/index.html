@@ -579,16 +579,60 @@
                         <v-container fluid  v-if="mainContentNumber==1" >
                         </v-container>
                         <v-container fluid  v-if="mainContentNumber==2" >
-                            <div v-if="users.length === 0">
-                            The list is empty
-                            </div>
-                            <div v-else>
+                            <div>
                                 <v-data-table
                                     v-model:items-per-page="itemsPerPage"
                                     :headers="headers"
-                                    :group-by="groupBy"
                                     :items="numberedItems"
                                     class="elevation-1">
+                                    <template v-slot:headers>
+                                        <tr>
+                                            <th v-for="(header, index) in headers" :key="index">
+                                                <template v-if="header.key === 'lastName'">
+                                                    <v-text-field
+                                                        v-model="lastNameSearchTerm"
+                                                        label="Last name"
+                                                        density="compact"
+                                                        prepend-inner-icon="mdi-magnify"
+                                                        single-line
+                                                        flat
+                                                        hide-details
+                                                        variant="solo"
+                                                        @change="search"
+                                                ></v-text-field>
+                                                </template>
+                                                <template v-else-if="header.key === 'email'">
+                                                    <v-text-field
+                                                            v-model="emailSearchTerm"
+                                                            label="Email"
+                                                            density="compact"
+                                                            prepend-inner-icon="mdi-magnify"
+                                                            single-line
+                                                            flat
+                                                            hide-details
+                                                            variant="solo"
+                                                            @change="search"
+                                                    ></v-text-field>
+                                                </template>
+                                                <template v-else-if="header.key === 'firstName'">
+                                                    <v-text-field
+                                                            v-model="firstNameSearchTerm"
+                                                            label="First name"
+                                                            density="compact"
+                                                            prepend-inner-icon="mdi-magnify"
+                                                            single-line
+                                                            flat
+                                                            hide-details
+                                                            variant="solo"
+                                                            @change="search"
+                                                    ></v-text-field>
+                                                </template>
+                                                <template v-else>
+                                                    {{ header.title }}
+                                                </template>
+                                            </th>
+                                        </tr>
+                                    </template>
                                     <template v-slot:top>
                                         <v-toolbar flat>
                                             <v-toolbar-title>List of users</v-toolbar-title>
@@ -598,12 +642,10 @@
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" dark class="mb-2" v-bind="props">New User</v-btn>
                                                 </template>
-
-                                                <v-card>
-                                                    <v-card-title>
-                                                        <span class="text-h5">{{ formTitle }}</span>
-                                                    </v-card-title>
-
+                                            <v-card>
+                                                <v-card-title>
+                                                    <span class="text-h5">{{ formTitle }}</span>
+                                                </v-card-title>
                                                 <v-card-text>
                                                     <v-container>
                                                         <v-row>
@@ -620,18 +662,16 @@
                                                                 <v-text-field v-model="editedItem.password" label="Password"></v-text-field>
                                                             </v-col>
                                                             <v-col cols="12" >
-                                                                <v-text-field name="Confitpassword" label="Confirm password"></v-text-field>
+                                                                <v-text-field name="Confirmpassword" label="Confirm password"></v-text-field>
                                                             </v-col>
                                                         </v-row>
                                                     </v-container>
                                                 </v-card-text>
-
                                                 <v-card-actions>
                                                     <v-spacer></v-spacer>
                                                     <v-btn color="blue-darken-1" variant="text" @click="close">Cancel</v-btn>
                                                     <v-btn color="blue-darken-1" variant="text" @click="saveUser">Save</v-btn>
                                                 </v-card-actions>
-
                                             </v-card>
                                         </v-dialog>
                                         <v-dialog v-model="dialogDelete" max-width="500px">
@@ -670,16 +710,13 @@
                                             <v-divider class="mx-1" inset vertical></v-divider>
                                             <v-spacer></v-spacer>
                                             <v-dialog v-model="dialog" max-width="500px">
-
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" dark class="mb-2" v-bind="props">New Product</v-btn>
                                                 </template>
-
                                                 <v-card>
                                                     <v-card-title>
                                                         <span class="text-h5">{{ formTitle }}</span>
                                                     </v-card-title>
-
                                                     <v-card-text>
                                                         <v-container>
                                                             <v-row>
@@ -698,13 +735,11 @@
                                                             </v-row>
                                                         </v-container>
                                                     </v-card-text>
-
                                                     <v-card-actions>
                                                         <v-spacer></v-spacer>
                                                         <v-btn color="blue-darken-1" variant="text" @click="close">Cancel</v-btn>
                                                         <v-btn color="blue-darken-1" variant="text" @click="saveProduct">Save</v-btn>
                                                     </v-card-actions>
-
                                                 </v-card>
                                             </v-dialog>
                                             <v-dialog v-model="dialogDelete" max-width="500px">
