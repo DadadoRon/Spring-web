@@ -85,7 +85,6 @@ export default {
         dialogDelete(val) {
             val || this.closeDelete()
         },
-
     },
     methods: {
         selectTime(time) {
