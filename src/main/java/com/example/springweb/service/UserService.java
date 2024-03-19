@@ -14,6 +14,8 @@ public interface UserService {
 
     User createUser(User user);
 
+    User registerUser(User user);
+
     List<User> search(UserSearch search);
 
     User update(User user);

@@ -1,7 +1,9 @@
 package com.example.springweb.controllers.user;
 
-import com.example.springweb.entity.Role;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCreateDto {
+public class UserRegisterDto {
     @NotEmpty(message = "First name cannot be empty")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters long")
     private String firstName;
@@ -28,6 +30,4 @@ public class UserCreateDto {
             message = "Password must contain at least one digit and one special character"
     )
     private String password;
-    @NotNull(message = "Role cannot be empty")
-    private Role role;
 }
