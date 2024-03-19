@@ -43,7 +43,13 @@ public class UserController {
         return userMapper.toDto(user);
     }
 
-    @PostMapping
+    @PostMapping("/register")
+    public UserDto register(@Valid @RequestBody UserRegisterDto registerDto) {
+        User user = userService.registerUser(userMapper.toUserForRegister(registerDto));
+        return userMapper.toDto(user);
+    }
+
+    @PostMapping("/create")
     public UserDto create(@Valid @RequestBody UserCreateDto createDto) {
         User user = userService.createUser(userMapper.toUserForCreate(createDto));
         return userMapper.toDto(user);
@@ -55,7 +61,6 @@ public class UserController {
                 .map(userMapper::toDto)
                 .toList();
     }
-
 
     @PutMapping
     public UserDto update(@Valid @RequestBody UserUpdateDto updateDto) {
