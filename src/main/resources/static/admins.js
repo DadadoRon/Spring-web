@@ -28,8 +28,8 @@ export default {
                 {title: 'Last Name', key: 'lastName'},
                 {title: 'Email', key: 'email'},
                 {title: 'Password', key: 'password'},
+                {title: 'Role', key: 'role'},
                 {title: 'Actions', key: 'actions', sortable: false},
-
             ],
             users: [],
             headersProducts: [
@@ -40,7 +40,6 @@ export default {
                 {title: 'Price', key: 'price'},
                 {title: 'ImageName', key: 'imageName'},
                 {title: 'Actions', key: 'actions', sortable: false},
-
             ],
             headersUserAppointments: [
                 {title: '#', key: 'index'},
@@ -61,7 +60,6 @@ export default {
             firstNameSearchTerm: '',
             lastNameSearchTerm: '',
             emailSearchTerm: '',
-
         }
     },
     computed: {
@@ -121,7 +119,6 @@ export default {
             this.userAppointments = response.data
             this.closeDelete()
         },
-
         close() {
             this.dialog = false
             this.$nextTick(() => {
@@ -129,7 +126,6 @@ export default {
                 this.editedIndex = -1
             })
         },
-
         closeDelete() {
             this.dialogDelete = false
             this.$nextTick(() => {
@@ -172,7 +168,6 @@ export default {
             this.userAppointments = response.data;
             this.close()
         },
-
         toHome() {
             this.mainContentNumber = 1;
         },
@@ -188,7 +183,6 @@ export default {
             this.products = response.data
 
         },
-
         async toUserAppointmentsTable(){
             this.mainContentNumber = 4;
             const response = await ax.get('/api/v1/user-appointments')
@@ -198,7 +192,6 @@ export default {
             const productResponse = await ax.get('/api/v1/products')
             this.products = productResponse.data
         },
-
         async search() {
             const response = await ax.post('/api/v1/users/search', {
                 lastName: this.lastNameSearchTerm,
