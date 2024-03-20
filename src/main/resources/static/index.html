@@ -662,6 +662,13 @@
                                                                 <v-text-field v-model="editedItem.password" label="Password"></v-text-field>
                                                             </v-col>
                                                             <v-col cols="12" >
+                                                                <v-autocomplete
+                                                                        v-model="editedItem.role"
+                                                                        label="Role"
+                                                                        :items="['USER', 'ADMIN']"
+                                                                ></v-autocomplete>
+                                                            </v-col>
+                                                            <v-col cols="12" >
                                                                 <v-text-field name="Confirmpassword" label="Confirm password"></v-text-field>
                                                             </v-col>
                                                         </v-row>
