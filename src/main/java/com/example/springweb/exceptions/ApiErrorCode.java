@@ -7,7 +7,9 @@ public enum ApiErrorCode {
     USER_NOT_FOUND("User Not Found"),
     APPOINTMENT_NOT_FOUND("UserAppointment Not Found"),
     PRODUCT_NOT_FOUND("Product Not Found"),
-    VALIDATION_ERROR("Validation Error");
+    VALIDATION_ERROR("Validation Error"),
+    FORBIDDEN("Required role is missing to perform this action."),
+    UNAUTHORIZED("Login required to proceed.");
 
 
 

@@ -26,28 +26,32 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class ApplicationSecurity {
 
     private final AuthenticationFilter authenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .addFilterAt(authenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET,"/api/v1/users").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/users").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST,"/api/v1/products").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/products").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/products/{id}").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user-appointments").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,"/api/v1/user-appointments/personal").hasAuthority(Role.USER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/{id}").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user-appointments").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user-appointments/personal").hasAuthority(Role.USER.name())
                         .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults());
-
-
+                .cors(withDefaults())
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint));
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
