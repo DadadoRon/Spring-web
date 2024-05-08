@@ -3,8 +3,6 @@ package com.example.springweb.service;
 import com.example.springweb.entity.Product;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserAppointment;
-import com.example.springweb.exceptions.UserAppointmentNotFoundException;
-import com.example.springweb.exceptions.UserNotFoundException;
 import com.example.springweb.repository.UserAppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,14 +44,13 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
 
     @Override
     public UserAppointment updateUserAppointment(UserAppointment userAppointment) {
-        Integer userAppointmentId = userAppointment.getId();
-        UserAppointment byId = getUserAppointmentById(userAppointmentId);
-        User user = byId.getUser();
-        Product product = byId.getProduct();
-        userAppointment.setUser(user);
-        userAppointment.setProduct(product);
-        return userAppointmentRepository.save(userAppointment);
-
+            Integer userAppointmentId = userAppointment.getId();
+            UserAppointment byId = getUserAppointmentById(userAppointmentId);
+            User user = byId.getUser();
+            Product product = byId.getProduct();
+            userAppointment.setUser(user);
+            userAppointment.setProduct(product);
+            return userAppointmentRepository.save(userAppointment);
     }
 
     @Override

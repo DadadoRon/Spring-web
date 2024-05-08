@@ -32,7 +32,7 @@ export default {
         async validateAndCreate() {
             const {valid} = await this.$refs.form.validate();
             if (valid) {
-                await axios.post('/api/v1/users', this.user);
+                await axios.post('/api/v1/users/register', this.user);
                 this.$router.push({path: '/login'});
                 alert('User created successfully');
             } else {
