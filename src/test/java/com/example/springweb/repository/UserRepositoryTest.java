@@ -20,13 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 class UserRepositoryTest {
 
+
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
 
     @Autowired
     private UserRepository userRepository;
 
     private final User user = UserModels.createUser(Role.USER);
-    private final List<User> userList = UserModels.createRandomUserList();
+
+    private final List<User> userList = UserModels.getRandomUserList();
+
+
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -34,6 +38,8 @@ class UserRepositoryTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
+
+
 
     @BeforeEach
     void setUp() {
@@ -45,11 +51,15 @@ class UserRepositoryTest {
         userRepository.deleteAll();
     }
 
+
+
     @Test
     void findAllTest() {
         assertEquals(userRepository.findAll().size(), userList.size());
         System.out.println(userRepository.findAll());
+
     }
+
 
     @Test
     void findByEmailTest() {
@@ -57,8 +67,9 @@ class UserRepositoryTest {
         String userEmail = user.getEmail();
         Optional<User> byEmail = userRepository.findByEmail(userEmail);
         assertTrue(byEmail.isPresent());
-    }
 
+
+    }
     @Test
     void findByIdTest() {
         userRepository.save(user);
@@ -69,7 +80,8 @@ class UserRepositoryTest {
 
     @Test
     void saveTest() {
-        assertEquals(userRepository.findAll().size(), userList.size() + 1);
+        assertEquals(userRepository.findAll().size(), userList.size()+1);
+
     }
 
     @Test
@@ -85,6 +97,7 @@ class UserRepositoryTest {
         assertEquals("Tanya", updatedUser.getFirstName());
     }
 
+
     @Test
     void deleteTest() {
         userRepository.save(user);
@@ -92,6 +105,7 @@ class UserRepositoryTest {
         userRepository.deleteById(userId);
         assertEquals(userRepository.findAll().size(), userList.size());
     }
+
 
     @BeforeAll
     static void beforeAll() {

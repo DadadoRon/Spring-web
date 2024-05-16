@@ -1,6 +1,7 @@
 package com.example.springweb.controllers.userappointment.byuser;
 
 
+import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.exceptions.ForbiddenUserException;
 import com.example.springweb.mapper.UserAppointmentByUserMapper;
@@ -30,16 +31,16 @@ public class UserAppointmentByUserController {
 
 
     @GetMapping
-    public List<UserAppointmentByUserDto> findAll() {
+    public List<UserAppointmentDto> findAll() {
         Integer userId = UserContextHolder.getUser().getId();
         return userAppointmentService.getAllUserAppointmentsByUserId(userId).stream()
             .map(userAppointmentByUserMapper::toDto)
-            .sorted(Comparator.comparing(UserAppointmentByUserDto::getDate))
+            .sorted(Comparator.comparing(UserAppointmentDto::getDate))
             .toList();
     }
 
     @PostMapping
-    public UserAppointmentByUserDto create(@Valid @RequestBody UserAppointmentByUserCreateDto createDto) {
+    public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByUserCreateDto createDto) {
         Integer userId = UserContextHolder.getUser().getId();
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
             userAppointmentByUserMapper.toUserAppointmentForCreate(createDto), userId, createDto.getProductId()
@@ -48,7 +49,7 @@ public class UserAppointmentByUserController {
     }
 
     @PutMapping
-    public UserAppointmentByUserDto update(@Valid @RequestBody UserAppointmentByUserUpdateDto updateDto) {
+    public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByUserUpdateDto updateDto) {
         Integer userId = UserContextHolder.getUser().getId();
         Integer userAppointmentId = updateDto.getId();
         UserAppointment userAppointmentById = userAppointmentService.getUserAppointmentById(userAppointmentId);

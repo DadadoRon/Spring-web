@@ -1,6 +1,7 @@
 package com.example.springweb.controllers.userappointment.byadmin;
 
 
+import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.mapper.UserAppointmentByAdminMapper;
 import com.example.springweb.service.UserAppointmentService;
@@ -25,14 +26,14 @@ public class UserAppointmentByAdminController {
     private final UserAppointmentByAdminMapper userAppointmentByAdminMapper;
 
     @GetMapping
-    public List<UserAppointmentByAdminDto> findAll() {
+    public List<UserAppointmentDto> findAll() {
         return userAppointmentService.getAllUserAppointments().stream()
             .map(userAppointmentByAdminMapper::toDto)
             .toList();
     }
 
     @PostMapping
-    public UserAppointmentByAdminDto create(@Valid @RequestBody UserAppointmentByAdminCreateDto createDto) {
+    public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByAdminCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
             userAppointmentByAdminMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
         );
@@ -40,7 +41,7 @@ public class UserAppointmentByAdminController {
     }
 
     @PutMapping
-    public UserAppointmentByAdminDto update(@Valid @RequestBody UserAppointmentByAdminUpdateDto updateDto) {
+    public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByAdminUpdateDto updateDto) {
         UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
                 userAppointmentByAdminMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentByAdminMapper.toDto(userAppointment);

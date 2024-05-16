@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ProductModels {
 
-    public static Product createProduct() {
+    public static Product getProduct() {
         int minPrice = 50;
         int maxPrice = 150;
         int price = ThreadLocalRandom.current().nextInt(minPrice, maxPrice);
@@ -26,18 +26,18 @@ public class ProductModels {
                 .build();
     }
 
-    public static List<Product> createRandomProductList() {
+    public static List<Product> getRandomProductList() {
         int min = 3;
         int max = 8;
         int productListSize = ThreadLocalRandom.current().nextInt(min, max);
         List<Product> productList = new ArrayList<>();
         for (int i = 0; i < productListSize; i++) {
-            productList.add(createProduct());
+            productList.add(getProduct());
         }
         return productList;
     }
 
-    public static ProductCreateDto createProductDto() {
+    public static ProductCreateDto getProductDto() {
         int minPrice = 50;
         int maxPrice = 150;
         int price = ThreadLocalRandom.current().nextInt(minPrice, maxPrice);
@@ -48,5 +48,16 @@ public class ProductModels {
                 .price(bigDecimalPrice)
                 .imageName(RandomStringUtils.randomAlphabetic(5, 6) + ".jpg")
                 .build();
+    }
+
+    public static List<ProductCreateDto> getRandomProductDtoList() {
+        int min = 3;
+        int max = 4;
+        int productDtoListSize = ThreadLocalRandom.current().nextInt(min, max);
+        List<ProductCreateDto> productDtoList = new ArrayList<>();
+        for (int i = 0; i < productDtoListSize; i++) {
+            productDtoList.add(getProductDto());
+        }
+        return productDtoList;
     }
 }

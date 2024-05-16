@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class UserAppointmentModels {
 
-    public static UserAppointment createUserAppointment(User user, Product product) {
+    public static UserAppointment getUserAppointment(User user, Product product) {
         int minHours = 9;
         int maxHours = 17;
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
@@ -27,18 +27,18 @@ public class UserAppointmentModels {
                 .build();
     }
 
-    public static List<UserAppointment> createUserAppointmentList(User user, Product product) {
+    public static List<UserAppointment> getUserAppointmentList(User user, Product product) {
         int min = 3;
         int max = 8;
         int userAppointmentListSize = ThreadLocalRandom.current().nextInt(min, max);
         List<UserAppointment> userAppointmentList = new ArrayList<>();
         for (int i = 0; i < userAppointmentListSize; i++) {
-            userAppointmentList.add(createUserAppointment(user, product));
+            userAppointmentList.add(getUserAppointment(user, product));
         }
         return userAppointmentList;
     }
 
-    public static UserAppointmentByAdminCreateDto createUserAppointmentByAdminDto (Integer userId, Integer productId) {
+    public static UserAppointmentByAdminCreateDto getUserAppointmentByAdminDto (Integer userId, Integer productId) {
         int minHours = 9;
         int maxHours = 17;
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
@@ -50,7 +50,18 @@ public class UserAppointmentModels {
                 .build();
     }
 
-    public static UserAppointmentByUserCreateDto createUserAppointmentByUserDto (Integer productId) {
+    public static List<UserAppointmentByAdminCreateDto> getRandomUserAppointmentCreateDto(Integer userId, Integer productId) {
+        int min = 3;
+        int max = 4;
+        int userAppointmentDtoListSize = ThreadLocalRandom.current().nextInt(min, max);
+        List<UserAppointmentByAdminCreateDto> userAppointmentByAdminCreateDtoList = new ArrayList<>();
+        for (int i = 0; i < userAppointmentDtoListSize; i++) {
+            userAppointmentByAdminCreateDtoList.add(getUserAppointmentByAdminDto(userId, productId));
+        }
+        return userAppointmentByAdminCreateDtoList;
+    }
+
+    public static UserAppointmentByUserCreateDto getUserAppointmentByUserDto (Integer productId) {
         int minHours = 9;
         int maxHours = 17;
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
@@ -60,5 +71,19 @@ public class UserAppointmentModels {
                 .productId(productId)
                 .build();
     }
+
+
+    public static List<UserAppointmentByUserCreateDto> getRandomUserAppointmentCreateDtoByUser(Integer productId) {
+        int min = 3;
+        int max = 4;
+        int userAppointmentDtoListSize = ThreadLocalRandom.current().nextInt(min, max);
+        List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtoList = new ArrayList<>();
+        for (int i = 0; i < userAppointmentDtoListSize; i++) {
+            userAppointmentByUserCreateDtoList.add(getUserAppointmentByUserDto(productId));
+        }
+        return userAppointmentByUserCreateDtoList;
+    }
+
+
 }
 
