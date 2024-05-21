@@ -2,11 +2,14 @@ package com.example.springweb.controllers.userappointment.byuser;
 
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserAppointmentModels;
+import com.example.springweb.UserModels;
 import com.example.springweb.controllers.product.ProductDto;
 import com.example.springweb.controllers.user.UserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
+import com.example.springweb.entity.Role;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,18 +28,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     private List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
+
     private ProductDto product = new ProductDto();
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
+        RestAssured.baseURI = "http://localhost:" + port;
+        admin = UserModels.createUser(Role.ADMIN);
         userRepository.save(admin);
         product = createProduct();
-        userAppointmentList = createUserAppointmentList(product.getId());
-//        RestAssured.baseURI = "http://localhost:" + port;
+        userAppointmentList = createUserAppointments(product.getId());
     }
 
     @Test
-    void getAllUserAppointmentsAsUser() throws JsonProcessingException {
+    void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
         UserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
@@ -48,7 +53,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void getAllUserAppointmentsAsAdmin() {
+    void testGetAllUserAppointmentsAsAdmin() {
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
@@ -59,7 +64,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void getAllUserAppointmentsAsAnonymous() {
+    void testGetAllUserAppointmentsAsAnonymous() {
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(anonymous))
@@ -83,7 +88,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateUserAppointmentByIdAsUser() throws JsonProcessingException {
+    void testUpdateUserAppointmentByIdAsUser() throws JsonProcessingException {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
@@ -107,7 +112,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateUserAppointmentByIdAsSomeUser() throws JsonProcessingException {
+    void testUpdateUserAppointmentByIdAsSomeUser() throws JsonProcessingException {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -115,7 +120,6 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         LocalDate newDate = LocalDate.now();
         updatedUserAppointment.setDate(newDate);
         UserDto someUser = createUser();
-        System.out.println(someUser);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -128,7 +132,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateUserAppointmentByIdAsAdmin() throws JsonProcessingException {
+    void testUpdateUserAppointmentByIdAsAdmin() throws JsonProcessingException {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -147,7 +151,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateUserAppointmentByIdAsAnonymous() throws JsonProcessingException {
+    void testUpdateUserAppointmentByIdAsAnonymous() throws JsonProcessingException {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -181,7 +185,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void createUserAppointmentAsUser() throws JsonProcessingException {
+    void testCreateUserAppointmentAsUser() throws JsonProcessingException {
         UserDto user = createUser();
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.getId());
@@ -198,7 +202,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void createUserAppointmentAsAdmin() throws JsonProcessingException {
+    void testCreateUserAppointmentAsAdmin() throws JsonProcessingException {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.getId());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -213,7 +217,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void createUserAppointmentAsAnonymous() throws JsonProcessingException {
+    void testCreateUserAppointmentAsAnonymous() throws JsonProcessingException {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.getId());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -243,7 +247,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void deleteUserAppointmentAsUser() throws JsonProcessingException {
+    void testDeleteUserAppointmentAsUser() throws JsonProcessingException {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
@@ -259,7 +263,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void deleteUserAppointmentAsSomeUser() throws JsonProcessingException {
+    void testDeleteUserAppointmentAsSomeUser() throws JsonProcessingException {
         UserDto someUser = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
@@ -273,7 +277,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void deleteUserAppointmentAsAdmin() {
+    void testDeleteUserAppointmentAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -286,7 +290,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void deleteUserAppointmentAsAnonymous() {
+    void testDeleteUserAppointmentAsAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -310,5 +314,4 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }
-
 }

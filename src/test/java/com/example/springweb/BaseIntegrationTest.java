@@ -21,26 +21,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
-import static com.example.springweb.PostgreSQLContainerExtension.postgres;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_OK;
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(PostgreSQLContainerExtension.class)
-public abstract class BaseIntegrationTest {
+public class BaseIntegrationTest {
+
+    @LocalServerPort
+    public Integer port;
 
     @Autowired
     public UserRepository userRepository;
@@ -59,12 +62,7 @@ public abstract class BaseIntegrationTest {
 
     @AfterEach
     void delete() {
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-
+        JdbcTestUtils.deleteFromTables(jdbcTemplate,"users", "products", "user_appointments");
     }
 
     public static Header getAuthorizationHeader(User user) {
@@ -88,9 +86,7 @@ public abstract class BaseIntegrationTest {
 
     public final Header randomString = new Header("Authorization", RandomStringUtils.randomAlphabetic(10));
 
-    public static final User admin = UserModels.createUser(Role.ADMIN);
-
-
+    public static User admin = new User();
 
     public ProductDto createProduct() throws JsonProcessingException {
         ProductCreateDto productCreateDto = ProductModels.getProductDto();
@@ -106,14 +102,11 @@ public abstract class BaseIntegrationTest {
                 .extract().body().as(ProductDto.class);
     }
 
-
-    public List<ProductDto> createProductList() throws JsonProcessingException {
+    public List<ProductDto> createProducts() throws JsonProcessingException {
         List<ProductDto> productDtoList = new ArrayList<>();
         List<ProductCreateDto> productCreateDtoList = ProductModels.getRandomProductDtoList();
         for (ProductCreateDto productCreateDto : productCreateDtoList) {
             String json = objectMapper.writeValueAsString(productCreateDto);
-            Header authorizationHeader = getAuthorizationHeader(admin);
-            System.out.println(authorizationHeader);
             ProductDto productDto = given()
                     .contentType(ContentType.JSON)
                     .header(getAuthorizationHeader(admin))
@@ -133,17 +126,16 @@ public abstract class BaseIntegrationTest {
         String jsonUser = objectMapper.writeValueAsString(userCreateDto);
         return given()
                 .contentType(ContentType.JSON)
-                .header("Authorization",String.format("Basic %s", "cGlua0BtYWlsLmNvbTozMDEzMDEzMDFA"))
+                .header(getAuthorizationHeader(admin))
                 .when()
                 .body(jsonUser)
                 .post(String.format("%s/create", UserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK)
                 .extract().body().as(UserDto.class);
-
     }
 
-    public List<UserDto> createUserList() throws JsonProcessingException {
+    public List<UserDto> createUsers() throws JsonProcessingException {
         List<UserDto> userDtoList = new ArrayList<>();
         List<UserCreateDto> userCreateDtoList = UserModels.getRandomUserCreateDtoList();
         for (UserCreateDto userCreateDto : userCreateDtoList) {
@@ -162,7 +154,7 @@ public abstract class BaseIntegrationTest {
         return userDtoList;
     }
 
-    public List<UserAppointmentDto> createUserAppointmentList(Integer userId, Integer productId) throws JsonProcessingException {
+    public List<UserAppointmentDto> createUserAppointments(Integer userId, Integer productId) throws JsonProcessingException {
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
         List<UserAppointmentByAdminCreateDto> userAppointmentByAdminCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDto(userId, productId);
         for (UserAppointmentByAdminCreateDto userAppointmentByAdminCreateDto : userAppointmentByAdminCreateDtos) {
@@ -181,7 +173,7 @@ public abstract class BaseIntegrationTest {
         return userAppointmentList;
     }
 
-    public List<UserAppointmentDto> createUserAppointmentList(Integer productId) throws JsonProcessingException {
+    public List<UserAppointmentDto> createUserAppointments(Integer productId) throws JsonProcessingException {
         UserDto user = createUser();
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
         List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDtoByUser(productId);
