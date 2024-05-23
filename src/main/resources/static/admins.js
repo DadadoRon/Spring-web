@@ -75,6 +75,7 @@ export default {
         numberedUserAppointments() {
             return this.userAppointments.map((item, index) => ({...item, index: index + 1}));
         },
+
     },
     watch: {
         dialog(val) {
@@ -114,8 +115,8 @@ export default {
             this.closeDelete()
         },
         async deleteUserAppointmentConfirm() {
-            await ax.delete(`/api/v1/user-appointments/${this.editedItem.id}`)
-            const response = await ax.get('/api/v1/user-appointments')
+            await ax.delete(`/api/v1/admin/user-appointments/${this.editedItem.id}`)
+            const response = await ax.get('/api/v1/admin/user-appointments')
             this.userAppointments = response.data
             this.closeDelete()
         },
@@ -137,7 +138,7 @@ export default {
             if (this.editedIndex > -1) {
                 await ax.put('/api/v1/users', this.editedItem)
             } else {
-                await ax.post('/api/v1/users', this.editedItem)
+                await ax.post('/api/v1/users/create', this.editedItem)
             }
             const response = await ax.get('/api/v1/users')
             this.users = response.data;
@@ -155,16 +156,16 @@ export default {
         },
         async saveUserAppointment() {
             if (this.editedIndex > -1) {
-                await ax.put('/api/v1/user-appointments', this.editedItem)
+                await ax.put('/api/v1/admin/user-appointments',  this.editedItem)
             } else {
-                await ax.post('/api/v1/user-appointments', {
+                await ax.post('/api/v1/admin/user-appointments', {
                     date: this.editedItem.date,
                     time: this.editedItem.time,
-                    userId:this.editedItem.userId.id,
-                    productId: this.editedItem.productId.id,
+                    userId:this.editedItem.userId,
+                    productId: this.editedItem.productId,
                 })
             }
-            const response = await ax.get('/api/v1/user-appointments')
+            const response = await ax.get('/api/v1/admin/user-appointments')
             this.userAppointments = response.data;
             this.close()
         },
@@ -185,7 +186,7 @@ export default {
         },
         async toUserAppointmentsTable(){
             this.mainContentNumber = 4;
-            const response = await ax.get('/api/v1/user-appointments')
+            const response = await ax.get('/api/v1/admin/user-appointments')
             this.userAppointments = response.data
             const userResponse = await ax.get('/api/v1/users')
             this.users = userResponse.data

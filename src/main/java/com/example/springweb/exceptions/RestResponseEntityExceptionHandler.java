@@ -41,5 +41,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
+
+    @ExceptionHandler(value = { ForbiddenUserException.class })
+    protected ResponseEntity<Object> handleAccessDeniedException(ForbiddenUserException ex) {
+        ApiError apiError = ApiError.builder()
+                .message(ApiErrorCode.FORBIDDEN.getMessage())
+                .debugMessage(ex.getMessage())
+                .code(ApiErrorCode.FORBIDDEN.name())
+                .build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    }
+
+
 }
 

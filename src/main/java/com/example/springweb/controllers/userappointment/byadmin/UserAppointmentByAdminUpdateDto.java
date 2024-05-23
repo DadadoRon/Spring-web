@@ -1,4 +1,4 @@
-package com.example.springweb.controllers.userAppointment;
+package com.example.springweb.controllers.userappointment.byadmin;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
@@ -14,14 +14,11 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserAppointmentCreateDto {
+public class UserAppointmentByAdminUpdateDto {
+    private Integer id;
     @NotNull(message = "Date cannot be empty")
     @FutureOrPresent(message = "Date should be in the present or future")
     private LocalDate date;
-    @NotNull(message = "Time cannot be empty")
+    @NotNull(message = "Date cannot be empty")
     private LocalTime time;
-    @NotNull(message = "UserId cannot be empty")
-    private Integer userId;
-    @NotNull(message = "ProductId cannot be empty")
-    private Integer productId;
 }

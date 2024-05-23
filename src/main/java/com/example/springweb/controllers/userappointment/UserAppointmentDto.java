@@ -1,4 +1,4 @@
-package com.example.springweb.controllers.userAppointment;
+package com.example.springweb.controllers.userappointment;
 
 import com.example.springweb.controllers.product.ProductDto;
 import com.example.springweb.controllers.user.UserDto;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 
 @Data
 @NoArgsConstructor
@@ -21,3 +22,4 @@ public class UserAppointmentDto {
     private UserDto user;
     private ProductDto product;
 }
+

@@ -661,7 +661,7 @@
                                                             <v-col cols="12" >
                                                                 <v-text-field v-model="editedItem.password" label="Password"></v-text-field>
                                                             </v-col>
-                                                            <v-col cols="12" >
+                                                             <v-col cols="12" >
                                                                 <v-autocomplete
                                                                         v-model="editedItem.role"
                                                                         label="Role"
@@ -811,21 +811,32 @@
                                                                 <v-col cols="12" >
                                                                     <div v-if="editedIndex > -1">Product: {{ editedItem.product.name }}</div>
                                                                 </v-col>
-<!--                                                                    <v-select-->
-<!--                                                                            v-model="editedItem.productId"-->
-<!--                                                                            label="Product"-->
-<!--                                                                            :items="products"-->
-<!--                                                                            :item-props="productProps"-->
-<!--                                                                    ></v-select>-->
+                                                                <v-col cols="12" >
+                                                                    <div v-if="editedIndex <= -1">
+                                                                    <v-autocomplete
+                                                                            v-model="editedItem.productId"
+                                                                            label="Product"
+                                                                            :items="products"
+                                                                            item-title="name"
+                                                                            item-value="id"
+                                                                    ></v-autocomplete>
+                                                                    </div>
+                                                                </v-col>
                                                                     <v-col cols="12" >
-                                                                        <div v-if="editedIndex > -1">User: {{ editedItem.user.firstName }} {{ editedItem.user.lastName }}</div>
+                                                                        <div v-if="editedIndex > -1">
+                                                                            User: {{ editedItem.user.firstName }} {{ editedItem.user.lastName }}</div>
                                                                     </v-col>
-<!--                                                                    <v-select-->
-<!--                                                                            v-model="editedItem.userId"-->
-<!--                                                                            label="User"-->
-<!--                                                                            :items="users"-->
-<!--                                                                            :item-props="userProps">-->
-<!--                                                                    ></v-select>-->
+                                                                    <v-col cols="12" >
+                                                                        <div v-if="editedIndex <= -1">
+                                                                            <v-autocomplete
+                                                                            v-model="editedItem.userId"
+                                                                            label="User"
+                                                                            :items="users"
+                                                                            :item-title="user => `${user.lastName} ${user.firstName}`"
+                                                                            item-value="id"
+                                                                            ></v-autocomplete>
+                                                                        </div>
+                                                                    </v-col>
                                                             </v-row>
                                                         </v-container>
                                                     </v-card-text>

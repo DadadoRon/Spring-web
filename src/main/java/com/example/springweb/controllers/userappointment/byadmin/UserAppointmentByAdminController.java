@@ -1,29 +1,29 @@
-package com.example.springweb.controllers.userAppointment;
+package com.example.springweb.controllers.userappointment.byadmin;
 
 
+import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
-import com.example.springweb.mapper.UserAppointmentMapper;
-import com.example.springweb.security.UserContextHolder;
+import com.example.springweb.mapper.userappointmentmapper.UserAppointmentMapper;
+import com.example.springweb.mapper.userappointmentmapper.byadmin.UserAppointmentByAdminMapper;
 import com.example.springweb.service.UserAppointmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
 
-import static com.example.springweb.controllers.userAppointment.UserAppointmentController.REQUEST_MAPPING;
+import static com.example.springweb.controllers.userappointment.byadmin.UserAppointmentByAdminController.REQUEST_MAPPING;
 
 
 @RestController
 @Tag(name = "UserAppointments API")
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
-public class UserAppointmentController {
-
-    public static final String REQUEST_MAPPING = "/api/v1/user-appointments";
+public class UserAppointmentByAdminController {
+    public static final String REQUEST_MAPPING = "/api/v1/admin/user-appointments";
     private final UserAppointmentService userAppointmentService;
+    private final UserAppointmentByAdminMapper userAppointmentByAdminMapper;
     private final UserAppointmentMapper userAppointmentMapper;
 
     @GetMapping
@@ -33,27 +33,18 @@ public class UserAppointmentController {
             .toList();
     }
 
-    @GetMapping("/personal")
-    public List<UserAppointmentDto> findAllForUser() {
-        Integer userId = UserContextHolder.getUser().getId();
-        return userAppointmentService.getAllUserAppointmentsByUserId(userId).stream()
-            .map(userAppointmentMapper::toDto)
-            .sorted(Comparator.comparing(UserAppointmentDto::getDate))
-            .toList();
-    }
-
     @PostMapping
-    public UserAppointmentDto create(@Valid @RequestBody UserAppointmentCreateDto createDto) {
+    public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByAdminCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
-            userAppointmentMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
+            userAppointmentByAdminMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
         );
         return userAppointmentMapper.toDto(userAppointment);
     }
 
     @PutMapping
-    public UserAppointmentDto update(@Valid @RequestBody UserAppointmentUpdateDto updateDto) {
+    public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByAdminUpdateDto updateDto) {
         UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
-            userAppointmentMapper.toUserAppointmentForUpdate(updateDto));
+                userAppointmentByAdminMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentMapper.toDto(userAppointment);
     }
 

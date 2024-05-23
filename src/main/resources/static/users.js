@@ -93,13 +93,13 @@ export default {
         },
 
         async saveAndClose() {
-            await ax.put('/api/v1/user-appointments', this.editedItem)
-            const response = await ax.get(`/api/v1/user-appointments/personal`)
+            await ax.put('/api/v1/user/user-appointments', this.editedItem)
+            const response = await ax.get(`/api/v1/user/user-appointments`)
             this.userAppointments = response.data;
             this.close()
         },
         async saveAndCloseCreate() {
-            await ax.post('/api/v1/user-appointments', {
+            await ax.post('/api/v1/user/user-appointments', {
                 date: this.selectedDate,
                 time: this.selectedTime,
                 userId: this.user.id,
@@ -110,8 +110,8 @@ export default {
 
 
         async deleteUserAppointmentConfirm() {
-            await ax.delete(`/api/v1/user-appointments/${this.editedItem.id}`);
-            const response = await ax.get(`/api/v1/user-appointments/personal`)
+            await ax.delete(`/api/v1/user/user-appointments/${this.editedItem.id}`);
+            const response = await ax.get(`/api/v1/user/user-appointments`)
             this.userAppointments = response.data
             this.closeDelete()
         },
@@ -126,7 +126,7 @@ export default {
         },
         async handleAppointmentClick(title) {
             if (title === 'Current Appointments') {
-                const response = await ax.get(`/api/v1/user-appointments/personal`)
+                const response = await ax.get(`/api/v1/user/user-appointments`)
                 this.userAppointments = response.data
                 this.toCurrent();
             } else if (title === 'Appointment History') {
