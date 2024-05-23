@@ -3,7 +3,8 @@ package com.example.springweb.controllers.userappointment.byadmin;
 
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
-import com.example.springweb.mapper.UserAppointmentByAdminMapper;
+import com.example.springweb.mapper.userappointmentmapper.UserAppointmentMapper;
+import com.example.springweb.mapper.userappointmentmapper.byadmin.UserAppointmentByAdminMapper;
 import com.example.springweb.service.UserAppointmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,15 +21,15 @@ import static com.example.springweb.controllers.userappointment.byadmin.UserAppo
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
 public class UserAppointmentByAdminController {
-
     public static final String REQUEST_MAPPING = "/api/v1/admin/user-appointments";
     private final UserAppointmentService userAppointmentService;
     private final UserAppointmentByAdminMapper userAppointmentByAdminMapper;
+    private final UserAppointmentMapper userAppointmentMapper;
 
     @GetMapping
     public List<UserAppointmentDto> findAll() {
         return userAppointmentService.getAllUserAppointments().stream()
-            .map(userAppointmentByAdminMapper::toDto)
+            .map(userAppointmentMapper::toDto)
             .toList();
     }
 
@@ -37,14 +38,14 @@ public class UserAppointmentByAdminController {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
             userAppointmentByAdminMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
         );
-        return userAppointmentByAdminMapper.toDto(userAppointment);
+        return userAppointmentMapper.toDto(userAppointment);
     }
 
     @PutMapping
     public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByAdminUpdateDto updateDto) {
         UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
                 userAppointmentByAdminMapper.toUserAppointmentForUpdate(updateDto));
-        return userAppointmentByAdminMapper.toDto(userAppointment);
+        return userAppointmentMapper.toDto(userAppointment);
     }
 
     @DeleteMapping("/{id}")
