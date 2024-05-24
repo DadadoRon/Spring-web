@@ -8,6 +8,12 @@ export default {
             selectedTime: null,
             productId: null,
             userId: null,
+            dateTime: null,
+            timeZone: null,
+            timeZones: [
+                { text: 'Moscow, Europe', value: '+03:00[Europe/Moscow]'},
+                { text: 'Moscow, Europe', value: '+03:00[Europe/Moscow]'},
+            ],
             tags: [
                 '11:00:00',
                 '12:00:00',
@@ -44,8 +50,7 @@ export default {
             headersUserAppointments: [
                 {title: '#', key: 'index'},
                 // {title: 'ID', key: 'id'},
-                {title: 'Date', key: 'date'},
-                {title: 'Time', key: 'time'},
+                {title: 'Date_Time', key: 'dateTime'},
                 {title: 'Name', key: 'product.name'},
                 {title: 'FirstName', key: 'user.firstName'},
                 {title: 'LastName', key: 'user.lastName'},
@@ -154,13 +159,21 @@ export default {
             this.products = response.data;
             this.close()
         },
+
         async saveUserAppointment() {
+            const dateTime = this.editedItem.dateTime;
+            const formattedDateTime = `${dateTime}${this.editItem.timeZone}`;
             if (this.editedIndex > -1) {
-                await ax.put('/api/v1/admin/user-appointments',  this.editedItem)
+                const updatedAppointment = {
+                    id: this.editedItem.id,
+                    dateTime: formattedDateTime,
+                    userId: this.editedItem.userId,
+                    productId: this.editedItem.productId,
+                };
+                await ax.put('/api/v1/admin/user-appointments',  updatedAppointment)
             } else {
                 await ax.post('/api/v1/admin/user-appointments', {
-                    date: this.editedItem.date,
-                    time: this.editedItem.time,
+                    dateTime: formattedDateTime,
                     userId:this.editedItem.userId,
                     productId: this.editedItem.productId,
                 })

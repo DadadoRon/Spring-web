@@ -6,8 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +19,8 @@ public class UserAppointment {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "date")
-    private LocalDate date;
-    @Column(name = "time")
-    private LocalTime time;
+    @Column(name = "date_time")
+    private ZonedDateTime dateTime;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

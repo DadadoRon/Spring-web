@@ -801,13 +801,22 @@
                                                                 <label for="start">
                                                                     Date:
                                                                 </label>
-                                                                <input type="date" id="start2" name="trip-start" v-model="editedItem.date" min="2010-11-21" max="2029-12-31" />
+                                                                    <v-row>
+                                                                        <v-col>
+                                                                            <input type="datetime-local" id="start2" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
+                                                                        </v-col>
+                                                                        <v-col>
+                                                                            <v-autocomplete
+                                                                                variant="outlined"
+                                                                                v-model="editItem.timeZone"
+                                                                                :items="timeZones"
+                                                                                item-title="value"
+                                                                                item-value="value"
+                                                                                label="Select Time Zone"
+                                                                            ></v-autocomplete>
+                                                                        </v-col>
+                                                                    </v-row>
                                                                 </v-col>
-                                                                <v-chip-group mandatory selected-class="text-primary">
-                                                                    <v-chip v-for="tag in tags" :key="tag"  @click="changeSelectedTime(tag)">
-                                                                        {{ tag }}
-                                                                    </v-chip>
-                                                                </v-chip-group>
                                                                 <v-col cols="12" >
                                                                     <div v-if="editedIndex > -1">Product: {{ editedItem.product.name }}</div>
                                                                 </v-col>

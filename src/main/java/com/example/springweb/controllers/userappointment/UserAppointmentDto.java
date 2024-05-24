@@ -7,8 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 
 @Data
@@ -17,8 +16,7 @@ import java.time.LocalTime;
 @Builder
 public class UserAppointmentDto {
     private Integer id;
-    private LocalDate date;
-    private LocalTime time;
+    private ZonedDateTime dateTime;
     private UserDto user;
     private ProductDto product;
 }
