@@ -1,19 +1,13 @@
+
 export default {
     template: '#admins',
     data() {
         return {
             user: JSON.parse(localStorage.getItem("currentUser")),
             mainContentNumber: 1,
-            selectedDate: "00-00-00",
-            selectedTime: null,
             productId: null,
             userId: null,
             dateTime: null,
-            timeZone: null,
-            timeZones: [
-                { text: 'Moscow, Europe', value: '+03:00[Europe/Moscow]'},
-                { text: 'Moscow, Europe', value: '+03:00[Europe/Moscow]'},
-            ],
             tags: [
                 '11:00:00',
                 '12:00:00',
@@ -78,7 +72,11 @@ export default {
             return this.products.map((item, index) => ({...item, index: index + 1}));
         },
         numberedUserAppointments() {
-            return this.userAppointments.map((item, index) => ({...item, index: index + 1}));
+                return this.userAppointments.map((item, index) => ({
+                    ...item,
+                    index: index + 1,
+                    dateTime: moment(item.dateTime).format('LLL'),
+                }));
         },
 
     },
@@ -91,12 +89,6 @@ export default {
         },
     },
     methods: {
-        selectTime(time) {
-            this.selectedTime = time;
-        },
-        changeSelectedTime(tag) {
-            this.editedItem.time = tag;
-        },
         editItem(item) {
             this.editedIndex = item.index
             this.editedItem = Object.assign({}, item)
@@ -162,18 +154,18 @@ export default {
 
         async saveUserAppointment() {
             const dateTime = this.editedItem.dateTime;
-            const formattedDateTime = `${dateTime}${this.editItem.timeZone}`;
+            const momentDateTime = moment(dateTime);
             if (this.editedIndex > -1) {
                 const updatedAppointment = {
                     id: this.editedItem.id,
-                    dateTime: formattedDateTime,
+                    dateTime: momentDateTime,
                     userId: this.editedItem.userId,
                     productId: this.editedItem.productId,
                 };
                 await ax.put('/api/v1/admin/user-appointments',  updatedAppointment)
             } else {
                 await ax.post('/api/v1/admin/user-appointments', {
-                    dateTime: formattedDateTime,
+                    dateTime: momentDateTime,
                     userId:this.editedItem.userId,
                     productId: this.editedItem.productId,
                 })
@@ -189,13 +181,11 @@ export default {
             this.mainContentNumber = 2;
             const response = await ax.get('/api/v1/users')
             this.users = response.data
-
         },
         async toProductsTable() {
             this.mainContentNumber = 3;
             const response = await ax.get('/api/v1/products')
             this.products = response.data
-
         },
         async toUserAppointmentsTable(){
             this.mainContentNumber = 4;

@@ -313,13 +313,7 @@
                                                 <v-card-title>Dialog Title</v-card-title>
                                                 <v-card-text>
                                                     <label for="start">Start date:</label>
-                                                    <input type="date" id="start" name="trip-start" v-model="selectedDate" value="00-00-00"
-                                                           min="2023-11-21" max="2023-12-31" />
-                                                    <v-chip-group mandatory selected-class="text-primary">
-                                                        <v-chip v-for="tag in tags" :key="tag" @click="selectTime(tag)">
-                                                            {{ tag }}
-                                                        </v-chip>
-                                                    </v-chip-group>
+                                                    <input type="datetime-local" id = "start" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
                                                 </v-card-text>
                                                 <v-card-actions>
                                                     <v-btn @click="saveAndCloseCreate">Save</v-btn>
@@ -460,8 +454,7 @@
                                 <v-col v-for="(userAppointment, i ) in userAppointments" :key="i" cols="12" md="4">
                                     <v-card>
                                         <v-card-title >{{ userAppointment.product.name }}</v-card-title>
-                                        <v-card-text>Date:{{ (userAppointment.date) }}</v-card-text>
-                                        <v-card-text>Time: {{ userAppointment.time }}</v-card-text>
+                                        <v-card-text> Date: {{ formatDate(userAppointment.dateTime) }}</v-card-text>
                                         <v-card-actions>
                                             <v-btn small @click="editItem(userAppointment)">Edit</v-btn>
                                             <v-btn small @click="deleteItem(userAppointment)">Delete</v-btn>
@@ -479,7 +472,7 @@
                                                         </v-col>
                                                         <v-card-text>
                                                             <label for="start">Start date:</label>
-                                                            <input type="date" id="start1" name="trip-start" v-model="editedItem.date" min="2010-11-21" max="2029-12-31" />
+                                                            <input type="datetime-local" id="start3" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
                                                             <v-chip-group mandatory selected-class="text-primary">
                                                                 <v-chip v-for="tag in tags" :key="tag"  @click="changeSelectedTime(tag)">
                                                                     {{ tag }}
@@ -805,16 +798,6 @@
                                                                         <v-col>
                                                                             <input type="datetime-local" id="start2" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
                                                                         </v-col>
-                                                                        <v-col>
-                                                                            <v-autocomplete
-                                                                                variant="outlined"
-                                                                                v-model="editItem.timeZone"
-                                                                                :items="timeZones"
-                                                                                item-title="value"
-                                                                                item-value="value"
-                                                                                label="Select Time Zone"
-                                                                            ></v-autocomplete>
-                                                                        </v-col>
                                                                     </v-row>
                                                                 </v-col>
                                                                 <v-col cols="12" >
@@ -1009,6 +992,7 @@
 <script src="https://unpkg.com/axios@1.5.0/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@3.3.15/dist/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@3.3.15/dist/vuetify-labs.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
 <script src="axios.js"></script>
 
 <script type="module" src="main.js"></script>
