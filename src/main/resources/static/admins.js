@@ -1,4 +1,3 @@
-
 export default {
     template: '#admins',
     data() {
@@ -78,7 +77,6 @@ export default {
                     dateTime: moment(item.dateTime).format('LLL'),
                 }));
         },
-
     },
     watch: {
         dialog(val) {
@@ -151,7 +149,6 @@ export default {
             this.products = response.data;
             this.close()
         },
-
         async saveUserAppointment() {
             const dateTime = this.editedItem.dateTime;
             const momentDateTime = moment(dateTime);
