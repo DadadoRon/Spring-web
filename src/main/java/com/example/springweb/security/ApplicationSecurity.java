@@ -38,6 +38,7 @@ public class ApplicationSecurity {
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/profile").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/create").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/register").hasAuthority(Role.USER.name())
                         .requestMatchers(HttpMethod.PUT, "/api/v1/users").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/products").hasAuthority(Role.ADMIN.name())
