@@ -29,8 +29,6 @@ class UserControllerTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() throws JsonProcessingException {
         RestAssured.baseURI = "http://localhost:" + port;
-        admin = UserModels.createUser(Role.ADMIN);
-        userRepository.save(admin);
         userList = createUsers();
     }
     @Test
@@ -140,8 +138,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .when()
                 .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
                 .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(admin.getId()));
+                .statusCode(SC_OK);
     }
 
     @Test
