@@ -46,6 +46,14 @@ export default {
         },
     },
     methods: {
+        getCurrentDateTime() {
+            let currentDateTime = moment();
+            return currentDateTime.format('YYYY-MM-DDTHH:mm');
+        },
+        getDateTimeSixMonthFromNow() {
+            let futureDate = moment().add(6, 'months');
+            return futureDate.format('YYYY-MM-DDTHH:mm');
+        },
         formatDate(dateTime) {
             return moment(dateTime).format('LLLL');
         },

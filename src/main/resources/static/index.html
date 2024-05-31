@@ -313,7 +313,7 @@
                                                 <v-card-title>Dialog Title</v-card-title>
                                                 <v-card-text>
                                                     <label for="start">Start date:</label>
-                                                    <input type="datetime-local" id = "start" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
+                                                    <input type="datetime-local" id = "start" name="trip-start" v-model="editedItem.dateTime" :min="getCurrentDateTime()" :max="getDateTimeSixMonthFromNow()"/>
                                                 </v-card-text>
                                                 <v-card-actions>
                                                     <v-btn @click="saveAndCloseCreate">Save</v-btn>
@@ -472,7 +472,7 @@
                                                         </v-col>
                                                         <v-card-text>
                                                             <label for="start">Start date:</label>
-                                                            <input type="datetime-local" id="start3" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
+                                                            <input type="datetime-local" id="start3" name="trip-start" v-model="editedItem.dateTime" :min="getCurrentDateTime()" :max="getDateTimeSixMonthFromNow()"/>
                                                             <v-chip-group mandatory selected-class="text-primary">
                                                                 <v-chip v-for="tag in tags" :key="tag"  @click="changeSelectedTime(tag)">
                                                                     {{ tag }}
@@ -695,10 +695,7 @@
                         </div>
                         </v-container>
                         <v-container fluid  v-if="mainContentNumber==3" >
-                            <div v-if="products.length === 0">
-                                The list is empty
-                            </div>
-                            <div v-else>
+                            <div>
                                 <v-data-table
                                         v-model:items-per-page="itemsPerPage"
                                         :headers="headersProducts"
@@ -763,10 +760,7 @@
                             </div>
                         </v-container>
                         <v-container fluid  v-if="mainContentNumber==4" >
-                            <div v-if="userAppointments.length === 0">
-                                The list is empty
-                            </div>
-                            <div v-else>
+                            <div>
                                 <v-data-table
                                         v-model:items-per-page="itemsPerPage"
                                         :headers="headersUserAppointments"
@@ -796,7 +790,7 @@
                                                                 </label>
                                                                     <v-row>
                                                                         <v-col>
-                                                                            <input type="datetime-local" id="start2" name="trip-start" v-model="editedItem.dateTime" min="2024-06-01T00:00" max="2029-12-31T23:59"/>
+                                                                            <input type="datetime-local" id="start2" name="trip-start" v-model="editedItem.dateTime" :min="getCurrentDateTime()" :max="getDateTimeSixMonthFromNow()"/>
                                                                         </v-col>
                                                                     </v-row>
                                                                 </v-col>

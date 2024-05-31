@@ -7,14 +7,6 @@ export default {
             productId: null,
             userId: null,
             dateTime: null,
-            tags: [
-                '11:00:00',
-                '12:00:00',
-                '13:00:00',
-                '14:00:00',
-                '15:00:00',
-                '16:00:00',
-            ],
             model: 'tab-2',
             dialog: false,
             dialogDelete: false,
@@ -87,6 +79,14 @@ export default {
         },
     },
     methods: {
+        getCurrentDateTime() {
+            let currentDateTime = moment();
+            return currentDateTime.format('YYYY-MM-DDTHH:mm');
+        },
+        getDateTimeSixMonthFromNow() {
+            let futureDate = moment().add(6, 'months');
+            return futureDate.format('YYYY-MM-DDTHH:mm');
+        },
         editItem(item) {
             this.editedIndex = item.index
             this.editedItem = Object.assign({}, item)

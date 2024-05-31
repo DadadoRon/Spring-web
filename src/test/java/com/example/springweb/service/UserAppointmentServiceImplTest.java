@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +40,7 @@ class UserAppointmentServiceImplTest {
     private final Integer testUserAppointmentId = 1;
     private final UserAppointment testUserAppointment = UserAppointment.builder()
             .id(testUserAppointmentId)
-            .dateTime(ZonedDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Moscow")))
+            .dateTime(ZonedDateTime.parse("2024-12-03T10:15:30+01:00"))
             .user(new User(1,"T", "T", "k@mai.com", "3001301", Role.USER))
             .product(new Product(1, "KOI", "YUYT", BigDecimal.valueOf(30.10), "img/n4.jpg"))
             .build();
