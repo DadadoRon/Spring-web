@@ -6,8 +6,7 @@ import com.example.springweb.entity.Product;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserAppointment;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,8 +19,7 @@ public class UserAppointmentModels {
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
         return UserAppointment.builder()
                 .id(null)
-                .date(LocalDate.now().plusDays(10))
-                .time(LocalTime.of(hour, 0))
+                .dateTime(ZonedDateTime.now().plusDays(10))
                 .user(user)
                 .product(product)
                 .build();
@@ -43,8 +41,7 @@ public class UserAppointmentModels {
         int maxHours = 17;
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
         return UserAppointmentByAdminCreateDto.builder()
-                .date(LocalDate.now().plusDays(10))
-                .time(LocalTime.of(hour, 0))
+                .dateTime(ZonedDateTime.now().plusDays(10))
                 .userId(userId)
                 .productId(productId)
                 .build();
@@ -66,8 +63,7 @@ public class UserAppointmentModels {
         int maxHours = 17;
         int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
         return UserAppointmentByUserCreateDto.builder()
-                .date(LocalDate.now().plusDays(10))
-                .time(LocalTime.of(hour, 0))
+                .dateTime(ZonedDateTime.now().plusDays(10))
                 .productId(productId)
                 .build();
     }

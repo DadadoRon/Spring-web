@@ -33,7 +33,7 @@ public class UserAppointmentByUserController {
         Integer userId = UserContextHolder.getUser().getId();
         return userAppointmentService.getAllUserAppointmentsByUserId(userId).stream()
             .map(userAppointmentMapper::toDto)
-            .sorted(Comparator.comparing(UserAppointmentDto::getDate))
+            .sorted(Comparator.comparing(UserAppointmentDto::getDateTime))
             .toList();
     }
 

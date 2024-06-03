@@ -2,13 +2,7 @@ export default {
     template: '#users',
     data() {
         return {
-            selectedDate: "00-00-00",
-            selectedTime: null,
-            tags: [
-                '11:00:00',
-                '12:00:00',
-                '13:00:00',
-            ],
+            dateTime: null,
             timelineItems: [
                 {time: '5pm', title: 'New Icon', category: 'Mobile App'},
                 {time: '5pm', title: 'New Icon', category: 'Mobile App'},
@@ -24,7 +18,6 @@ export default {
                 {title: 'Appointment 2', date: '2023-12-15', time: '13:00'},
                 {title: 'Appointment 2', date: '2023-12-15', time: '13:00'},
             ],
-
             userAppointments: [],
             dialogVisible: false,
             dialogDelete: false,
@@ -34,13 +27,11 @@ export default {
             products: [],
             cards: [
                 {title: 'Сертификат', src: 'img/n1.png', flex: 3, price: 70},
-
             ],
             mainContentNumber: 1,
             editedIndex: -1,
             editedItem: {},
             defaultItem: {},
-
         }
     },
     watch: {
@@ -54,8 +45,18 @@ export default {
             val || this.close()
         },
     },
-
     methods: {
+        getCurrentDateTime() {
+            let currentDateTime = moment();
+            return currentDateTime.format('YYYY-MM-DDTHH:mm');
+        },
+        getDateTimeSixMonthFromNow() {
+            let futureDate = moment().add(6, 'months');
+            return futureDate.format('YYYY-MM-DDTHH:mm');
+        },
+        formatDate(dateTime) {
+            return moment(dateTime).format('LLLL');
+        },
         selectTime(time) {
             this.selectedTime = time;
         },
@@ -91,31 +92,36 @@ export default {
                 this.editedIndex = -1
             })
         },
-
         async saveAndClose() {
-            await ax.put('/api/v1/user/user-appointments', this.editedItem)
+            const dateTime = this.editedItem.dateTime;
+            const momentDateTime = moment(dateTime);
+            const updatedAppointment = {
+                id: this.editedItem.id,
+                dateTime: momentDateTime,
+                userId: this.editedItem.userId,
+                productId: this.editedItem.productId,
+            };
+            await ax.put('/api/v1/user/user-appointments', updatedAppointment)
             const response = await ax.get(`/api/v1/user/user-appointments`)
             this.userAppointments = response.data;
             this.close()
         },
         async saveAndCloseCreate() {
+            const dateTime = this.editedItem.dateTime;
+            const momentDateTime = moment(dateTime);
             await ax.post('/api/v1/user/user-appointments', {
-                date: this.selectedDate,
-                time: this.selectedTime,
+                dateTime: momentDateTime,
                 userId: this.user.id,
                 productId: this.selectedProductId,
             });
             this.close()
         },
-
-
         async deleteUserAppointmentConfirm() {
             await ax.delete(`/api/v1/user/user-appointments/${this.editedItem.id}`);
             const response = await ax.get(`/api/v1/user/user-appointments`)
             this.userAppointments = response.data
             this.closeDelete()
         },
-
         async toProducts() {
             this.mainContentNumber = 1
             const response = await ax.get('/api/v1/products')
