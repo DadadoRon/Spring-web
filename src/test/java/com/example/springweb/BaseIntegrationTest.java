@@ -82,8 +82,7 @@ public class BaseIntegrationTest {
     }
 
     public static Header getAuthorizationHeader(String admin) {
-        String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(admin.getBytes()));
-        return new Header("Authorization", authorizationHeaderValue);
+        return new Header("Authorization", admin);
     }
 
 

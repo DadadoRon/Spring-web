@@ -24,17 +24,20 @@ public class AuthenticationService {
     @Value("${security.admin.authorization}")
     private String adminHeader;
 
-    private String encodeAdminHeader(String header) {
-        return String.format("Basic %s", Base64.getEncoder().encodeToString(header.getBytes()));
-    }
-
     public AuthenticationToken getAuthenticationToken(HttpServletRequest request) {
         try {
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader == null) return null;
-            if (authHeader.equals(encodeAdminHeader(adminHeader))) {
+            if (authHeader.equals(adminHeader)) {
                 return AuthenticationToken.builder()
                         .authorities(List.of(new SimpleGrantedAuthority(Role.ADMIN.name())))
+                        .principal("admin@mail.com")
+                        .user(User.builder()
+                                .firstName("Admin")
+                                .lastName("Admin")
+                                .email("admin@mail.com")
+                                .build())
+                        .authHeader(adminHeader)
                         .authenticated(true)
                         .build();
             }
