@@ -79,4 +79,16 @@
             </where>
         </delete>
     </changeSet>
+    <changeSet id="7" author="DadadoRon">
+        <addColumn tableName="user_appointments">
+            <column name="date_time" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <dropColumn tableName="user_appointments">
+            <column name="date"/>
+            <column name="time"/>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>

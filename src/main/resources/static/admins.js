@@ -4,18 +4,9 @@ export default {
         return {
             user: JSON.parse(localStorage.getItem("currentUser")),
             mainContentNumber: 1,
-            selectedDate: "00-00-00",
-            selectedTime: null,
             productId: null,
             userId: null,
-            tags: [
-                '11:00:00',
-                '12:00:00',
-                '13:00:00',
-                '14:00:00',
-                '15:00:00',
-                '16:00:00',
-            ],
+            dateTime: null,
             model: 'tab-2',
             dialog: false,
             dialogDelete: false,
@@ -44,8 +35,7 @@ export default {
             headersUserAppointments: [
                 {title: '#', key: 'index'},
                 // {title: 'ID', key: 'id'},
-                {title: 'Date', key: 'date'},
-                {title: 'Time', key: 'time'},
+                {title: 'Date_Time', key: 'dateTime'},
                 {title: 'Name', key: 'product.name'},
                 {title: 'FirstName', key: 'user.firstName'},
                 {title: 'LastName', key: 'user.lastName'},
@@ -73,9 +63,12 @@ export default {
             return this.products.map((item, index) => ({...item, index: index + 1}));
         },
         numberedUserAppointments() {
-            return this.userAppointments.map((item, index) => ({...item, index: index + 1}));
+                return this.userAppointments.map((item, index) => ({
+                    ...item,
+                    index: index + 1,
+                    dateTime: moment(item.dateTime).format('LLL'),
+                }));
         },
-
     },
     watch: {
         dialog(val) {
@@ -86,11 +79,13 @@ export default {
         },
     },
     methods: {
-        selectTime(time) {
-            this.selectedTime = time;
+        getCurrentDateTime() {
+            let currentDateTime = moment();
+            return currentDateTime.format('YYYY-MM-DDTHH:mm');
         },
-        changeSelectedTime(tag) {
-            this.editedItem.time = tag;
+        getDateTimeSixMonthFromNow() {
+            let futureDate = moment().add(6, 'months');
+            return futureDate.format('YYYY-MM-DDTHH:mm');
         },
         editItem(item) {
             this.editedIndex = item.index
@@ -155,12 +150,19 @@ export default {
             this.close()
         },
         async saveUserAppointment() {
+            const dateTime = this.editedItem.dateTime;
+            const momentDateTime = moment(dateTime);
             if (this.editedIndex > -1) {
-                await ax.put('/api/v1/admin/user-appointments',  this.editedItem)
+                const updatedAppointment = {
+                    id: this.editedItem.id,
+                    dateTime: momentDateTime,
+                    userId: this.editedItem.userId,
+                    productId: this.editedItem.productId,
+                };
+                await ax.put('/api/v1/admin/user-appointments',  updatedAppointment)
             } else {
                 await ax.post('/api/v1/admin/user-appointments', {
-                    date: this.editedItem.date,
-                    time: this.editedItem.time,
+                    dateTime: momentDateTime,
                     userId:this.editedItem.userId,
                     productId: this.editedItem.productId,
                 })
@@ -176,13 +178,11 @@ export default {
             this.mainContentNumber = 2;
             const response = await ax.get('/api/v1/users')
             this.users = response.data
-
         },
         async toProductsTable() {
             this.mainContentNumber = 3;
             const response = await ax.get('/api/v1/products')
             this.products = response.data
-
         },
         async toUserAppointmentsTable(){
             this.mainContentNumber = 4;

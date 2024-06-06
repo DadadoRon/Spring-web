@@ -7,8 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,5 @@ public class UserAppointmentByUserUpdateDto {
     private Integer id;
     @NotNull(message = "Date cannot be empty")
     @FutureOrPresent(message = "Date should be in the present or future")
-    private LocalDate date;
-    @NotNull(message = "Date cannot be empty")
-    private LocalTime time;
+    private ZonedDateTime dateTime;
 }

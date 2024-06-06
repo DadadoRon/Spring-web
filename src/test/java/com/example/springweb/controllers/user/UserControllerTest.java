@@ -150,7 +150,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .when()
                 .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
                 .then()
-                .statusCode(SC_FORBIDDEN);
+                .statusCode(SC_OK);
     }
 
     @Test

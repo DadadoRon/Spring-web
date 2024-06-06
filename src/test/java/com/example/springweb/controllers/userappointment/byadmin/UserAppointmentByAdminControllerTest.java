@@ -12,7 +12,9 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -88,13 +90,13 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsAdmin() throws com.fasterxml.jackson.core.JsonProcessingException {
+    void testUpdateUserAppointmentByIdAsAdmin() throws JsonProcessingException {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
-        LocalDate newDate = LocalDate.now();
-        updatedUserAppointment.setDate(newDate);
+        ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
+        updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -105,7 +107,9 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
                 .then()
                 .statusCode(SC_OK)
                 .body("id", equalTo(updatedUserAppointment.getId()))
-                .body("date", equalTo(updatedUserAppointment.getDate().toString()));
+                .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
+                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+
     }
 
     @Test
@@ -114,8 +118,8 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
-        LocalDate newDate = LocalDate.now();
-        updatedUserAppointment.setDate(newDate);
+        ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
+        updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -133,8 +137,8 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
-        LocalDate newDate = LocalDate.now();
-        updatedUserAppointment.setDate(newDate);
+        ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
+        updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
