@@ -83,5 +83,4 @@
             <column name="time"/>
         </dropColumn>
     </changeSet>
-
 </databaseChangeLog>
