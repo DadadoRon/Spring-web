@@ -24,6 +24,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,6 +61,9 @@ public class BaseIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Value("${security.admin.authorization}")
+    public String admin;
+
     @AfterEach
     void delete() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate,"users", "products", "user_appointments");
@@ -77,6 +81,11 @@ public class BaseIntegrationTest {
         return new Header("Authorization", authorizationHeaderValue);
     }
 
+    public static Header getAuthorizationHeader(String admin) {
+        return new Header("Authorization", admin);
+    }
+
+
     public static int getRandomIndex(int listSize) {
         Random random = new Random();
         return random.nextInt(listSize);
@@ -85,8 +94,6 @@ public class BaseIntegrationTest {
     public final User anonymous = UserModels.createUser(null);
 
     public final Header randomString = new Header("Authorization", RandomStringUtils.randomAlphabetic(10));
-
-    public static User admin = new User();
 
     public ProductDto createProduct() throws JsonProcessingException {
         ProductCreateDto productCreateDto = ProductModels.getProductDto();

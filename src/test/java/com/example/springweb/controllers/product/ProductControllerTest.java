@@ -2,10 +2,8 @@ package com.example.springweb.controllers.product;
 
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.ProductModels;
-import com.example.springweb.UserModels;
 import com.example.springweb.controllers.user.UserDto;
 import com.example.springweb.entity.Product;
-import com.example.springweb.entity.Role;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -31,8 +29,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() throws JsonProcessingException {
         RestAssured.baseURI = "http://localhost:" + port;
-        admin = UserModels.createUser(Role.ADMIN);
-        userRepository.save(admin);
         productList = createProducts();
 
     }

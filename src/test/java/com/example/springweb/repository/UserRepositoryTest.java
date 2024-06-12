@@ -80,7 +80,7 @@ class UserRepositoryTest {
 
     @Test
     void saveTest() {
-        assertEquals(userRepository.findAll().size(), userList.size()+1);
+        assertEquals(userRepository.findAll().size(), userList.size());
 
     }
 

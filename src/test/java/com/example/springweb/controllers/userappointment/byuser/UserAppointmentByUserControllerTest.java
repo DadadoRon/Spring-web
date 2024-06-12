@@ -2,11 +2,9 @@ package com.example.springweb.controllers.userappointment.byuser;
 
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserAppointmentModels;
-import com.example.springweb.UserModels;
 import com.example.springweb.controllers.product.ProductDto;
 import com.example.springweb.controllers.user.UserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
-import com.example.springweb.entity.Role;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
@@ -36,8 +34,6 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() throws JsonProcessingException {
         RestAssured.baseURI = "http://localhost:" + port;
-        admin = UserModels.createUser(Role.ADMIN);
-        userRepository.save(admin);
         product = createProduct();
         userAppointmentList = createUserAppointments(product.getId());
     }

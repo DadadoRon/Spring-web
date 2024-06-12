@@ -1,10 +1,12 @@
 package com.example.springweb.security;
 
+import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.example.springweb.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,26 @@ import java.util.Objects;
 public class AuthenticationService {
     private final UserService userService;
 
+    @Value("${security.admin.authorization}")
+    private String adminHeader;
+
     public AuthenticationToken getAuthenticationToken(HttpServletRequest request) {
         try {
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader == null) return null;
-
+            if (authHeader.equals(adminHeader)) {
+                return AuthenticationToken.builder()
+                        .authorities(List.of(new SimpleGrantedAuthority(Role.ADMIN.name())))
+                        .principal("admin@mail.com")
+                        .user(User.builder()
+                                .firstName("Admin")
+                                .lastName("Admin")
+                                .email("admin@mail.com")
+                                .build())
+                        .authHeader(adminHeader)
+                        .authenticated(true)
+                        .build();
+            }
             return getAuthenticationToken(authHeader);
         } catch (Exception e) {
             log.error("Failed to get user profile. Error - {}", e.getMessage());
