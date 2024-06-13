@@ -31,7 +31,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     private List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
 
-    private ProductDto product = new ProductDto();
+    private ProductDto product;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
@@ -39,7 +39,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         admin = UserModels.createUser(Role.ADMIN);
         userRepository.save(admin);
         product = createProduct();
-        userAppointmentList = createUserAppointments(product.getId());
+        userAppointmentList = createUserAppointments(product.id());
     }
 
     @Test
@@ -193,7 +193,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
         UserDto user = createUser();
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByUserDto(product.getId());
+                .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -209,7 +209,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     @Test
     void testCreateUserAppointmentAsAdmin() throws JsonProcessingException {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByUserDto(product.getId());
+                .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -224,7 +224,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     @Test
     void testCreateUserAppointmentAsAnonymous() throws JsonProcessingException {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByUserDto(product.getId());
+                .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)

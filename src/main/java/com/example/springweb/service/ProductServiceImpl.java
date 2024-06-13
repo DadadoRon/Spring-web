@@ -1,8 +1,6 @@
 package com.example.springweb.service;
 
 import com.example.springweb.entity.Product;
-import com.example.springweb.exceptions.ProductNotFoundException;
-import com.example.springweb.exceptions.UserAppointmentNotFoundException;
 import com.example.springweb.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
