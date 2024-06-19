@@ -35,13 +35,13 @@ public class UserModels {
 
 
     public static UserCreateDto getUserCreateDto(Role role) {
-        return UserCreateDto.builder()
-                .firstName(RandomStringUtils.randomAlphabetic(8,12))
-                .lastName(RandomStringUtils.randomAlphabetic(8,12))
-                .email(RandomStringUtils.randomAlphabetic(5,6) + "@example.com")
-                .password(RandomStringUtils.randomNumeric(8) + "@@")
-                .role(role)
-                .build();
+        return new UserCreateDto(
+                RandomStringUtils.randomAlphabetic(8,12),
+                RandomStringUtils.randomAlphabetic(8,12),
+                RandomStringUtils.randomAlphabetic(5,6) + "@example.com",
+                RandomStringUtils.randomNumeric(8) + "@@",
+                role
+                );
     }
 
 

@@ -30,16 +30,16 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
 
     private List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
 
-    private UserDto user = new UserDto();
+    private UserDto user;
 
-    private ProductDto product = new ProductDto();
+    private ProductDto product;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
         RestAssured.baseURI = "http://localhost:" + port;
         user = createUser();
         product = createProduct();
-        userAppointmentList = createUserAppointments(user.getId(), product.getId());
+        userAppointmentList = createUserAppointments(user.id(), product.id());
     }
 
     @Test
@@ -168,7 +168,7 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
     @Test
     void testCreateUserAppointmentAsAdmin() throws JsonProcessingException {
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByAdminDto(user.getId(), product.getId());
+                .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -183,7 +183,7 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
     @Test
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByAdminDto(user.getId(), product.getId());
+                .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -198,7 +198,7 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
     @Test
     void testCreateUserAppointmentAsAnonymous() throws JsonProcessingException {
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByAdminDto(user.getId(), product.getId());
+                .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
         given()
                 .contentType(ContentType.JSON)

@@ -87,7 +87,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetProductByIdAsAdmin() {
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
@@ -101,7 +101,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     @Test
     void testGetProductByIdAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -143,7 +143,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateProductByIdAsAdmin() throws JsonProcessingException {
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         Optional<Product> byId = productRepository.findById(productId);
         assertTrue(byId.isPresent());
         Product updatedProduct = byId.get();
@@ -165,11 +165,12 @@ class ProductControllerTest extends BaseIntegrationTest {
     @Test
     void testUpdateProductByIdAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         Optional<Product> byId = productRepository.findById(productId);
         assertTrue(byId.isPresent());
         Product updatedProduct = byId.get();
-        updatedProduct.setName(RandomStringUtils.randomAlphabetic(8,12));
+        String newName = RandomStringUtils.randomAlphabetic(8,12);
+        updatedProduct.setName(newName);
         String json = objectMapper.writeValueAsString(updatedProduct);
         given()
                 .contentType(ContentType.JSON)
@@ -188,7 +189,8 @@ class ProductControllerTest extends BaseIntegrationTest {
         Optional<Product> byId = productRepository.findById(productId);
         assertTrue(byId.isPresent());
         Product updatedProduct = byId.get();
-        updatedProduct.setName(RandomStringUtils.randomAlphabetic(8,12));
+        String newName = RandomStringUtils.randomAlphabetic(8,12);
+        updatedProduct.setName(newName);
         String json = objectMapper.writeValueAsString(updatedProduct);
         given()
                 .contentType(ContentType.JSON)
@@ -227,7 +229,7 @@ class ProductControllerTest extends BaseIntegrationTest {
                 .post(ProductController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_OK)
-                .body("name", equalTo(newProductDto.getName()));
+                .body("name", equalTo(newProductDto.name()));
     }
 
     @Test
@@ -276,7 +278,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteProductAsAdmin() {
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         given()
                 .contentType(ContentType.JSON)
@@ -290,7 +292,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     @Test
     void testDeleteProductAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         given()
                 .contentType(ContentType.JSON)
@@ -303,7 +305,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteProductAsAnonymous() {
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         given()
                 .contentType(ContentType.JSON)

@@ -37,14 +37,11 @@ public class UserAppointmentModels {
     }
 
     public static UserAppointmentByAdminCreateDto getUserAppointmentByAdminDto (Integer userId, Integer productId) {
-        int minHours = 9;
-        int maxHours = 17;
-        int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
-        return UserAppointmentByAdminCreateDto.builder()
-                .dateTime(ZonedDateTime.now().plusDays(10))
-                .userId(userId)
-                .productId(productId)
-                .build();
+        return new UserAppointmentByAdminCreateDto(
+                ZonedDateTime.now().plusDays(10),
+                userId,
+                productId
+        );
     }
 
     public static List<UserAppointmentByAdminCreateDto> getRandomUserAppointmentCreateDto(Integer userId, Integer productId) {
@@ -59,15 +56,11 @@ public class UserAppointmentModels {
     }
 
     public static UserAppointmentByUserCreateDto getUserAppointmentByUserDto (Integer productId) {
-        int minHours = 9;
-        int maxHours = 17;
-        int hour = ThreadLocalRandom.current().nextInt(minHours, maxHours);
-        return UserAppointmentByUserCreateDto.builder()
-                .dateTime(ZonedDateTime.now().plusDays(10))
-                .productId(productId)
-                .build();
+        return new UserAppointmentByUserCreateDto(
+                ZonedDateTime.now().plusDays(10),
+                productId
+        );
     }
-
 
     public static List<UserAppointmentByUserCreateDto> getRandomUserAppointmentCreateDtoByUser(Integer productId) {
         int min = 3;
