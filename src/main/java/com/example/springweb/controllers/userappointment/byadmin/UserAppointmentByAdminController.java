@@ -41,7 +41,7 @@ public class UserAppointmentByAdminController {
     @PostMapping
     public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByAdminCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
-            userAppointmentByAdminMapper.toUserAppointmentForCreate(createDto), createDto.getUserId(), createDto.getProductId()
+            userAppointmentByAdminMapper.toUserAppointmentForCreate(createDto), createDto.userId(), createDto.productId()
         );
         return userAppointmentMapper.toDto(userAppointment);
     }

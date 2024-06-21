@@ -35,7 +35,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetUserByIdAsAdmin() {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
@@ -49,7 +49,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     @Test
     void testGetUserByIdAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -61,7 +61,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetUserByIdAsAnonymous() {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(anonymous))
@@ -134,7 +134,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateUserByIdAsAdmin() throws JsonProcessingException {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
         User updatedUser = byId.get();
@@ -156,7 +156,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     @Test
     void testUpdateUserByIdAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
         User updatedUser = byId.get();
@@ -174,7 +174,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateUserByIdAsAnonymous() throws JsonProcessingException {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
         User updatedUser = byId.get();
@@ -267,7 +267,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAsAdmin() throws JsonProcessingException {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         given()
                 .contentType(ContentType.JSON)
@@ -281,7 +281,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     @Test
     void testDeleteUserAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         userRepository.deleteById(userId);
         given()
@@ -295,7 +295,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAsAnonymous() {
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
+        Integer userId = userList.get(getRandomIndex(userList.size())).id();
         userRepository.deleteById(userId);
         given()
                 .contentType(ContentType.JSON)

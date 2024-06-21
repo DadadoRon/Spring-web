@@ -41,7 +41,7 @@ public class UserAppointmentByUserController {
     public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByUserCreateDto createDto) {
         Integer userId = UserContextHolder.getUser().getId();
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(
-            userAppointmentByUserMapper.toUserAppointmentForCreate(createDto), userId, createDto.getProductId()
+            userAppointmentByUserMapper.toUserAppointmentForCreate(createDto), userId, createDto.productId()
         );
         return userAppointmentMapper.toDto(userAppointment);
     }
@@ -49,7 +49,7 @@ public class UserAppointmentByUserController {
     @PutMapping
     public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByUserUpdateDto updateDto) {
         Integer userId = UserContextHolder.getUser().getId();
-        Integer userAppointmentId = updateDto.getId();
+        Integer userAppointmentId = updateDto.id();
         UserAppointment userAppointmentById = userAppointmentService.getUserAppointmentById(userAppointmentId);
         Integer userIdFromUserAppointment = userAppointmentById.getUser().getId();
         if (!userId.equals(userIdFromUserAppointment)) {
