@@ -22,6 +22,7 @@ import java.util.Optional;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -314,5 +315,131 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
                 .delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
+    }
+
+    @Test
+    void testCacheAfterUpdate() throws JsonProcessingException {
+        UserAppointmentDto userAppointment = userAppointmentList
+                .get(getRandomIndex(userAppointmentList.size()));
+        Integer userAppointmentId = userAppointment.getId();
+        UserDto user = userAppointment.getUser();
+        List<UserAppointment> userAppointmentsBeforeUpdate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
+        assertTrue(byId.isPresent());
+        UserAppointment updatedUserAppointment = byId.get();
+        ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
+        updatedUserAppointment.setDateTime(newDate);
+        String json = objectMapper.writeValueAsString(updatedUserAppointment);
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .body(json)
+                .put(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .body("id", equalTo(updatedUserAppointment.getId()))
+                .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
+                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        List<UserAppointment> userAppointmentsAfterUpdate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        assertNotEquals(userAppointmentsBeforeUpdate, userAppointmentsAfterUpdate);
+    }
+
+    @Test
+    void testCacheAfterCreate() throws JsonProcessingException {
+        UserDto user = createUser();
+        List<UserAppointment> userAppointmentsBeforeCreate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
+                .getUserAppointmentByUserDto(product.getId());
+        String json = objectMapper.writeValueAsString(newUserAppointment);
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .body(json)
+                .post(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK);
+        List<UserAppointment> userAppointmentsAfterCreate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        assertNotEquals(userAppointmentsBeforeCreate, userAppointmentsAfterCreate);
+    }
+
+    @Test
+    void testCacheAfterDelete() {
+        UserAppointmentDto userAppointment = userAppointmentList
+                .get(getRandomIndex(userAppointmentList.size()));
+        Integer userAppointmentId = userAppointment.getId();
+        UserDto user = userAppointment.getUser();
+        List<UserAppointment> userAppointmentsBeforeDelete = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_OK);
+        List<UserAppointment> userAppointmentsAfterDelete = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(UserAppointmentByUserController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", UserAppointment.class);
+        assertNotEquals(userAppointmentsBeforeDelete, userAppointmentsAfterDelete);
     }
 }

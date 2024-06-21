@@ -33,6 +33,11 @@ public class UserAppointmentByAdminController {
             .toList();
     }
 
+    @GetMapping("/{userId}")
+    public boolean existsUserAppointmentsByUserId(@PathVariable Integer userId) {
+        return userAppointmentService.checkIfExistsUserAppointmentsByUserId(userId);
+    }
+
     @PostMapping
     public UserAppointmentDto create(@Valid @RequestBody UserAppointmentByAdminCreateDto createDto) {
         UserAppointment userAppointment = userAppointmentService.createUserAppointment(

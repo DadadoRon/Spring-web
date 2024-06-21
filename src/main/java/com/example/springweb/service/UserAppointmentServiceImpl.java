@@ -17,7 +17,6 @@ import java.util.List;
 @CacheConfig(cacheNames = "userAppointment")
 @RequiredArgsConstructor
 public class UserAppointmentServiceImpl implements UserAppointmentService{
-
     private final UserAppointmentRepository userAppointmentRepository;
     private final ProductService productService;
     private final UserService userService;
@@ -42,7 +41,16 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     }
 
     @Override
+    public boolean checkIfExistsUserAppointmentsByUserId(Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        return userAppointmentRepository.existsUserAppointmentsByUserId(userId);
+    }
+
+    @Override
     @CachePut(key = "#userAppointment.id")
+    @CacheEvict(allEntries=true)
     public UserAppointment createUserAppointment(UserAppointment userAppointment, Integer userId, Integer productId) {
         User user = userService.getUserById(userId);
         userAppointment.setUser(user);
@@ -53,6 +61,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
 
     @Override
     @CachePut(key = "#userAppointment.id")
+    @CacheEvict(allEntries=true)
     public UserAppointment updateUserAppointment(UserAppointment userAppointment) {
             Integer userAppointmentId = userAppointment.getId();
             UserAppointment byId = getUserAppointmentById(userAppointmentId);
@@ -64,7 +73,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     }
 
     @Override
-    @CacheEvict(key = "#userAppointmentId")
+    @CacheEvict(key = "#userAppointmentId", allEntries=true)
     public void deleteUserAppointment(Integer userAppointmentId) {
         userAppointmentRepository.checkIfExistsById(userAppointmentId);
         userAppointmentRepository.deleteById(userAppointmentId);

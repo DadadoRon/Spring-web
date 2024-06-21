@@ -4,9 +4,15 @@ import com.example.springweb.controllers.userappointment.byadmin.UserAppointment
 import com.example.springweb.controllers.userappointment.byadmin.UserAppointmentByAdminUpdateDto;
 import com.example.springweb.entity.UserAppointment;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserAppointmentByAdminMapper {
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "product", ignore = true)
+    @Mapping(target = "id", ignore = true)
     UserAppointment toUserAppointmentForCreate(UserAppointmentByAdminCreateDto createDto);
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "product", ignore = true)
     UserAppointment toUserAppointmentForUpdate(UserAppointmentByAdminUpdateDto updateDto);
 }

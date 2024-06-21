@@ -124,7 +124,7 @@ export default {
         },
         async toProducts() {
             this.mainContentNumber = 1
-            const response = await ax.get('/api/v1/products')
+            const response = await ax.get('/api/v1/common/products')
             this.products = response.data
             for (let i = 0; i < this.products.length; i++) {
                 this.products[i].reveal = false;

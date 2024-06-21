@@ -46,7 +46,7 @@ export default {
         }
     },
     async created() {
-        const response = await axios.get('/products')
+        const response = await axios.get('api/v1/admin/products')
         this.products = response.data
         for (let i = 0; i < this.products.length; i++) {
             this.products[i].reveal = false;

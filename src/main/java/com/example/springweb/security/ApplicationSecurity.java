@@ -1,11 +1,14 @@
 package com.example.springweb.security;
 
 
+import com.example.springweb.controllers.product.AdminProductController;
+import com.example.springweb.controllers.user.AdminUserController;
+import com.example.springweb.controllers.userappointment.byadmin.UserAppointmentByAdminController;
+import com.example.springweb.controllers.userappointment.byuser.UserAppointmentByUserController;
 import com.example.springweb.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,7 +27,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class ApplicationSecurity {
-
     private final AuthenticationFilter authenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -34,24 +36,10 @@ public class ApplicationSecurity {
         http
                 .addFilterAt(authenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/profile").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users/create").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users/register").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/users").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/products").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/products").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/{id}").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET ,  "/api/v1/user/user-appointments").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/user/user-appointments").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/user/user-appointments").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/user/user-appointments/{id}").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.GET ,  "/api/v1/admin/user-appointments").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/admin/user-appointments").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/user-appointments").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/user-appointments/{id}").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(AdminUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(AdminProductController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(UserAppointmentByUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.USER.name())
+                        .requestMatchers(UserAppointmentByAdminController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
