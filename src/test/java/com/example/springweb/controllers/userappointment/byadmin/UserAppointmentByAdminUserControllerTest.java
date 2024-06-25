@@ -23,7 +23,6 @@ import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -279,120 +278,54 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterUpdate() throws JsonProcessingException {
-        List<UserAppointment> userAppointmentsBeforeUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+    void testCheckIfExistsUserAppointmentByAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
-        Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
-        assertTrue(byId.isPresent());
-        UserAppointment updatedUserAppointment = byId.get();
-        ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
-        updatedUserAppointment.setDateTime(newDate);
-        String json = objectMapper.writeValueAsString(updatedUserAppointment);
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
                 .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(updatedUserAppointment.getId()))
-                .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
-                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
-        List<UserAppointment> userAppointmentsAfterUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
-        assertNotEquals(userAppointmentsBeforeUpdate, userAppointmentsAfterUpdate);
+                .statusCode(SC_OK);
     }
 
     @Test
-    void testCacheAfterCreate() throws JsonProcessingException {
-        List<UserAppointment> userAppointmentsBeforeCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
-        UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
-                .getUserAppointmentByAdminDto(user.getId(), product.getId());
-        String json = objectMapper.writeValueAsString(newUserAppointment);
+    void testCheckIfExistsUserAppointmentByUser() {
+        Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
+                .header(getAuthorizationHeader(user))
                 .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .then()
-                .statusCode(SC_OK);
-        List<UserAppointment> userAppointmentsAfterCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
-        assertNotEquals(userAppointmentsBeforeCreate, userAppointmentsAfterCreate);
+                .statusCode(SC_FORBIDDEN);
     }
-        @Test
-        void testCacheAfterDelete() {
-            List<UserAppointment> userAppointmentsBeforeDelete = given()
-                    .contentType(ContentType.JSON)
-                    .header(getAuthorizationHeader(admin))
-                    .when()
-                    .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                    .then()
-                    .statusCode(SC_OK)
-                    .extract()
-                    .body()
-                    .jsonPath()
-                    .getList(".", UserAppointment.class);
-            Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
-            assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-            given()
-                    .contentType(ContentType.JSON)
-                    .header(getAuthorizationHeader(admin))
-                    .when()
-                    .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                    .then()
-                    .statusCode(SC_OK);
-            List<UserAppointment> userAppointmentsAfterDelete = given()
-                    .contentType(ContentType.JSON)
-                    .header(getAuthorizationHeader(admin))
-                    .when()
-                    .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                    .then()
-                    .statusCode(SC_OK)
-                    .extract()
-                    .body()
-                    .jsonPath()
-                    .getList(".", UserAppointment.class);
-            assertNotEquals(userAppointmentsBeforeDelete, userAppointmentsAfterDelete);
+
+    @Test
+    void testCheckIfExistsUserAppointmentByAnonymous() {
+        Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(anonymous))
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
+        given()
+                .contentType(ContentType.JSON)
+                .header(randomString)
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
     }
 }

@@ -32,14 +32,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @CachePut(key = "#product.id")
-    @CacheEvict(allEntries = true)
     public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
     @Override
     @CachePut(key = "#product.id")
-    @CacheEvict(allEntries = true)
     public Product update(Product product) {
         Integer productId = product.getId();
         productRepository.checkIfExistsById(productId);

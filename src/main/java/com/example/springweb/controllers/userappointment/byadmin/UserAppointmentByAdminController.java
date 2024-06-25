@@ -1,6 +1,7 @@
 package com.example.springweb.controllers.userappointment.byadmin;
 
 
+import com.example.springweb.controllers.ExistsDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.mapper.userappointmentmapper.UserAppointmentMapper;
@@ -34,8 +35,9 @@ public class UserAppointmentByAdminController {
     }
 
     @GetMapping("/{userId}")
-    public boolean existsUserAppointmentsByUserId(@PathVariable Integer userId) {
-        return userAppointmentService.checkIfExistsUserAppointmentsByUserId(userId);
+    public ExistsDto existsByUserId(@PathVariable Integer userId) {
+        boolean existsByUserId = userAppointmentService.checkIfExistsByUserId(userId);
+        return new ExistsDto(existsByUserId);
     }
 
     @PostMapping

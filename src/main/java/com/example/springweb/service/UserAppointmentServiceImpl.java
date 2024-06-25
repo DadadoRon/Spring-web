@@ -41,16 +41,15 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     }
 
     @Override
-    public boolean checkIfExistsUserAppointmentsByUserId(Integer userId) {
-        if (userId == null) {
+    public boolean checkIfExistsByUserId(Integer userId) {
+        if(userId == null) {
             return false;
         }
-        return userAppointmentRepository.existsUserAppointmentsByUserId(userId);
+        return userAppointmentRepository.existsByUserId(userId);
     }
 
     @Override
     @CachePut(key = "#userAppointment.id")
-    @CacheEvict(allEntries=true)
     public UserAppointment createUserAppointment(UserAppointment userAppointment, Integer userId, Integer productId) {
         User user = userService.getUserById(userId);
         userAppointment.setUser(user);
@@ -61,7 +60,6 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
 
     @Override
     @CachePut(key = "#userAppointment.id")
-    @CacheEvict(allEntries=true)
     public UserAppointment updateUserAppointment(UserAppointment userAppointment) {
             Integer userAppointmentId = userAppointment.getId();
             UserAppointment byId = getUserAppointmentById(userAppointmentId);

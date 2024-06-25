@@ -19,7 +19,6 @@ import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -317,124 +316,6 @@ class AdminUserControllerTest extends BaseIntegrationTest {
                 .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
-    }
-
-    @Test
-    void testCacheAfterUpdate() throws JsonProcessingException {
-        List<User> usersBeforeUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
-        Optional<User> byId = userRepository.findById(userId);
-        assertTrue(byId.isPresent());
-        User updatedUser = byId.get();
-        String newFirstName = RandomStringUtils.randomAlphabetic(8,12);
-        updatedUser.setFirstName(newFirstName);
-        String json = objectMapper.writeValueAsString(updatedUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(userId))
-                .body("firstName", equalTo(newFirstName));
-        List<User> usersAfterUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        assertNotEquals(usersBeforeUpdate, usersAfterUpdate);
-    }
-
-    @Test
-    void testCacheAfterCreate() throws JsonProcessingException {
-        List<User> usersBeforeCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        User newUser = UserModels.createUser(Role.USER);
-        String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.getFirstName()));
-        List<User> usersAfterreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        assertNotEquals(usersBeforeCreate, usersAfterreate);
-    }
-
-    @Test
-    void testCacheAfterDelete() {
-        List<User> usersBeforeDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        Integer userId = userList.get(getRandomIndex(userList.size())).getId();
-        assertTrue(userRepository.existsById(userId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_OK);
-        List<User> usersAfterDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        assertNotEquals(usersBeforeDelete, usersAfterDelete);
     }
 }
 

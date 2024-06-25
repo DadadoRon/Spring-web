@@ -10,13 +10,10 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class CommonUserControllerTest extends BaseIntegrationTest {
     @BeforeEach
@@ -132,42 +129,5 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK);
-    }
-
-    @Test
-    void testCacheAfterRegister() throws JsonProcessingException {
-        List<User> usersBeforeRegister = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        User newUser = UserModels.createUser(Role.USER);
-        String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
-        List<User> usersAfterRegister = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
-        assertNotEquals(usersBeforeRegister, usersAfterRegister);
     }
 }

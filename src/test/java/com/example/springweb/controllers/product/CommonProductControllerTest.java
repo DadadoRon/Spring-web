@@ -81,7 +81,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetProductByIdAsAdmin() {
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
@@ -95,7 +95,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     @Test
     void testGetProductByIdAsUser() throws JsonProcessingException {
         UserDto user = createUser();
-        Integer productId = productList.get(getRandomIndex(productList.size())).getId();
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
