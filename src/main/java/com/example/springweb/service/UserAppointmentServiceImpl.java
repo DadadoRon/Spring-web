@@ -71,7 +71,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
     }
 
     @Override
-    @CacheEvict(key = "#userAppointmentId", allEntries=true)
+    @CacheEvict(key = "#userAppointmentId")
     public void deleteUserAppointment(Integer userAppointmentId) {
         userAppointmentRepository.checkIfExistsById(userAppointmentId);
         userAppointmentRepository.deleteById(userAppointmentId);

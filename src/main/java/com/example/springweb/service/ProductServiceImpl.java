@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @CacheEvict(key = "#productId", allEntries=true)
+    @CacheEvict(key = "#productId")
     public void deleteProduct(Integer productId) {
         productRepository.checkIfExistsById(productId);
         productRepository.deleteById(productId);

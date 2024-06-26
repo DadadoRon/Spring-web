@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@CacheConfig(cacheNames = {"users"})
+@CacheConfig(cacheNames = "users")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(key = "#userId", allEntries=true)
+    @CacheEvict(key = "#userId")
     public void deleteUser(Integer userId) {
         userRepository.checkIfExistsById(userId);
         userRepository.deleteById(userId);
