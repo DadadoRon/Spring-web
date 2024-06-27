@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
+class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     private List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
 
@@ -273,6 +273,58 @@ class UserAppointmentByAdminControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
+    }
+
+    @Test
+    void testCheckIfExistsUserAppointmentByAdmin() {
+        Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_OK);
+    }
+
+    @Test
+    void testCheckIfExistsUserAppointmentByUser() {
+        Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(user))
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_FORBIDDEN);
+    }
+
+    @Test
+    void testCheckIfExistsUserAppointmentByAnonymous() {
+        Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        assertTrue(userAppointmentRepository.existsById(userAppointmentId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(anonymous))
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
+        given()
+                .contentType(ContentType.JSON)
+                .header(randomString)
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .then()
+                .statusCode(SC_UNAUTHORIZED);
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }

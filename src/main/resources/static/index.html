@@ -674,17 +674,31 @@
                                                 </v-card-actions>
                                             </v-card>
                                         </v-dialog>
+                                            <div class="remove-user-appointments">
+                                            </div>
                                         <v-dialog v-model="dialogDelete" max-width="500px">
                                             <v-card>
                                                 <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
                                                 <v-card-actions>
                                                     <v-spacer></v-spacer>
                                                     <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
-                                                    <v-btn color="blue-darken-1" variant="text" @click="deleteUserConfirm">OK</v-btn>
+                                                    <v-btn color="blue-darken-1" variant="text" @click="checkUserAppointments">OK</v-btn>
                                                     <v-spacer></v-spacer>
                                                 </v-card-actions>
                                             </v-card>
                                         </v-dialog>
+                                            <v-dialog v-model="dialogWarning" max-width="500px">
+                                                <v-card>
+                                                    <v-card-title class="text-h5">Warning</v-card-title>
+                                                    <v-card-text>User has existing appointments. Please delete them first.</v-card-text>
+                                                    <v-card-actions>
+                                                        <v-spacer></v-spacer>
+                                                        <v-btn color="blue-darken-1" variant="text" @click="closeWarning">Cancel</v-btn>
+                                                        <v-btn color="blue-darken-1" variant="text" @click="toUserAppointmentsTable">OK</v-btn>
+                                                        <v-spacer></v-spacer>
+                                                    </v-card-actions>
+                                                </v-card>
+                                            </v-dialog>
                                     </v-toolbar>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
@@ -775,7 +789,6 @@
                                                 <template v-slot:activator="{ props }">
                                                     <v-btn color="primary" dark class="mb-2" v-bind="props">New UserAppointment</v-btn>
                                                 </template>
-
                                                 <v-card>
                                                     <v-card-title>
                                                         <span class="text-h5">{{ formTitle }}</span>

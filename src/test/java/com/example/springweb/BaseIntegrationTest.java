@@ -1,9 +1,9 @@
 package com.example.springweb;
 
-import com.example.springweb.controllers.product.ProductController;
+import com.example.springweb.controllers.product.AdminProductController;
 import com.example.springweb.controllers.product.ProductCreateDto;
 import com.example.springweb.controllers.product.ProductDto;
-import com.example.springweb.controllers.user.UserController;
+import com.example.springweb.controllers.user.AdminUserController;
 import com.example.springweb.controllers.user.UserCreateDto;
 import com.example.springweb.controllers.user.UserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
@@ -103,7 +103,7 @@ public class BaseIntegrationTest {
                 .header(getAuthorizationHeader(admin))
                 .when()
                 .body(jsonProduct)
-                .post(ProductController.REQUEST_MAPPING)
+                .post(AdminProductController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_OK)
                 .extract().body().as(ProductDto.class);
@@ -119,7 +119,7 @@ public class BaseIntegrationTest {
                     .header(getAuthorizationHeader(admin))
                     .when()
                     .body(json)
-                    .post(ProductController.REQUEST_MAPPING)
+                    .post(AdminProductController.REQUEST_MAPPING)
                     .then()
                     .statusCode(SC_OK)
                     .extract().body().as(ProductDto.class);
@@ -136,7 +136,7 @@ public class BaseIntegrationTest {
                 .header(getAuthorizationHeader(admin))
                 .when()
                 .body(jsonUser)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK)
                 .extract().body().as(UserDto.class);
@@ -152,7 +152,7 @@ public class BaseIntegrationTest {
                     .header(getAuthorizationHeader(admin))
                     .when()
                     .body(json)
-                    .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                    .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                     .then()
                     .statusCode(SC_OK)
                     .extract().body().as(UserDto.class);

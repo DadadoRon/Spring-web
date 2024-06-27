@@ -12,7 +12,7 @@ export default {
             const authToken = 'Basic ' + btoa(`${this.userEmail}:${this.userPassword}`)
             var response
             try {
-                response = await axios.get('/api/v1/users/profile', {
+                response = await axios.get('/api/v1/common/users/profile', {
                     headers: {
                         Authorization: `${authToken}`,
                         'Content-Type': 'application/json'

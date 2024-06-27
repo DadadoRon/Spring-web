@@ -11,6 +11,8 @@ public interface UserAppointmentService {
 
     List<UserAppointment> getAllUserAppointmentsByUserId(Integer userId);
 
+    boolean checkIfExistsByUserId(Integer userId);
+
     UserAppointment createUserAppointment(UserAppointment userAppointment, Integer userId, Integer productId);
 
     UserAppointment updateUserAppointment(UserAppointment userAppointment);

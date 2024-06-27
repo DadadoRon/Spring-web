@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-class UserControllerTest extends BaseIntegrationTest {
+class AdminUserControllerTest extends BaseIntegrationTest {
 
     private static List<UserDto> userList = new ArrayList<>();
 
@@ -31,6 +31,7 @@ class UserControllerTest extends BaseIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
         userList = createUsers();
     }
+
     @Test
     void testGetUserByIdAsAdmin() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
@@ -38,7 +39,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
                 .when()
-                .get(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_OK)
                 .body("id", equalTo(userId));
@@ -52,7 +53,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
                 .when()
-                .get(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_FORBIDDEN);
     }
@@ -64,20 +65,20 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(anonymous))
                 .when()
-                .get(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .header(randomString)
                 .when()
-                .get(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }
@@ -88,7 +89,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
                 .when()
-                .get(UserController.REQUEST_MAPPING)
+                .get(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_OK)
                 .body(".", hasSize(userRepository.findAll().size()));
@@ -101,7 +102,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
                 .when()
-                .get(UserController.REQUEST_MAPPING)
+                .get(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_FORBIDDEN);
     }
@@ -112,67 +113,20 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(anonymous))
                 .when()
-                .get(UserController.REQUEST_MAPPING)
+                .get(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .header(randomString)
                 .when()
-                .get(UserController.REQUEST_MAPPING)
+                .get(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-    }
-
-    @Test
-    void testProfileAsAdmin() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
-    }
-
-    @Test
-    void testProfileAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
-    }
-
-    @Test
-    void testProfileAsAnonymous() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(String.format("%s/profile", UserController.REQUEST_MAPPING))
+                .get(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }
@@ -191,7 +145,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(admin))
                 .when()
                 .body(json)
-                .put(UserController.REQUEST_MAPPING)
+                .put(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_OK)
                 .body("id", equalTo(userId))
@@ -212,7 +166,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(user))
                 .when()
                 .body(json)
-                .put(UserController.REQUEST_MAPPING)
+                .put(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_FORBIDDEN);
     }
@@ -230,7 +184,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(anonymous))
                 .when()
                 .body(json)
-                .put(UserController.REQUEST_MAPPING)
+                .put(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
@@ -238,14 +192,14 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(randomString)
                 .when()
                 .body(json)
-                .put(UserController.REQUEST_MAPPING)
+                .put(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(json)
-                .put(UserController.REQUEST_MAPPING)
+                .put(AdminUserController.REQUEST_MAPPING)
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }
@@ -259,7 +213,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(admin))
                 .when()
                 .body(json)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK)
                 .body("firstName", equalTo(newUser.getFirstName()));
@@ -275,7 +229,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(user))
                 .when()
                 .body(json)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_FORBIDDEN);
     }
@@ -289,7 +243,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(getAuthorizationHeader(anonymous))
                 .when()
                 .body(json)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
@@ -297,76 +251,18 @@ class UserControllerTest extends BaseIntegrationTest {
                 .header(randomString)
                 .when()
                 .body(json)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(json)
-                .post(String.format("%s/create", UserController.REQUEST_MAPPING))
+                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }
 
-    @Test
-    void testRegisterUserAsAdmin() throws JsonProcessingException {
-        User newUser = UserModels.createUser(Role.USER);
-        String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_FORBIDDEN);
-    }
-
-    @Test
-    void testRegisterUserAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
-        User newUser = UserModels.createUser(Role.USER);
-        String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.getFirstName()));
-    }
-
-    @Test
-    void testRegisterUserAsAnonymous() throws JsonProcessingException {
-        User newUser = UserModels.createUser(Role.USER);
-        String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .post(String.format("%s/register", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .post(String.format("%s/register", UserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-    }
 
     @Test
     void testDeleteUserAsAdmin() throws JsonProcessingException {
@@ -376,13 +272,13 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
                 .when()
-                .delete(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_OK);
     }
 
     @Test
-    void tstDeleteUserAsUser() throws JsonProcessingException {
+    void testDeleteUserAsUser() throws JsonProcessingException {
         UserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
@@ -391,7 +287,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
                 .when()
-                .delete(String.format("%s/%s", UserController.REQUEST_MAPPING, userId))
+                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_FORBIDDEN);
     }
@@ -404,20 +300,20 @@ class UserControllerTest extends BaseIntegrationTest {
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(anonymous))
                 .when()
-                .delete(String.format("%s/%d", UserController.REQUEST_MAPPING, userId))
+                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .header(randomString)
                 .when()
-                .delete(String.format("%s/%d", UserController.REQUEST_MAPPING, userId))
+                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .delete(String.format("%s/%d", UserController.REQUEST_MAPPING, userId))
+                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
     }

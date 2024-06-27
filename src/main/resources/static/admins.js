@@ -10,13 +10,14 @@ export default {
             model: 'tab-2',
             dialog: false,
             dialogDelete: false,
+            dialogWarning: false,
             itemsPerPage: 10,
             groupBy: [{key: 'role', order: 'asc'}],
             headers: [
                 {title: '#', key: 'index'},
                 {title: 'ID', key: 'id'},
-                {title: 'First Name', key: 'firstName'},
-                {title: 'Last Name', key: 'lastName'},
+                {title: 'First name', key: 'firstName'},
+                {title: 'Last name', key: 'lastName'},
                 {title: 'Email', key: 'email'},
                 {title: 'Password', key: 'password'},
                 {title: 'Role', key: 'role'},
@@ -29,16 +30,16 @@ export default {
                 {title: 'Name', key: 'name'},
                 {title: 'Description', key: 'description'},
                 {title: 'Price', key: 'price'},
-                {title: 'ImageName', key: 'imageName'},
+                {title: 'Image name', key: 'imageName'},
                 {title: 'Actions', key: 'actions', sortable: false},
             ],
             headersUserAppointments: [
                 {title: '#', key: 'index'},
                 // {title: 'ID', key: 'id'},
-                {title: 'Date_Time', key: 'dateTime'},
+                {title: 'Appointment time', key: 'dateTime'},
                 {title: 'Name', key: 'product.name'},
-                {title: 'FirstName', key: 'user.firstName'},
-                {title: 'LastName', key: 'user.lastName'},
+                {title: 'First name', key: 'user.firstName'},
+                {title: 'Last name', key: 'user.lastName'},
                 {title: 'Email', key: 'user.email'},
                 {title: 'Actions', key: 'actions', sortable: false},
             ],
@@ -63,11 +64,11 @@ export default {
             return this.products.map((item, index) => ({...item, index: index + 1}));
         },
         numberedUserAppointments() {
-                return this.userAppointments.map((item, index) => ({
-                    ...item,
-                    index: index + 1,
-                    dateTime: moment(item.dateTime).format('LLL'),
-                }));
+            return this.userAppointments.map((item, index) => ({
+                ...item,
+                index: index + 1,
+                dateTime: moment(item.dateTime).format('LLL'),
+            }));
         },
     },
     watch: {
@@ -76,6 +77,10 @@ export default {
         },
         dialogDelete(val) {
             val || this.closeDelete()
+        },
+
+        dialogWarning(val) {
+            val || this.closeWarning()
         },
     },
     methods: {
@@ -98,14 +103,32 @@ export default {
             this.dialogDelete = true
         },
         async deleteUserConfirm() {
-            await ax.delete(`/api/v1/users/${this.editedItem.id}`)
-            const response = await ax.get('/api/v1/users')
+            await ax.delete(`/api/v1/admin/users/${this.editedItem.id}`)
+            const response = await ax.get('/api/v1/admin/users')
+            console.log(response)
             this.users = response.data
             this.closeDelete()
         },
+
+        async checkUserAppointments() {
+            try {
+                const userAppointmentsResponse = await ax.get(`/api/v1/admin/user-appointments/${this.editedItem.id}`);
+                const response = userAppointmentsResponse.data;
+                if (response) {
+                    this.dialogWarning = true;
+                    const resp = this.getCurrentAppointments(this.editedItem.id);
+                } else {
+                    await this.deleteUserConfirm();
+                }
+            } catch (error) {
+                console.error("Error checking user appointments:", error);
+            }
+            this.closeDelete()
+        },
+
         async deleteProductConfirm() {
-            await ax.delete(`/api/v1/products/${this.editedItem.id}`)
-            const response = await axios.get('/api/v1/products')
+            await ax.delete(`/api/v1/admin/products/${this.editedItem.id}`)
+            const response = await axios.get('/api/v1/common/products')
             this.products = response.data
             this.closeDelete()
         },
@@ -115,6 +138,7 @@ export default {
             this.userAppointments = response.data
             this.closeDelete()
         },
+
         close() {
             this.dialog = false
             this.$nextTick(() => {
@@ -129,23 +153,43 @@ export default {
                 this.editedIndex = -1
             })
         },
+
+        closeWarning() {
+            this.dialogWarning = false
+            this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedIndex = -1
+            })
+        },
+
+        closeTable() {
+            this.dialogTable = false
+            this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedIndex = -1
+            })
+        },
+
         async saveUser() {
             if (this.editedIndex > -1) {
-                await ax.put('/api/v1/users', this.editedItem)
+                const resp = await ax.put('/api/v1/admin/users', this.editedItem)
+                console.log('put response', resp)
+
             } else {
-                await ax.post('/api/v1/users/create', this.editedItem)
+                await ax.post('/api/v1/admin/users/create', this.editedItem)
             }
-            const response = await ax.get('/api/v1/users')
+            const response = await ax.get('/api/v1/admin/users')
             this.users = response.data;
+            console.log('response get all', this.users)
             this.close()
         },
         async saveProduct() {
             if (this.editedIndex > -1) {
-                 await ax.put('/api/v1/products', this.editedItem)
+                 await ax.put('/api/v1/admin/products', this.editedItem)
             } else {
-                 await ax.post('/api/v1/products', this.editedItem)
+                 await ax.post('/api/v1/admin/products', this.editedItem)
             }
-            const response = await ax.get('/api/v1/products')
+            const response = await ax.get('/api/v1/common/products')
             this.products = response.data;
             this.close()
         },
@@ -176,25 +220,27 @@ export default {
         },
         async toUsersTable() {
             this.mainContentNumber = 2;
-            const response = await ax.get('/api/v1/users')
+            const response = await ax.get('/api/v1/admin/users')
             this.users = response.data
         },
         async toProductsTable() {
             this.mainContentNumber = 3;
-            const response = await ax.get('/api/v1/products')
+            const response = await ax.get('/api/v1/common/products')
             this.products = response.data
         },
         async toUserAppointmentsTable(){
             this.mainContentNumber = 4;
             const response = await ax.get('/api/v1/admin/user-appointments')
             this.userAppointments = response.data
-            const userResponse = await ax.get('/api/v1/users')
+            const userResponse = await ax.get('/api/v1/admin/users')
             this.users = userResponse.data
-            const productResponse = await ax.get('/api/v1/products')
+            const productResponse = await ax.get('/api/v1/common/products')
             this.products = productResponse.data
+            this.closeWarning()
         },
+
         async search() {
-            const response = await ax.post('/api/v1/users/search', {
+            const response = await ax.post('/api/v1/admin/users/search', {
                 lastName: this.lastNameSearchTerm,
                 email: this.emailSearchTerm,
                 firstName: this.firstNameSearchTerm,
