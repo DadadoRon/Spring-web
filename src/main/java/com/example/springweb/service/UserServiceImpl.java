@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @CachePut(key = "#user.id")
+    @CacheEvict(allEntries = true)
     public User registerUser(User user) {
         user.setRole(Role.USER);
         return userRepository.save(user);
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @CachePut(key = "#user.id")
+    @CacheEvict(allEntries = true)
     public User createUser(User user) {
         return userRepository.save(user);
     }
@@ -58,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @CachePut(key = "#user.id")
+    @CacheEvict(allEntries = true)
     public User update(User user) {
         Integer userId = user.getId();
         userRepository.checkIfExistsById(userId);
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(key = "#userId")
+    @CacheEvict(key = "#userId", allEntries = true)
     public void deleteUser(Integer userId) {
         userRepository.checkIfExistsById(userId);
         userRepository.deleteById(userId);
