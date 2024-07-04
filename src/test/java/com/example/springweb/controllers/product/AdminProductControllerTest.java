@@ -18,6 +18,7 @@ import java.util.Optional;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -217,5 +218,123 @@ class AdminProductControllerTest extends BaseIntegrationTest {
                 .delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .then()
                 .statusCode(SC_UNAUTHORIZED);
+    }
+
+    @Test
+    void testCacheAfterUpdate() throws JsonProcessingException {
+        List<Product> productsBeforeUpdate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
+        Optional<Product> byId = productRepository.findById(productId);
+        assertTrue(byId.isPresent());
+        Product updatedProduct = byId.get();
+        String newName = RandomStringUtils.randomAlphabetic(8, 12);
+        updatedProduct.setName(newName);
+        String json = objectMapper.writeValueAsString(updatedProduct);
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .body(json)
+                .put(AdminProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .body("id", equalTo(productId))
+                .body("name", equalTo(newName));
+        List<Product> productsAfterUpdate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        assertNotEquals(productsBeforeUpdate, productsAfterUpdate);
+    }
+
+    @Test
+    void testCacheAfterCreate() throws JsonProcessingException {
+        List<Product> productsBeforeCreate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        ProductCreateDto newProductDto = ProductModels.getProductDto();
+        String json = objectMapper.writeValueAsString(newProductDto);
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .body(json)
+                .post(AdminProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .body("name", equalTo(newProductDto.name()));
+        List<Product> productsAfterCreate = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        assertNotEquals(productsBeforeCreate, productsAfterCreate);
+    }
+
+    @Test
+    void testCacheAfterDelete() throws JsonProcessingException {
+        List<Product> productsBeforeDelete = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        Integer productId = productList.get(getRandomIndex(productList.size())).id();
+        assertTrue(productRepository.existsById(productId));
+        given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
+                .then()
+                .statusCode(SC_OK);
+        List<Product> productsAfterDelete = given()
+                .contentType(ContentType.JSON)
+                .header(getAuthorizationHeader(admin))
+                .when()
+                .get(CommonProductController.REQUEST_MAPPING)
+                .then()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList(".", Product.class);
+        assertNotEquals(productsBeforeDelete, productsAfterDelete);
     }
 }
