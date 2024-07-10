@@ -20,5 +20,11 @@ public interface UserMapper {
 
     User toUserForUpdate(UserUpdateDto updateDto);
 
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    User toUserForUpdatePassword(PasswordUpdateDtoByUser passwordUpdateDtoByUser);
+
     UserSearch toUserForSearch(UserSearchDto searchDto);
 }

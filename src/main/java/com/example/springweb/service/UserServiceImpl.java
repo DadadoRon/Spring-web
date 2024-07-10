@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,6 +66,20 @@ public class UserServiceImpl implements UserService {
         Integer userId = user.getId();
         userRepository.checkIfExistsById(userId);
             return userRepository.save(user);
+    }
+
+    @Override
+    @CachePut(key = "#user.id")
+    @CacheEvict(allEntries = true)
+    public User updatePassword(User user) {
+        Integer userId = user.getId();
+        User byIdRequired = userRepository.findByIdRequired(userId);
+        BCrypt.checkpw(byIdRequired.getPassword(), user.getPassword());
+        user.setFirstName(byIdRequired.getFirstName());
+        user.setLastName(byIdRequired.getLastName());
+        user.setEmail(byIdRequired.getEmail());
+        user.setRole(byIdRequired.getRole());
+        return userRepository.save(user);
     }
 
     @Override
