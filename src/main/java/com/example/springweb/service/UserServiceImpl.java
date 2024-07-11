@@ -74,6 +74,7 @@ public class UserServiceImpl implements UserService {
         Integer userId = user.getId();
         User userByIdRequired = userRepository.findByIdRequired(userId);
         user.setPassword(userByIdRequired.getPassword());
+        user.setSalt(userByIdRequired.getSalt());
         return userRepository.save(user);
     }
 

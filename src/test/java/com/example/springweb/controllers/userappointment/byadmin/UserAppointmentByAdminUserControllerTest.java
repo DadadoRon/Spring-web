@@ -56,7 +56,8 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUserAppointmentsAsUser() {
+    void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
+        UserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -115,6 +116,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateUserAppointmentByIdAsUser() throws JsonProcessingException {
+        UserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -183,6 +185,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
+        UserDto user = createUser();
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -240,7 +243,8 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAppointmentAsUser() {
+    void testDeleteUserAppointmentAsUser() throws JsonProcessingException {
+        UserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -292,7 +296,8 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCheckIfExistsUserAppointmentByUser() {
+    void testCheckIfExistsUserAppointmentByUser() throws JsonProcessingException {
+        UserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()

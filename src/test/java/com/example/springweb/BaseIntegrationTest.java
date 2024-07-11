@@ -75,6 +75,11 @@ public class BaseIntegrationTest {
         return new Header("Authorization", authorizationHeaderValue);
     }
 
+    public static Header getAuthorizationHeader(UserCreateDto user) {
+        String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
+                String.format("%s:%s", user.email(), user.password()).getBytes()));
+        return new Header("Authorization", authorizationHeaderValue);
+    }
     public static Header getAuthorizationHeader(UserDto user) {
         String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
                 String.format("%s:%s", user.email(), user.password()).getBytes()));
@@ -131,7 +136,7 @@ public class BaseIntegrationTest {
     public UserDto createUser() throws JsonProcessingException {
         UserCreateDto userCreateDto = UserModels.getUserCreateDto(Role.USER);
         String jsonUser = objectMapper.writeValueAsString(userCreateDto);
-        return given()
+        UserDto userDto =  given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(admin))
                 .when()
@@ -140,6 +145,17 @@ public class BaseIntegrationTest {
                 .then()
                 .statusCode(SC_OK)
                 .extract().body().as(UserDto.class);
+        UserDto newUserDto = new UserDto(
+                userDto.id(),
+                userDto.firstName(),
+                userDto.lastName(),
+                userDto.email(),
+                userCreateDto.password(),
+                userDto.role(),
+                userDto.salt()
+        );
+        return newUserDto;
+
     }
 
     public List<UserDto> createUsers() throws JsonProcessingException {
@@ -180,8 +196,7 @@ public class BaseIntegrationTest {
         return userAppointmentList;
     }
 
-    public List<UserAppointmentDto> createUserAppointments(Integer productId) throws JsonProcessingException {
-        UserDto user = createUser();
+    public List<UserAppointmentDto> createUserAppointments(Integer productId, UserDto user) throws JsonProcessingException {
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
         List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDtoByUser(productId);
         for (UserAppointmentByUserCreateDto userAppointmentByUserCreateDto : userAppointmentByUserCreateDtos) {

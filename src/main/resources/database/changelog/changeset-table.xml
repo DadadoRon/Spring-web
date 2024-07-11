@@ -90,4 +90,11 @@
             <column name="time"/>
         </dropColumn>
     </changeSet>
+    <changeSet id="8" author="DadadoRon">
+        <addColumn tableName="users" >
+            <column name="salt" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

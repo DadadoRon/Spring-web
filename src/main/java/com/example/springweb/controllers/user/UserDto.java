@@ -8,6 +8,7 @@ public record UserDto (
         String lastName,
         String email,
         String password,
-        Role role
+        Role role,
+        String salt
 ) {}
 

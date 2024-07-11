@@ -41,7 +41,7 @@ class UserAppointmentServiceImplTest {
     private final UserAppointment testUserAppointment = UserAppointment.builder()
             .id(testUserAppointmentId)
             .dateTime(ZonedDateTime.parse("2024-12-03T10:15:30+01:00"))
-            .user(new User(1,"T", "T", "k@mai.com", "3001301", Role.USER))
+            .user(new User(1,"T", "T", "k@mai.com", "3001301", Role.USER, "1vd1fv"))
             .product(new Product(1, "KOI", "YUYT", BigDecimal.valueOf(30.10), "img/n4.jpg"))
             .build();
 
