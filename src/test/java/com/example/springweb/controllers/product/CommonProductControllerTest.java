@@ -1,7 +1,7 @@
 package com.example.springweb.controllers.product;
 
 import com.example.springweb.BaseIntegrationTest;
-import com.example.springweb.controllers.user.UserDto;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.entity.Product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
@@ -41,7 +41,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetAllProductsAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -94,7 +94,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetProductByIdAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         given()
                 .contentType(ContentType.JSON)

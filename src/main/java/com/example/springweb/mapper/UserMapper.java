@@ -11,13 +11,17 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
     UserDto toDto(User user);
 
+    @Mapping(target = "salt", ignore = true)
     @Mapping(target = "id", ignore = true)
     User toUserForCreate(UserCreateDto createDto);
 
+    @Mapping(target = "salt", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "id", ignore = true)
     User toUserForRegister(UserRegisterDto registerDto);
 
+    @Mapping(target = "salt", ignore = true)
+    @Mapping(target = "password", ignore = true)
     User toUserForUpdate(UserUpdateDto updateDto);
 
     UserSearch toUserForSearch(UserSearchDto searchDto);

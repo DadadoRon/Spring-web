@@ -48,7 +48,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetUserByIdAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         given()
                 .contentType(ContentType.JSON)
@@ -98,7 +98,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetAllUsersAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -155,7 +155,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateUserByIdAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
@@ -222,7 +222,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateUserAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         User newUser = UserModels.createUser(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()
@@ -280,7 +280,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         userRepository.deleteById(userId);

@@ -3,7 +3,7 @@ package com.example.springweb.controllers.userappointment.byadmin;
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserAppointmentModels;
 import com.example.springweb.controllers.product.ProductDto;
-import com.example.springweb.controllers.user.UserDto;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +31,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     private List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
 
-    private UserDto user;
+    private TestUserDto user;
 
     private ProductDto product;
 
@@ -57,7 +57,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -116,7 +116,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateUserAppointmentByIdAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -185,7 +185,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -244,7 +244,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAppointmentAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -297,7 +297,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCheckIfExistsUserAppointmentByUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()

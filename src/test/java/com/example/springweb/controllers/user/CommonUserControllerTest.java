@@ -37,7 +37,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testProfileAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -87,7 +87,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testRegisterUserAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()

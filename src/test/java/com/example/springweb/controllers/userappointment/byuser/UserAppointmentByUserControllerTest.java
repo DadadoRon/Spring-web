@@ -3,7 +3,7 @@ package com.example.springweb.controllers.userappointment.byuser;
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserAppointmentModels;
 import com.example.springweb.controllers.product.ProductDto;
-import com.example.springweb.controllers.user.UserDto;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,7 +32,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     private ProductDto product;
 
-    private UserDto userDto;
+    private TestUserDto userDto;
 
 
     @BeforeEach
@@ -45,7 +45,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -122,7 +122,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointment updatedUserAppointment = byId.get();
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
-        UserDto someUser = createUser();
+        TestUserDto someUser = createUser();
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -189,7 +189,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -266,7 +266,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAppointmentAsSomeUser() throws JsonProcessingException {
-        UserDto someUser = createUser();
+        TestUserDto someUser = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -366,7 +366,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCacheAfterCreate() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         List<UserAppointment> userAppointmentsBeforeCreate = given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))

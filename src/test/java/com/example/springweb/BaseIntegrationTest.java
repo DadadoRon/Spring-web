@@ -4,6 +4,7 @@ import com.example.springweb.controllers.product.AdminProductController;
 import com.example.springweb.controllers.product.ProductCreateDto;
 import com.example.springweb.controllers.product.ProductDto;
 import com.example.springweb.controllers.user.AdminUserController;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.user.UserCreateDto;
 import com.example.springweb.controllers.user.UserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
@@ -80,7 +81,7 @@ public class BaseIntegrationTest {
                 String.format("%s:%s", user.email(), user.password()).getBytes()));
         return new Header("Authorization", authorizationHeaderValue);
     }
-    public static Header getAuthorizationHeader(UserDto user) {
+    public static Header getAuthorizationHeader(TestUserDto user) {
         String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
                 String.format("%s:%s", user.email(), user.password()).getBytes()));
         return new Header("Authorization", authorizationHeaderValue);
@@ -133,7 +134,7 @@ public class BaseIntegrationTest {
         return productDtoList;
     }
 
-    public UserDto createUser() throws JsonProcessingException {
+    public TestUserDto createUser() throws JsonProcessingException {
         UserCreateDto userCreateDto = UserModels.getUserCreateDto(Role.USER);
         String jsonUser = objectMapper.writeValueAsString(userCreateDto);
         UserDto userDto =  given()
@@ -145,17 +146,11 @@ public class BaseIntegrationTest {
                 .then()
                 .statusCode(SC_OK)
                 .extract().body().as(UserDto.class);
-        UserDto newUserDto = new UserDto(
+        return new TestUserDto(
                 userDto.id(),
-                userDto.firstName(),
-                userDto.lastName(),
                 userDto.email(),
-                userCreateDto.password(),
-                userDto.role(),
-                userDto.salt()
+                userCreateDto.password()
         );
-        return newUserDto;
-
     }
 
     public List<UserDto> createUsers() throws JsonProcessingException {
@@ -196,7 +191,7 @@ public class BaseIntegrationTest {
         return userAppointmentList;
     }
 
-    public List<UserAppointmentDto> createUserAppointments(Integer productId, UserDto user) throws JsonProcessingException {
+    public List<UserAppointmentDto> createUserAppointments(Integer productId, TestUserDto user) throws JsonProcessingException {
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
         List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDtoByUser(productId);
         for (UserAppointmentByUserCreateDto userAppointmentByUserCreateDto : userAppointmentByUserCreateDtos) {
