@@ -10,6 +10,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Permission
+        run: chmod +x gradlew
       - name: Install dependencies
         run: ./gradlew build
       - name: Test application
