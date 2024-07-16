@@ -7,7 +7,7 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_USERNAME: postgres
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: my_password
         options: >-
           --health-cmd pg_isready
@@ -15,7 +15,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 15432:15432
+          - 15432:5432
     steps:
       - name: Get the repository code
         uses: actions/checkout@v3
@@ -28,6 +28,10 @@ jobs:
       - name: Install dependencies
         run: ./gradlew build
       - name: Test application
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:15432/postgres
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: my_password
         run: ./gradlew test
 
 
