@@ -43,6 +43,10 @@ public class UserServiceImpl implements UserService {
     @CachePut(key = "#user.id")
     @CacheEvict(allEntries = true)
     public User registerUser(User user) {
+        String salt = BCrypt.gensalt();
+        String hashed = BCrypt.hashpw(user.getPassword(), salt);
+        user.setSalt(salt);
+        user.setPassword(hashed);
         user.setRole(Role.USER);
         return userRepository.save(user);
     }
@@ -51,6 +55,10 @@ public class UserServiceImpl implements UserService {
     @CachePut(key = "#user.id")
     @CacheEvict(allEntries = true)
     public User createUser(User user) {
+        String salt = BCrypt.gensalt();
+        String hashed = BCrypt.hashpw(user.getPassword(), salt);
+        user.setSalt(salt);
+        user.setPassword(hashed);
         return userRepository.save(user);
     }
 
@@ -64,8 +72,10 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(allEntries = true)
     public User update(User user) {
         Integer userId = user.getId();
-        userRepository.checkIfExistsById(userId);
-            return userRepository.save(user);
+        User userByIdRequired = userRepository.findByIdRequired(userId);
+        user.setPassword(userByIdRequired.getPassword());
+        user.setSalt(userByIdRequired.getSalt());
+        return userRepository.save(user);
     }
 
     @Override

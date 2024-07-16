@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class CommonUserControllerTest extends BaseIntegrationTest {
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
@@ -37,7 +37,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testProfileAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -73,7 +73,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testRegisterUserAsAdmin() throws JsonProcessingException {
-        User newUser = UserModels.createUser(Role.USER);
+        UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()
                 .contentType(ContentType.JSON)
@@ -87,8 +87,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testRegisterUserAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
-        User newUser = UserModels.createUser(Role.USER);
+        TestUserDto user = createUser();
+        UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()
                 .contentType(ContentType.JSON)
@@ -98,12 +98,12 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.getFirstName()));
+                .body("firstName", equalTo(newUser.firstName()));
     }
 
     @Test
     void testRegisterUserAsAnonymous() throws JsonProcessingException {
-        User newUser = UserModels.createUser(Role.USER);
+        UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()
                 .contentType(ContentType.JSON)
@@ -113,7 +113,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK);
-        User newUser1 = UserModels.createUser(Role.USER);
+        UserCreateDto newUser1 = UserModels.getUserCreateDto(Role.USER);
         String json1 = objectMapper.writeValueAsString(newUser1);
         given()
                 .contentType(ContentType.JSON)
@@ -123,7 +123,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .then()
                 .statusCode(SC_OK);
-        User newUser2 = UserModels.createUser(Role.USER);
+        UserCreateDto newUser2 = UserModels.getUserCreateDto(Role.USER);
         String json2 = objectMapper.writeValueAsString(newUser2);
         given()
                 .contentType(ContentType.JSON)
@@ -147,7 +147,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 .body()
                 .jsonPath()
                 .getList(".", User.class);
-        User newUser = UserModels.createUser(Role.USER);
+        UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         given()
                 .contentType(ContentType.JSON)

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -72,7 +73,9 @@ public class AuthenticationService {
         String password = userCredentials[1];
 
         User user = userService.getUserByEmail(email);
-        boolean isAuthenticated = user != null && Objects.equals(user.getPassword(), password);
+        String salt = user.getSalt();
+        String hashedPassword = BCrypt.hashpw(password, salt);
+        boolean isAuthenticated = user != null && Objects.equals(user.getPassword(), hashedPassword);
         if (!isAuthenticated) return null;
 
         return AuthenticationToken.builder()

@@ -3,7 +3,7 @@ package com.example.springweb.controllers.userappointment.byuser;
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserAppointmentModels;
 import com.example.springweb.controllers.product.ProductDto;
-import com.example.springweb.controllers.user.UserDto;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,16 +32,20 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     private ProductDto product;
 
+    private TestUserDto userDto;
+
+
     @BeforeEach
     void setUp() throws JsonProcessingException {
         RestAssured.baseURI = "http://localhost:" + port;
         product = createProduct();
-        userAppointmentList = createUserAppointments(product.id());
+        userDto = createUser();
+        userAppointmentList = createUserAppointments(product.id(), userDto);
     }
 
     @Test
     void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -91,7 +95,6 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
-        UserDto user = userAppointment.getUser();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
@@ -100,7 +103,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .body(json)
                 .put(UserAppointmentByUserController.REQUEST_MAPPING)
@@ -109,8 +112,6 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
                 .body("id", equalTo(updatedUserAppointment.getId()))
                 .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
                         .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
-
-
     }
 
     @Test
@@ -121,7 +122,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointment updatedUserAppointment = byId.get();
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
-        UserDto someUser = createUser();
+        TestUserDto someUser = createUser();
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
@@ -188,7 +189,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateUserAppointmentAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -253,11 +254,10 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
-        UserDto user = userAppointment.getUser();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
                 .then()
@@ -266,7 +266,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteUserAppointmentAsSomeUser() throws JsonProcessingException {
-        UserDto someUser = createUser();
+        TestUserDto someUser = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
@@ -322,10 +322,9 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
-        UserDto user = userAppointment.getUser();
         List<UserAppointment> userAppointmentsBeforeUpdate = given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .then()
@@ -342,7 +341,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .body(json)
                 .put(UserAppointmentByUserController.REQUEST_MAPPING)
@@ -353,7 +352,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
                         .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         List<UserAppointment> userAppointmentsAfterUpdate = given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .then()
@@ -367,7 +366,7 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCacheAfterCreate() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         List<UserAppointment> userAppointmentsBeforeCreate = given()
                 .contentType(ContentType.JSON)
                 .header(getAuthorizationHeader(user))
@@ -409,10 +408,9 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
-        UserDto user = userAppointment.getUser();
         List<UserAppointment> userAppointmentsBeforeDelete = given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .then()
@@ -424,14 +422,14 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
                 .then()
                 .statusCode(SC_OK);
         List<UserAppointment> userAppointmentsAfterDelete = given()
                 .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
+                .header(getAuthorizationHeader(userDto))
                 .when()
                 .get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .then()

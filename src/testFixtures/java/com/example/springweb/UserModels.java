@@ -17,8 +17,9 @@ public class UserModels {
                 .firstName(RandomStringUtils.randomAlphabetic(8,12))
                 .lastName(RandomStringUtils.randomAlphabetic(8,12))
                 .email(RandomStringUtils.randomAlphabetic(5,6) + "@example.com")
-                .password(RandomStringUtils.randomNumeric(8) + "@@")
+                .password(RandomStringUtils.randomAlphabetic(8) + "@@")
                 .role(role)
+                .salt(RandomStringUtils.randomAlphabetic(16))
                 .build();
     }
 

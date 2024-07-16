@@ -30,6 +30,7 @@ public class UserServiceImplTest {
             .email("Roll@mail.com")
             .password("302302")
             .role(Role.USER)
+            .salt("hbjhvgcfgxfdz")
             .build();
     @Test
     public void userByIdTest() {
@@ -59,20 +60,20 @@ public class UserServiceImplTest {
 
     @Test
     public void updateTest() {
-        doNothing().when(userRepository).checkIfExistsById(testUser.getId());
+        when(userRepository.findByIdRequired(testUser.getId())).thenReturn(testUser);
         when(userRepository.save(testUser)).thenReturn(testUser);
         User result = userService.update(testUser);
         assertEquals(testUser, result);
-        verify(userRepository, times(1)).checkIfExistsById(1);
+        verify(userRepository, times(1)).findByIdRequired(testUserId);
         verify(userRepository, times(1)).save(testUser);
     }
 
     @Test
     public void updateIfIdNotFoundTest() {
         doThrow(new UserNotFoundException("User not found with id: " + testUser.getId()))
-                .when(userRepository).checkIfExistsById(testUser.getId());
+                .when(userRepository).findByIdRequired(testUser.getId());
         assertThrows(UserNotFoundException.class, () -> userService.update(testUser));
-        verify(userRepository, times(1)).checkIfExistsById(testUserId);
+        verify(userRepository, times(1)).findByIdRequired(testUserId);
     }
 
     @Test
