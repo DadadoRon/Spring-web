@@ -19,7 +19,6 @@ export default {
                 {title: 'First name', key: 'firstName'},
                 {title: 'Last name', key: 'lastName'},
                 {title: 'Email', key: 'email'},
-                {title: 'Password', key: 'password'},
                 {title: 'Role', key: 'role'},
                 {title: 'Actions', key: 'actions', sortable: false},
             ],
@@ -113,10 +112,8 @@ export default {
         async checkUserAppointments() {
             try {
                 const userAppointmentsResponse = await ax.get(`/api/v1/admin/user-appointments/${this.editedItem.id}`);
-                const response = userAppointmentsResponse.data;
-                if (response) {
+                if (userAppointmentsResponse.data.exist) {
                     this.dialogWarning = true;
-                    const resp = this.getCurrentAppointments(this.editedItem.id);
                 } else {
                     await this.deleteUserConfirm();
                 }

@@ -2,7 +2,7 @@ package com.example.springweb.controllers.product;
 
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.ProductModels;
-import com.example.springweb.controllers.user.UserDto;
+import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.entity.Product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
@@ -57,7 +57,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testUpdateProductByIdAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         Optional<Product> byId = productRepository.findById(productId);
         assertTrue(byId.isPresent());
@@ -125,7 +125,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testCreateProductAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         ProductCreateDto newProductDto = ProductModels.getProductDto();
         String json = objectMapper.writeValueAsString(newProductDto);
         given()
@@ -182,7 +182,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
 
     @Test
     void testDeleteProductAsUser() throws JsonProcessingException {
-        UserDto user = createUser();
+        TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         given()
