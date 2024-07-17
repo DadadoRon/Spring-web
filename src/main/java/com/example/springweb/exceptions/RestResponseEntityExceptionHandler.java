@@ -52,6 +52,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 
+    @ExceptionHandler(value = { InvalidPasswordException.class })
+    protected ResponseEntity<Object> handleAccessDeniedException(InvalidPasswordException ex) {
+        ApiError apiError = ApiError.builder()
+                .message(ApiErrorCode.INVALID_PASSWORD.getMessage())
+                .debugMessage(ex.getMessage())
+                .code(ApiErrorCode.INVALID_PASSWORD.name())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
 
 }
 

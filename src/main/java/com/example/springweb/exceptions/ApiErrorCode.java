@@ -9,7 +9,9 @@ public enum ApiErrorCode {
     PRODUCT_NOT_FOUND("Product Not Found"),
     VALIDATION_ERROR("Validation Error"),
     FORBIDDEN("No permission to perform this action."),
-    UNAUTHORIZED("Login required to proceed.");
+    UNAUTHORIZED("Login required to proceed."),
+    INVALID_PASSWORD("Invalid Password");
+
 
 
 

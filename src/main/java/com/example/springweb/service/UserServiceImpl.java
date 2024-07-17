@@ -79,17 +79,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CachePut(key = "#user.id")
+    @CachePut(key = "#userId")
     @CacheEvict(allEntries = true)
-    public User updatePassword(User user) {
-        Integer userId = user.getId();
-        User byIdRequired = userRepository.findByIdRequired(userId);
-        BCrypt.checkpw(byIdRequired.getPassword(), user.getPassword());
-        user.setFirstName(byIdRequired.getFirstName());
-        user.setLastName(byIdRequired.getLastName());
-        user.setEmail(byIdRequired.getEmail());
-        user.setRole(byIdRequired.getRole());
-        return userRepository.save(user);
+    public void updatePassword(Integer userId, String oldPassword, String newPassword) {
+        User userById = userRepository.findByIdRequired(userId);
+        String salt = userById.getSalt();
+        String hashedPassword = BCrypt.hashpw(oldPassword, salt);
+        if (hashedPassword.equals(userById.getPassword())) {
+            userById.setPassword(BCrypt.hashpw(newPassword, salt));
+        } else {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        userRepository.save(userById);
     }
 
     @Override

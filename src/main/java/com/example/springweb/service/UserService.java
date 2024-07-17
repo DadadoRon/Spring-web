@@ -22,9 +22,9 @@ public interface UserService {
 
     User update(User user);
 
-    @CachePut(key = "#user.id")
+    @CachePut(key = "#userId")
     @CacheEvict(allEntries = true)
-    User updatePassword(User user);
+    void updatePassword(Integer userId, String oldPassword, String newPassword);
 
     void deleteUser(Integer userId);
 

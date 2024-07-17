@@ -1,7 +1,7 @@
 package com.example.springweb.controllers.user;
 
-import com.example.springweb.entity.User;
-import com.example.springweb.mapper.UserMapper;
+import com.example.springweb.exceptions.InvalidPasswordException;
+import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,11 +20,26 @@ import static com.example.springweb.controllers.user.UserController.REQUEST_MAPP
 public class UserController {
     public static final String REQUEST_MAPPING = "/api/v1/user/users";
     private final UserService userService;
-    private final UserMapper userMapper;
+
 
     @PutMapping
-    public UserDto updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser, String newPassword) {
-        User user = userService.updatePassword(userMapper.toUserForUpdatePassword(passwordUpdateDtoByUser));
-        return userMapper.toDto(user);
+    public PasswordUpdateResponseDto updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser) {
+        Integer userId = UserContextHolder.getUser().getId();
+        boolean success;
+        String message;
+        try {
+            userService.updatePassword(
+                    userId,
+                    passwordUpdateDtoByUser.oldPassword(),
+                    passwordUpdateDtoByUser.newPassword()
+            );
+            success = true;
+            message = "Password updated successfully.";
+        } catch (InvalidPasswordException e) {
+            success = false;
+            message = "Failed to update password:" + e.getMessage();
+        }
+
+        return new PasswordUpdateResponseDto(success, message);
     }
 }

@@ -3,6 +3,7 @@ package com.example.springweb.security;
 
 import com.example.springweb.controllers.product.AdminProductController;
 import com.example.springweb.controllers.user.AdminUserController;
+import com.example.springweb.controllers.user.UserController;
 import com.example.springweb.controllers.userappointment.byadmin.UserAppointmentByAdminController;
 import com.example.springweb.controllers.userappointment.byuser.UserAppointmentByUserController;
 import com.example.springweb.entity.Role;
@@ -39,6 +40,7 @@ public class ApplicationSecurity {
                         .requestMatchers(AdminUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(AdminProductController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(UserAppointmentByUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.USER.name())
+                        .requestMatchers(UserController.REQUEST_MAPPING + "/**").hasAuthority(Role.USER.name())
                         .requestMatchers(UserAppointmentByAdminController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
                 )
