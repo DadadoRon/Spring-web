@@ -1,6 +1,5 @@
 package com.example.springweb.controllers.user;
 
-import com.example.springweb.exceptions.InvalidPasswordException;
 import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,21 +24,17 @@ public class UserController {
     @PutMapping
     public PasswordUpdateResponseDto updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser) {
         Integer userId = UserContextHolder.getUser().getId();
-        boolean success;
+        boolean success = userService.updatePassword(
+                userId,
+                passwordUpdateDtoByUser.oldPassword(),
+                passwordUpdateDtoByUser.newPassword()
+        );
         String message;
-        try {
-            userService.updatePassword(
-                    userId,
-                    passwordUpdateDtoByUser.oldPassword(),
-                    passwordUpdateDtoByUser.newPassword()
-            );
-            success = true;
+        if (success) {
             message = "Password updated successfully.";
-        } catch (InvalidPasswordException e) {
-            success = false;
-            message = "Failed to update password:" + e.getMessage();
+        } else {
+            message = "Failed to update password";
         }
-
         return new PasswordUpdateResponseDto(success, message);
     }
 }
