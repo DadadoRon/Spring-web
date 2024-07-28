@@ -79,6 +79,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(key = "#userId")
+    @CacheEvict(allEntries = true)
+    public boolean updatePassword(Integer userId, String oldPassword, String newPassword) {
+        User userById = userRepository.findByIdRequired(userId);
+        String salt = userById.getSalt();
+        String hashedPassword = BCrypt.hashpw(oldPassword, salt);
+        if (!hashedPassword.equals(userById.getPassword())) {
+            return false;
+        }
+        userById.setPassword(BCrypt.hashpw(newPassword, salt));
+        userRepository.save(userById);
+        return true;
+    }
+
+    @Override
     @CacheEvict(key = "#userId", allEntries = true)
     public void deleteUser(Integer userId) {
         userRepository.checkIfExistsById(userId);
