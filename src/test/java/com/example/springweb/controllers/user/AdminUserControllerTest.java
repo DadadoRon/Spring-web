@@ -4,23 +4,22 @@ import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserModels;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 class AdminUserControllerTest extends BaseIntegrationTest {
@@ -28,112 +27,81 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     private static List<UserDto> userList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
-        RestAssured.baseURI = "http://localhost:" + port;
+    void setUp() throws Exception {
         userList = createUsers();
     }
 
     @Test
-    void testGetUserByIdAsAdmin() {
+    void testGetUserByIdAsAdmin() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(userId));
+        mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId));
     }
 
     @Test
-    void testGetUserByIdAsUser() throws JsonProcessingException {
+    void testGetUserByIdAsUser() throws Exception {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testGetUserByIdAsAnonymous() {
+    void testGetUserByIdAsAnonymous() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(randomString.getName(), randomString.getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testGetAllUsersAsAdmin() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body(".", hasSize(userRepository.findAll().size()));
+    void testGetAllUsersAsAdmin() throws Exception {
+        mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(userRepository.findAll().size())));
     }
 
     @Test
-    void testGetAllUsersAsUser() throws JsonProcessingException {
+    void testGetAllUsersAsUser() throws Exception {
         TestUserDto user = createUser();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testGetAllUsersAsAnonymous() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+    void testGetAllUsersAsAnonymous() throws Exception {
+        mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(randomString.getName(), randomString.getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testUpdateUserByIdAsAdmin() throws JsonProcessingException {
+    void testUpdateUserByIdAsAdmin() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
@@ -141,20 +109,17 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String newFirstName = RandomStringUtils.randomAlphabetic(8,12);
         updatedUser.setFirstName(newFirstName);
         String json = objectMapper.writeValueAsString(updatedUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(userId))
-                .body("firstName", equalTo(newFirstName));
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.firstName").value(newFirstName));
     }
 
     @Test
-    void testUpdateUserByIdAsUser() throws JsonProcessingException {
+    void testUpdateUserByIdAsUser() throws Exception {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
@@ -162,176 +127,131 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         User updatedUser = byId.get();
         updatedUser.setFirstName(RandomStringUtils.randomAlphabetic(8,12));
         String json = objectMapper.writeValueAsString(updatedUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .content(json))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testUpdateUserByIdAsAnonymous() throws JsonProcessingException {
+    void testUpdateUserByIdAsAnonymous() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
         User updatedUser = byId.get();
         updatedUser.setFirstName(RandomStringUtils.randomAlphabetic(8,12));
         String json = objectMapper.writeValueAsString(updatedUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(randomString.getName(), randomString.getValue())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testCreateUserAsAdmin() throws JsonProcessingException {
+    void testCreateUserAsAdmin() throws Exception {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.firstName()));
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
     }
 
     @Test
-    void testCreateUserAsUser() throws JsonProcessingException {
+    void testCreateUserAsUser() throws Exception {
         TestUserDto user = createUser();
         User newUser = UserModels.createUser(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .content(json))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testCreateUserAsAnonymous() throws JsonProcessingException {
+    void testCreateUserAsAnonymous() throws Exception {
         User newUser = UserModels.createUser(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(randomString.getName(), randomString.getValue())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isUnauthorized());
     }
 
 
     @Test
-    void testDeleteUserAsAdmin() throws JsonProcessingException {
+    void testDeleteUserAsAdmin() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testDeleteUserAsUser() throws JsonProcessingException {
+    void testDeleteUserAsUser() throws Exception {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         userRepository.deleteById(userId);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testDeleteUserAsAnonymous() {
+    void testDeleteUserAsAnonymous() throws Exception {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         userRepository.deleteById(userId);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(randomString.getName(), randomString.getValue()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testCacheAfterUpdate() throws JsonProcessingException {
-        List<User> usersBeforeUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+    void testCacheAfterUpdate() throws Exception {
+        String usersBeforeUpdateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersBeforeUpdate = objectMapper.readValue(usersBeforeUpdateResponse, new TypeReference<List<User>>() {});
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
@@ -339,101 +259,76 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String newFirstName = RandomStringUtils.randomAlphabetic(8,12);
         updatedUser.setFirstName(newFirstName);
         String json = objectMapper.writeValueAsString(updatedUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(userId))
-                .body("firstName", equalTo(newFirstName));
-        List<User> usersAfterUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+        mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.firstName").value(newFirstName));
+        String userAfterUpdateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersAfterUpdate = objectMapper.readValue(userAfterUpdateResponse, new TypeReference<List<User>>() {});
         assertNotEquals(usersBeforeUpdate, usersAfterUpdate);
     }
 
     @Test
-    void testCacheAfterCreate() throws JsonProcessingException {
-        List<User> usersBeforeCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+    void testCacheAfterCreate() throws Exception {
+        String usersBeforeCreateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersBeforeCreate = objectMapper.readValue(usersBeforeCreateResponse, new TypeReference<List<User>>(){});
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.firstName()));
-        List<User> usersAfterCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+        mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
+        String usersAfterCreateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(),getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersAfterCreate = objectMapper.readValue(usersAfterCreateResponse, new TypeReference<List<User>>() {});
         assertNotEquals(usersBeforeCreate, usersAfterCreate);
     }
 
     @Test
-    void testCacheAfterDelete() {
-        List<User> usersBeforeDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+    void testCacheAfterDelete() throws Exception {
+        String usersBeforeDeleteResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersBeforeDelete = objectMapper.readValue(usersBeforeDeleteResponse, new TypeReference<List<User>>() {});
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .then()
-                .statusCode(SC_OK);
-        List<User> usersAfterDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+        mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk());
+        String usersAfterDeleteResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersAfterDelete = objectMapper.readValue(usersAfterDeleteResponse, new TypeReference<List<User>>() {});
         assertNotEquals(usersBeforeDelete, usersAfterDelete);
     }
 }
