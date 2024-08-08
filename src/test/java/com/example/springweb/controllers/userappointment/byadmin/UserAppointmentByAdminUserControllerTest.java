@@ -6,25 +6,27 @@ import com.example.springweb.controllers.product.ProductDto;
 import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
@@ -36,86 +38,72 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     private ProductDto product;
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
-        RestAssured.baseURI = "http://localhost:" + port;
+    void setUp() throws Exception {
         user = createUser();
         product = createProduct();
         userAppointmentList = createUserAppointments(user.id(), product.id());
     }
 
     @Test
+    @SneakyThrows
     void testGetAllUserAppointmentsAsAdmin() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body(".", hasSize(userAppointmentRepository.findAll().size()));
+        mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(userAppointmentRepository.findAll().size())));
     }
 
     @Test
-    void testGetAllUserAppointmentsAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testGetAllUserAppointmentsAsUser() {
         TestUserDto user = createUser();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
+    @SneakyThrows
     void testGetAllUserAppointmentsAsAnonymous() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsAdmin() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        System.out.println(userAppointmentList);
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(updatedUserAppointment.getId()))
-                .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
-                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
-
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(updatedUserAppointment.getId()))
+                .andExpect(jsonPath("$.dateTime").value(updatedUserAppointment.getDateTime().truncatedTo(ChronoUnit.SECONDS)
+                .format(DateTimeFormatter.ISO_INSTANT)));
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsUser() {
         TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
@@ -124,18 +112,16 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .content(json))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsAnonymous() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -143,211 +129,167 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testCreateUserAppointmentAsAdmin() throws JsonProcessingException {
+    @SneakyThrows
+    void testCreateUserAppointmentAsAdmin() {
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dateTime").value(newUserAppointment.dateTime().truncatedTo(ChronoUnit.SECONDS)
+                        .format(DateTimeFormatter.ISO_INSTANT)));
     }
 
     @Test
-    void testCreateUserAppointmentAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testCreateUserAppointmentAsUser() {
         TestUserDto user = createUser();
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .content(json))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testCreateUserAppointmentAsAnonymous() throws JsonProcessingException {
+    @SneakyThrows
+    void testCreateUserAppointmentAsAnonymous() {
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
+    @SneakyThrows
     void testDeleteUserAppointmentAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testDeleteUserAppointmentAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testDeleteUserAppointmentAsUser() {
         TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
+    @SneakyThrows
     void testDeleteUserAppointmentAsAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
+    @SneakyThrows
     void testCheckIfExistsUserAppointmentByAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testCheckIfExistsUserAppointmentByUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testCheckIfExistsUserAppointmentByUser() {
         TestUserDto user = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
+    @SneakyThrows
     void testCheckIfExistsUserAppointmentByAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void testCacheAfterUpdate() throws JsonProcessingException {
-        List<UserAppointment> userAppointmentsBeforeUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+    @SneakyThrows
+    void testCacheAfterUpdate() {
+        String userAppointmentsBeforeUpdateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsBeforeUpdate = objectMapper
+                .readValue(userAppointmentsBeforeUpdateResponse, new TypeReference<List<UserAppointment>>() {});
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -355,102 +297,89 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         ZonedDateTime newDate = ZonedDateTime.now(ZoneOffset.UTC).plusDays(15);
         updatedUserAppointment.setDateTime(newDate);
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .body("id", equalTo(updatedUserAppointment.getId()))
-                .body("dateTime", equalTo(updatedUserAppointment.getDateTime()
-                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
-        List<UserAppointment> userAppointmentsAfterUpdate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+        mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(updatedUserAppointment.getId()))
+                .andExpect(jsonPath("$.dateTime").value(updatedUserAppointment.getDateTime()
+                        .truncatedTo(ChronoUnit.SECONDS)
+                        .format(DateTimeFormatter.ISO_INSTANT)));
+        String userAppointmentsAfterUpdateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsAfterUpdate = objectMapper.readValue(userAppointmentsAfterUpdateResponse,
+                new TypeReference<List<UserAppointment>>() {});
         assertNotEquals(userAppointmentsBeforeUpdate, userAppointmentsAfterUpdate);
     }
 
     @Test
-    void testCacheAfterCreate() throws JsonProcessingException {
-        List<UserAppointment> userAppointmentsBeforeCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+    @SneakyThrows
+    void testCacheAfterCreate() {
+        String userAppointmentsBeforeCreateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsBeforeCreate = objectMapper.readValue(userAppointmentsBeforeCreateResponse,
+                new TypeReference<List<UserAppointment>>() {});
         UserAppointmentByAdminCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByAdminDto(user.id(), product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK);
-        List<UserAppointment> userAppointmentsAfterCreate = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+        mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dateTime").value(newUserAppointment.dateTime()
+                        .truncatedTo(ChronoUnit.SECONDS)
+                        .format(DateTimeFormatter.ISO_INSTANT)));
+        String userAppointmentsAfterCreateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsAfterCreate = objectMapper.readValue(userAppointmentsAfterCreateResponse,
+                new TypeReference<List<UserAppointment>>() {});
         assertNotEquals(userAppointmentsBeforeCreate, userAppointmentsAfterCreate);
     }
 
     @Test
+    @SneakyThrows
     void testCacheAfterDelete() {
-        List<UserAppointment> userAppointmentsBeforeDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+        String userAppointmentsBeforeDeleteResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsBeforeDelete = objectMapper.readValue(userAppointmentsBeforeDeleteResponse,
+                new TypeReference<List<UserAppointment>>() {});
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
-                .then()
-                .statusCode(SC_OK);
-        List<UserAppointment> userAppointmentsAfterDelete = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(UserAppointmentByAdminController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", UserAppointment.class);
+        mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk());
+        String userAppointmentsAfterDeleteResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<UserAppointment> userAppointmentsAfterDelete = objectMapper.readValue(userAppointmentsAfterDeleteResponse,
+                new TypeReference<List<UserAppointment>>() {});
         assertNotEquals(userAppointmentsBeforeDelete, userAppointmentsAfterDelete);
     }
 }

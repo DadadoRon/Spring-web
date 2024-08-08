@@ -13,5 +13,4 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     Product toProductForCreate(ProductCreateDto createDto);
     Product toProductForUpdate (ProductUpdateDto updateDto);
-
 }

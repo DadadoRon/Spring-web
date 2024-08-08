@@ -1,88 +1,74 @@
 package com.example.springweb.controllers.user;
 
 import com.example.springweb.BaseIntegrationTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest extends BaseIntegrationTest {
     private TestUserDto user;
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
-        RestAssured.baseURI = "http://localhost:" + port;
+    void setUp() throws Exception {
         user = createUser();
     }
 
     @Test
-    void testUpdateUserPasswordAsAdmin() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserPasswordAsAdmin() {
         String oldPassword = user.password();
         String newPassword = (RandomStringUtils.randomAlphabetic(8) + "@@");
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);
         String json = objectMapper.writeValueAsString(password);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .put(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_FORBIDDEN);
+        mockMvc.perform(put(UserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void testUpdateUserByIdAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserByIdAsUser() {
         String oldPassword = user.password();
-        System.out.println(oldPassword);
         String newPassword = (RandomStringUtils.randomNumeric(8) + "@@");
-        System.out.println(newPassword);
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);
         String json = objectMapper.writeValueAsString(password);
-        System.out.println(json);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .put(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(put(UserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
     }
 
     @Test
-    void testUpdateUserByIdAsAnonymous() throws JsonProcessingException {
+    @SneakyThrows
+    void testUpdateUserByIdAsAnonymous() {
         String oldPassword = user.password();
         String newPassword = (RandomStringUtils.randomAlphabetic(8) + "@@");
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);
         String json = objectMapper.writeValueAsString(password);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .put(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json)
-                .put(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json)
-                .put(UserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+        mockMvc.perform(put(UserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(UserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .content(json))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(put(UserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -4,170 +4,138 @@ import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.UserModels;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CommonUserControllerTest extends BaseIntegrationTest {
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
-    }
 
     @Test
+    @SneakyThrows
     void testProfileAsAdmin() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testProfileAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testProfileAsUser() {
         TestUserDto user = createUser();
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
+                .andExpect(status().isOk());
     }
 
     @Test
+    @SneakyThrows
     void testProfileAsAnonymous() {
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_NOT_FOUND);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_NOT_FOUND);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_NOT_FOUND);
+        mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void testRegisterUserAsAdmin() throws JsonProcessingException {
+    @SneakyThrows
+    void testRegisterUserAsAdmin() {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
     }
 
     @Test
-    void testRegisterUserAsUser() throws JsonProcessingException {
+    @SneakyThrows
+    void testRegisterUserAsUser() {
         TestUserDto user = createUser();
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(user))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK)
-                .body("firstName", equalTo(newUser.firstName()));
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
     }
 
     @Test
-    void testRegisterUserAsAnonymous() throws JsonProcessingException {
+    @SneakyThrows
+    void testRegisterUserAsAnonymous() {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(anonymous))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
         UserCreateDto newUser1 = UserModels.getUserCreateDto(Role.USER);
         String json1 = objectMapper.writeValueAsString(newUser1);
-        given()
-                .contentType(ContentType.JSON)
-                .header(randomString)
-                .when()
-                .body(json1)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .content(json1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser1.firstName()));
         UserCreateDto newUser2 = UserModels.getUserCreateDto(Role.USER);
         String json2 = objectMapper.writeValueAsString(newUser2);
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(json2)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(newUser2.firstName()));
     }
 
     @Test
-    void testCacheAfterRegister() throws JsonProcessingException {
-        List<User> usersBeforeRegister = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+    @SneakyThrows
+    void testCacheAfterRegister() {
+        String usersBeforeRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersBeforeRegister = objectMapper.readValue(usersBeforeRegisterResponse, new TypeReference<List<User>>() {});
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
-        given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .body(json)
-                .post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
-                .then()
-                .statusCode(SC_OK);
-        List<User> usersAfterRegister = given()
-                .contentType(ContentType.JSON)
-                .header(getAuthorizationHeader(admin))
-                .when()
-                .get(AdminUserController.REQUEST_MAPPING)
-                .then()
-                .statusCode(SC_OK)
-                .extract()
-                .body()
-                .jsonPath()
-                .getList(".", User.class);
+        mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .content(json))
+                .andExpect(status().isOk());
+        String usersAfterRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<User> usersAfterRegister = objectMapper.readValue(usersAfterRegisterResponse, new TypeReference<List<User>>() {});
         assertNotEquals(usersBeforeRegister, usersAfterRegister);
     }
 }
