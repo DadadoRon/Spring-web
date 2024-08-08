@@ -6,6 +6,7 @@ import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.util.List;
@@ -21,7 +22,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testProfileAsAdmin() throws Exception {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -30,7 +31,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         TestUserDto user = createUser();
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isOk());
     }
 
@@ -38,11 +39,11 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testProfileAsAnonymous() throws Exception {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isNotFound());
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isNotFound());
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -55,7 +56,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -68,7 +69,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -80,7 +81,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -88,7 +89,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json1 = objectMapper.writeValueAsString(newUser1);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser1.firstName()));
@@ -96,7 +97,6 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json2 = objectMapper.writeValueAsString(newUser2);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
                 .content(json2))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser2.firstName()));
@@ -106,7 +106,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterRegister() throws Exception {
         String usersBeforeRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -116,12 +116,12 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk());
         String usersAfterRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

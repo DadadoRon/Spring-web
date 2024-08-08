@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -26,6 +27,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
 
     private static List<ProductDto> productList = new ArrayList<>();
 
+
     @BeforeEach
     void setUp() throws Exception {
         productList = createProducts();
@@ -43,7 +45,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedProduct);
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId))
@@ -61,7 +63,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedProduct);
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -77,12 +79,12 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedProduct);
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
@@ -97,7 +99,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(newProductDto.name()));
@@ -111,7 +113,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -122,12 +124,12 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
@@ -142,7 +144,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -153,7 +155,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -163,11 +165,11 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(),getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -178,7 +180,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     void testCacheAfterUpdate() throws Exception {
         String productsBeforeUpdateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -193,14 +195,14 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedProduct);
         mockMvc.perform(put(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId))
                 .andExpect(jsonPath("$.name").value(newName));
         String productsAfterUpdateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -213,7 +215,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     void testCacheAfterCreate() throws Exception {
         String productsBeforeCreateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -223,13 +225,13 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(newProductDto.name()));
         String productsAfterCreateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -242,7 +244,7 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     void testCacheAfterDelete() throws Exception {
         String productsBeforeDeleteResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -252,11 +254,11 @@ class AdminProductControllerTest extends BaseIntegrationTest {
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
         String productsAfterDeleteResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

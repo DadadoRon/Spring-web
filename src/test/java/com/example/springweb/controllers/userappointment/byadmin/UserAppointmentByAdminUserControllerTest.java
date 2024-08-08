@@ -9,6 +9,7 @@ import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.time.ZoneOffset;
@@ -46,7 +47,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     void testGetAllUserAppointmentsAsAdmin() throws Exception {
         mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(userAppointmentRepository.findAll().size())));
     }
@@ -56,7 +57,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         TestUserDto user = createUser();
         mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -64,11 +65,11 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     void testGetAllUserAppointmentsAsAnonymous() throws Exception {
         mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -78,6 +79,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     @Test
     void testUpdateUserAppointmentByIdAsAdmin() throws Exception {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
+        System.out.println(userAppointmentList);
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
@@ -86,7 +88,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatedUserAppointment.getId()))
@@ -106,7 +108,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -122,12 +124,12 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
@@ -143,7 +145,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserAppointment);
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dateTime").value(newUserAppointment.dateTime().truncatedTo(ChronoUnit.SECONDS)
@@ -158,7 +160,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserAppointment);
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -170,12 +172,12 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserAppointment);
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
@@ -190,7 +192,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -201,7 +203,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -211,11 +213,11 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -228,7 +230,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -239,7 +241,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -249,11 +251,11 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -264,7 +266,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterUpdate() throws Exception {
         String userAppointmentsBeforeUpdateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -280,7 +282,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUserAppointment);
         mockMvc.perform(put(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatedUserAppointment.getId()))
@@ -289,7 +291,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
                         .format(DateTimeFormatter.ISO_INSTANT)));
         String userAppointmentsAfterUpdateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -303,7 +305,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterCreate() throws Exception {
         String userAppointmentsBeforeCreateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -315,7 +317,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserAppointment);
         mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dateTime").value(newUserAppointment.dateTime()
@@ -323,7 +325,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
                         .format(DateTimeFormatter.ISO_INSTANT)));
         String userAppointmentsAfterCreateResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -337,7 +339,7 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterDelete() throws Exception {
         String userAppointmentsBeforeDeleteResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -348,11 +350,11 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByAdminController.REQUEST_MAPPING, userAppointmentId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(),getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
         String userAppointmentsAfterDeleteResponse = mockMvc.perform(get(UserAppointmentByAdminController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(),getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

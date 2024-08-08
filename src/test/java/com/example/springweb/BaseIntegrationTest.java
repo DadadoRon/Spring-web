@@ -18,7 +18,6 @@ import com.example.springweb.repository.ProductRepository;
 import com.example.springweb.repository.UserAppointmentRepository;
 import com.example.springweb.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.http.Header;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -70,26 +70,27 @@ public class BaseIntegrationTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate,"users", "products", "user_appointments");
     }
 
-    public static Header getAuthorizationHeader(User user) {
-        String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
+    public static String getAuthorizationHeader(User user) {
+        return String.format("Basic %s", Base64.getEncoder().encodeToString(
                 String.format("%s:%s", user.getEmail(), user.getPassword()).getBytes()));
-        return new Header("Authorization", authorizationHeaderValue);
     }
 
-    public static Header getAuthorizationHeader(UserCreateDto user) {
-        String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
+    public static String getAuthorizationHeader(UserCreateDto user) {
+        return String.format("Basic %s", Base64.getEncoder().encodeToString(
                 String.format("%s:%s", user.email(), user.password()).getBytes()));
-        return new Header("Authorization", authorizationHeaderValue);
     }
-    public static Header getAuthorizationHeader(TestUserDto user) {
-        String authorizationHeaderValue = String.format("Basic %s", Base64.getEncoder().encodeToString(
+
+    public static String getAuthorizationHeader(TestUserDto user) {
+        return String.format("Basic %s", Base64.getEncoder().encodeToString(
                 String.format("%s:%s", user.email(), user.password()).getBytes()));
-        return new Header("Authorization", authorizationHeaderValue);
     }
 
+    public static String getAuthorizationHeader(String admin) {
+        return admin;
+    }
 
-    public static Header getAuthorizationHeader(String admin) {
-        return new Header("Authorization", admin);
+    public final String randomString() {
+        return RandomStringUtils.randomAlphabetic(10);
     }
 
     public static int getRandomIndex(int listSize) {
@@ -99,14 +100,13 @@ public class BaseIntegrationTest {
 
     public final User anonymous = UserModels.createUser(null);
 
-    public final Header randomString = new Header("Authorization", RandomStringUtils.randomAlphabetic(10));
 
     public ProductDto createProduct() throws Exception {
         ProductCreateDto productCreateDto = ProductModels.getProductDto();
         String jsonProduct = objectMapper.writeValueAsString(productCreateDto);
         String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(jsonProduct))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -122,7 +122,7 @@ public class BaseIntegrationTest {
             String json = objectMapper.writeValueAsString(productCreateDto);
             String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -139,7 +139,7 @@ public class BaseIntegrationTest {
         String jsonUser = objectMapper.writeValueAsString(userCreateDto);
         String jsonResult = mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,(admin))
                 .content(jsonUser))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -160,7 +160,7 @@ public class BaseIntegrationTest {
             String json = objectMapper.writeValueAsString(userCreateDto);
             String jsonResult = mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -177,14 +177,16 @@ public class BaseIntegrationTest {
         List<UserAppointmentByAdminCreateDto> userAppointmentByAdminCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDto(userId, productId);
         for (UserAppointmentByAdminCreateDto userAppointmentByAdminCreateDto : userAppointmentByAdminCreateDtos) {
             String json = objectMapper.writeValueAsString(userAppointmentByAdminCreateDto);
+            System.out.println(json);
             String jsonResult = mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
+            System.out.println(jsonResult);
             UserAppointmentDto userAppointmentDto = objectMapper.readValue(jsonResult, UserAppointmentDto.class);
             userAppointmentList.add(userAppointmentDto);
         }
@@ -198,7 +200,7 @@ public class BaseIntegrationTest {
             String json = objectMapper.writeValueAsString(userAppointmentByUserCreateDto);
             String jsonResult = mockMvc.perform(post(UserAppointmentByUserController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()

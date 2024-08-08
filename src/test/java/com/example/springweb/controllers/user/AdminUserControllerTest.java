@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId));
     }
@@ -47,7 +48,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -56,11 +57,11 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -71,7 +72,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     void testGetAllUsersAsAdmin() throws Exception {
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(userRepository.findAll().size())));
     }
@@ -81,7 +82,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         TestUserDto user = createUser();
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -89,11 +90,11 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     void testGetAllUsersAsAnonymous() throws Exception {
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -111,7 +112,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUser);
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId))
@@ -129,7 +130,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUser);
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -144,12 +145,12 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUser);
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
@@ -164,7 +165,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -177,7 +178,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -188,12 +189,12 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
@@ -209,7 +210,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         assertTrue(userRepository.existsById(userId));
         mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -221,7 +222,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         userRepository.deleteById(userId);
         mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isForbidden());
     }
 
@@ -231,11 +232,11 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         userRepository.deleteById(userId);
         mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,(anonymous)))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -246,7 +247,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterUpdate() throws Exception {
         String usersBeforeUpdateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -261,14 +262,14 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(updatedUser);
         mockMvc.perform(put(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId))
                 .andExpect(jsonPath("$.firstName").value(newFirstName));
         String userAfterUpdateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -281,7 +282,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterCreate() throws Exception {
         String usersBeforeCreateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -291,13 +292,13 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
         String usersAfterCreateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(),getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -310,7 +311,7 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterDelete() throws Exception {
         String usersBeforeDeleteResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -319,11 +320,11 @@ class AdminUserControllerTest extends BaseIntegrationTest {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
         String usersAfterDeleteResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue()))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

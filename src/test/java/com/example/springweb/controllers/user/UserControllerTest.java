@@ -4,6 +4,7 @@ import com.example.springweb.BaseIntegrationTest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,7 +27,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -39,7 +40,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
@@ -53,12 +54,12 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous).getValue())
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue())
+                .header(HttpHeaders.AUTHORIZATION,randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserController.REQUEST_MAPPING)

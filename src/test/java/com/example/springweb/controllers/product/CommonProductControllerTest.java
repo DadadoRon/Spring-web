@@ -5,6 +5,7 @@ import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     void testGetAllProductsAsAdmin() throws Exception {
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(productRepository.findAll().size())));
     }
@@ -38,7 +39,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
         TestUserDto user = createUser();
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(productRepository.findAll().size())));
     }
@@ -47,12 +48,12 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     void testGetAllProductsAsAnonymous() throws Exception {
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(productRepository.findAll().size())));
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(productRepository.findAll().size())));
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
@@ -66,7 +67,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(admin).getName(), getAuthorizationHeader(admin)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId));
     }
@@ -77,7 +78,7 @@ class CommonProductControllerTest extends BaseIntegrationTest {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(user).getName(), getAuthorizationHeader(user)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId));
     }
@@ -88,12 +89,12 @@ class CommonProductControllerTest extends BaseIntegrationTest {
         Integer productId = productList.get(getRandomIndex(productList.size())).getId();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(getAuthorizationHeader(anonymous).getName(), getAuthorizationHeader(anonymous)))
+                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId));
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(randomString.getName(), randomString.getValue()))
+                .header(HttpHeaders.AUTHORIZATION,randomString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(productId));
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
