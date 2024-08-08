@@ -7,6 +7,7 @@ import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +45,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUserAppointmentsAsUser() throws Exception {
+    @SneakyThrows
+    void testGetAllUserAppointmentsAsUser() {
         TestUserDto user = createUser();
         mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -53,7 +55,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUserAppointmentsAsAdmin() throws Exception {
+    @SneakyThrows
+    void testGetAllUserAppointmentsAsAdmin() {
         mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin)))
@@ -61,7 +64,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUserAppointmentsAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testGetAllUserAppointmentsAsAnonymous() {
         mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
@@ -76,7 +80,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsUser() {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
@@ -98,7 +103,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsSomeUser() throws Exception {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsSomeUser() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -115,7 +121,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsAdmin() throws Exception {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -131,7 +138,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserAppointmentByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testUpdateUserAppointmentByIdAsAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
@@ -156,7 +164,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAppointmentAsUser() throws Exception {
+    @SneakyThrows
+    void testCreateUserAppointmentAsUser() {
         TestUserDto user = createUser();
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.id());
@@ -172,7 +181,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAppointmentAsAdmin() throws Exception {
+    @SneakyThrows
+    void testCreateUserAppointmentAsAdmin() {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -184,7 +194,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAppointmentAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testCreateUserAppointmentAsAnonymous() {
         UserAppointmentByUserCreateDto newUserAppointment = UserAppointmentModels
                 .getUserAppointmentByUserDto(product.id());
         String json = objectMapper.writeValueAsString(newUserAppointment);
@@ -205,7 +216,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAppointmentAsUser() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAppointmentAsUser() {
         UserAppointmentDto userAppointment = userAppointmentList
                 .get(getRandomIndex(userAppointmentList.size()));
         Integer userAppointmentId = userAppointment.getId();
@@ -217,7 +229,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAppointmentAsSomeUser() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAppointmentAsSomeUser() {
         TestUserDto someUser = createUser();
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
@@ -228,7 +241,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAppointmentAsAdmin() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAppointmentAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
@@ -238,7 +252,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAppointmentAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAppointmentAsAnonymous() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
         assertTrue(userAppointmentRepository.existsById(userAppointmentId));
         mockMvc.perform(delete(String.format("%s/%s", UserAppointmentByUserController.REQUEST_MAPPING, userAppointmentId))
@@ -255,7 +270,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterUpdate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterUpdate() {
         String userAppointmentsBeforeUpdateResponse = mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(userDto)))
@@ -296,7 +312,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterCreate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterCreate() {
         TestUserDto user = createUser();
         String userAppointmentsBeforeCreateResponse = mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -332,7 +349,8 @@ class UserAppointmentByUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterDelete() throws Exception {
+    @SneakyThrows
+    void testCacheAfterDelete() {
         String userAppointmentsBeforeDeleteResponse = mockMvc.perform(get(UserAppointmentByUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(userDto)))

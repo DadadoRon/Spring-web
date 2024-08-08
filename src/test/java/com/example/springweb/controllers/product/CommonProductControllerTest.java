@@ -3,6 +3,7 @@ package com.example.springweb.controllers.product;
 import com.example.springweb.BaseIntegrationTest;
 import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.entity.Product;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllProductsAsAdmin() throws Exception {
+    @SneakyThrows
+    void testGetAllProductsAsAdmin() {
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -35,7 +37,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllProductsAsUser() throws Exception {
+    @SneakyThrows
+    void testGetAllProductsAsUser() {
         TestUserDto user = createUser();
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -45,7 +48,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllProductsAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testGetAllProductsAsAnonymous() {
         mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
@@ -63,7 +67,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetProductByIdAsAdmin() throws Exception {
+    @SneakyThrows
+    void testGetProductByIdAsAdmin() {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +78,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetProductByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testGetProductByIdAsUser() {
         TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))
@@ -84,7 +90,8 @@ class CommonProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetProductByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testGetProductByIdAsAnonymous() {
         List<Product> productList = productRepository.findAll();
         Integer productId = productList.get(getRandomIndex(productList.size())).getId();
         mockMvc.perform(get(String.format("%s/%s", CommonProductController.REQUEST_MAPPING, productId))

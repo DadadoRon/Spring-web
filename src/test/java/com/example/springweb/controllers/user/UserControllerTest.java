@@ -1,6 +1,7 @@
 package com.example.springweb.controllers.user;
 
 import com.example.springweb.BaseIntegrationTest;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,8 @@ class UserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserPasswordAsAdmin() throws Exception {
+    @SneakyThrows
+    void testUpdateUserPasswordAsAdmin() {
         String oldPassword = user.password();
         String newPassword = (RandomStringUtils.randomAlphabetic(8) + "@@");
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);
@@ -33,7 +35,8 @@ class UserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testUpdateUserByIdAsUser() {
         String oldPassword = user.password();
         String newPassword = (RandomStringUtils.randomNumeric(8) + "@@");
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);
@@ -47,7 +50,8 @@ class UserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testUpdateUserByIdAsAnonymous() {
         String oldPassword = user.password();
         String newPassword = (RandomStringUtils.randomAlphabetic(8) + "@@");
         PasswordUpdateDtoByUser password = new PasswordUpdateDtoByUser(oldPassword, newPassword);

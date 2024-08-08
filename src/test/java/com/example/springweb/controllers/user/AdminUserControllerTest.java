@@ -5,6 +5,7 @@ import com.example.springweb.UserModels;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetUserByIdAsAdmin() throws Exception {
+    @SneakyThrows
+    void testGetUserByIdAsAdmin() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,7 +45,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetUserByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testGetUserByIdAsUser() {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
@@ -53,7 +56,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetUserByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testGetUserByIdAsAnonymous() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         mockMvc.perform(get(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +73,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUsersAsAdmin() throws Exception {
+    @SneakyThrows
+    void testGetAllUsersAsAdmin() {
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -78,7 +83,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUsersAsUser() throws Exception {
+    @SneakyThrows
+    void testGetAllUsersAsUser() {
         TestUserDto user = createUser();
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +93,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testGetAllUsersAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testGetAllUsersAsAnonymous() {
         mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
@@ -102,7 +109,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserByIdAsAdmin() throws Exception {
+    @SneakyThrows
+    void testUpdateUserByIdAsAdmin() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
@@ -120,7 +128,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testUpdateUserByIdAsUser() {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
@@ -136,7 +145,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateUserByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testUpdateUserByIdAsAnonymous() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         Optional<User> byId = userRepository.findById(userId);
         assertTrue(byId.isPresent());
@@ -160,7 +170,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAsAdmin() throws Exception {
+    @SneakyThrows
+    void testCreateUserAsAdmin() {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
@@ -172,7 +183,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAsUser() throws Exception {
+    @SneakyThrows
+    void testCreateUserAsUser() {
         TestUserDto user = createUser();
         User newUser = UserModels.createUser(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
@@ -184,7 +196,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateUserAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testCreateUserAsAnonymous() {
         User newUser = UserModels.createUser(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
@@ -205,7 +218,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
 
 
     @Test
-    void testDeleteUserAsAdmin() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAsAdmin() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
         mockMvc.perform(delete(String.format("%s/%s", AdminUserController.REQUEST_MAPPING, userId))
@@ -215,7 +229,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAsUser() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAsUser() {
         TestUserDto user = createUser();
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         assertTrue(userRepository.existsById(userId));
@@ -227,7 +242,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteUserAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testDeleteUserAsAnonymous() {
         Integer userId = userList.get(getRandomIndex(userList.size())).id();
         userRepository.deleteById(userId);
         mockMvc.perform(delete(String.format("%s/%d", AdminUserController.REQUEST_MAPPING, userId))
@@ -244,7 +260,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterUpdate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterUpdate() {
         String usersBeforeUpdateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -279,7 +296,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterCreate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterCreate() {
         String usersBeforeCreateResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -308,7 +326,8 @@ class AdminUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterDelete() throws Exception {
+    @SneakyThrows
+    void testCacheAfterDelete() {
         String usersBeforeDeleteResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))

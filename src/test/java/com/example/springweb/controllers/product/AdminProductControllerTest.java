@@ -5,6 +5,7 @@ import com.example.springweb.ProductModels;
 import com.example.springweb.controllers.user.TestUserDto;
 import com.example.springweb.entity.Product;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateProductByIdAsAdmin() throws Exception {
+    @SneakyThrows
+    void testUpdateProductByIdAsAdmin() {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         Optional<Product> byId = productRepository.findById(productId);
         assertTrue(byId.isPresent());
@@ -53,7 +55,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateProductByIdAsUser() throws Exception {
+    @SneakyThrows
+    void testUpdateProductByIdAsUser() {
         TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         Optional<Product> byId = productRepository.findById(productId);
@@ -69,7 +72,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testUpdateProductByIdAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testUpdateProductByIdAsAnonymous() {
         List<Product> productList = productRepository.findAll();
         Integer productId = productList.get(getRandomIndex(productList.size())).getId();
         Optional<Product> byId = productRepository.findById(productId);
@@ -94,7 +98,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateProductAsAdmin() throws Exception {
+    @SneakyThrows
+    void testCreateProductAsAdmin() {
         ProductCreateDto newProductDto = ProductModels.getProductDto();
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
@@ -107,7 +112,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateProductAsUser() throws Exception {
+    @SneakyThrows
+    void testCreateProductAsUser() {
         TestUserDto user = createUser();
         ProductCreateDto newProductDto = ProductModels.getProductDto();
         String json = objectMapper.writeValueAsString(newProductDto);
@@ -119,7 +125,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCreateProductAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testCreateProductAsAnonymous() {
         ProductCreateDto newProductDto = ProductModels.getProductDto();
         String json = objectMapper.writeValueAsString(newProductDto);
         mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
@@ -139,7 +146,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteProductAsAdmin() throws Exception {
+    @SneakyThrows
+    void testDeleteProductAsAdmin() {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
@@ -149,7 +157,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteProductAsUser() throws Exception {
+    @SneakyThrows
+    void testDeleteProductAsUser() {
         TestUserDto user = createUser();
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
@@ -160,7 +169,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testDeleteProductAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testDeleteProductAsAnonymous() {
         Integer productId = productList.get(getRandomIndex(productList.size())).id();
         assertTrue(productRepository.existsById(productId));
         mockMvc.perform(MockMvcRequestBuilders.delete(String.format("%s/%s", AdminProductController.REQUEST_MAPPING, productId))
@@ -177,7 +187,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterUpdate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterUpdate() {
         String productsBeforeUpdateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -212,7 +223,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterCreate() throws Exception {
+    @SneakyThrows
+    void testCacheAfterCreate() {
         String productsBeforeCreateResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,(admin)))
@@ -241,7 +253,8 @@ class AdminProductControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterDelete() throws Exception {
+    @SneakyThrows
+    void testCacheAfterDelete() {
         String productsBeforeDeleteResponse = mockMvc.perform(get(CommonProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))

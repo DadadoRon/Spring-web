@@ -5,6 +5,7 @@ import com.example.springweb.UserModels;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CommonUserControllerTest extends BaseIntegrationTest {
+
     @Test
-    void testProfileAsAdmin() throws Exception {
+    @SneakyThrows
+    void testProfileAsAdmin() {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
@@ -27,7 +30,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testProfileAsUser() throws Exception {
+    @SneakyThrows
+    void testProfileAsUser() {
         TestUserDto user = createUser();
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -36,7 +40,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testProfileAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testProfileAsAnonymous() {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
@@ -51,7 +56,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testRegisterUserAsAdmin() throws Exception {
+    @SneakyThrows
+    void testRegisterUserAsAdmin() {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
@@ -63,7 +69,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testRegisterUserAsUser() throws Exception {
+    @SneakyThrows
+    void testRegisterUserAsUser() {
         TestUserDto user = createUser();
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
@@ -76,7 +83,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testRegisterUserAsAnonymous() throws Exception {
+    @SneakyThrows
+    void testRegisterUserAsAnonymous() {
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
@@ -103,7 +111,8 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void testCacheAfterRegister() throws Exception {
+    @SneakyThrows
+    void testCacheAfterRegister() {
         String usersBeforeRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
