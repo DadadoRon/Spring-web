@@ -4,4 +4,4 @@ public record UserSearchDto(
     String firstName,
     String lastName,
     String email
-) {}
+) { }

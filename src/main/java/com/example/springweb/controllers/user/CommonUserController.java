@@ -30,7 +30,7 @@ public class CommonUserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
                 throw new UserNotFoundException("User is not found");
-            }else {
+            } else {
                 return UserContextHolder.getUser();
             }
         }
