@@ -15,10 +15,11 @@ jobs:
         run: chmod +x gradlew
       - name: Install dependencies
         run: ./gradlew build
+      - name: Run PMD analysis
+        run: ./gradlew pmdMain
       - name: Test application
         run: ./gradlew test
-      - name: Run PMD analysis
-        run: ./gradlew pmd
+
 
 
 

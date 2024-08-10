@@ -11,8 +11,6 @@ pmd {
     toolVersion = "7.0.0"
     rulesMinimumPriority = 5
     ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
-    ruleSetFiles = files()
-//    ignoreFailures = false
 }
 
 group = 'com.example'
