@@ -16,7 +16,7 @@ public class UserContextHolder {
         AuthenticationToken authentication = (AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthHeader();
     }
-    public static String getEmail(){
+    public static String getEmail() {
 
         return getUser().getEmail();
     }

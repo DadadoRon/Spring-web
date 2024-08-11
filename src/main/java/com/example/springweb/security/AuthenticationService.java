@@ -27,6 +27,7 @@ public class AuthenticationService {
     private static final String ADMIN_EMAIL = "admin@mail.com";
     private static final String ADMIN_FIRST_NAME = "Admin";
     private static final String ADMIN_LAST_NAME = "Admin";
+    private static final int EXPECTED_AUTH_TOKENS_LENGTH = 2;
 
     public AuthenticationToken getAuthenticationToken(HttpServletRequest request) {
         try {
@@ -52,7 +53,6 @@ public class AuthenticationService {
         }
     }
 
-    private static final int EXPECTED_AUTH_TOKENS_LENGTH = 2;
     private AuthenticationToken getAuthenticationToken(String authHeader) {
         try {
             String[] authTokens = authHeader.split(" ");
