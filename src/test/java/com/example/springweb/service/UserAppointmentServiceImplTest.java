@@ -46,7 +46,7 @@ class UserAppointmentServiceImplTest {
             .build();
 
     @Test
-    public void createUserAppointmentTest() {
+    void createUserAppointmentTest() {
         when(userService.getUserById(testUserAppointment.getUser().getId())).thenReturn(testUserAppointment.getUser());
         when(productService.getProductById(testUserAppointment.getProduct().getId()))
                  .thenReturn(testUserAppointment.getProduct());
@@ -59,7 +59,7 @@ class UserAppointmentServiceImplTest {
 
     }
     @Test
-    public void createUserAppointmentIfUserByIdNotFoundTest() {
+    void createUserAppointmentIfUserByIdNotFoundTest() {
         when(userService.getUserById(testUserAppointment.getUser().getId()))
                 .thenThrow(new UserNotFoundException(
                         ("User not found with id: " + testUserAppointment.getUser().getId())));
@@ -68,7 +68,7 @@ class UserAppointmentServiceImplTest {
     }
 
     @Test
-    public void createUserAppointmentIfProductByIdNotFoundTest() {
+    void createUserAppointmentIfProductByIdNotFoundTest() {
         when(productService.getProductById(testUserAppointment.getProduct().getId()))
                 .thenThrow(new ProductNotFoundException(
                         ("Product not found with id: " + testUserAppointment.getProduct().getId())));
@@ -77,7 +77,7 @@ class UserAppointmentServiceImplTest {
     }
 
     @Test
-    public void updateUserAppointmentTest() {
+    void updateUserAppointmentTest() {
        when(userAppointmentService.getUserAppointmentById(testUserAppointmentId)).thenReturn(testUserAppointment);
        when(userAppointmentRepository.save(testUserAppointment)).thenReturn(testUserAppointment);
        UserAppointment result = userAppointmentService.updateUserAppointment(testUserAppointment);
@@ -85,7 +85,7 @@ class UserAppointmentServiceImplTest {
     }
 
     @Test
-    public void updateIfUserAppointmentByIdNotFoundTest() {
+    void updateIfUserAppointmentByIdNotFoundTest() {
         when(userAppointmentService.getUserAppointmentById(testUserAppointmentId))
                 .thenThrow(new UserAppointmentNotFoundException(
                         ("UserAppointment not found with id: " + testUserAppointmentId)));
@@ -94,14 +94,14 @@ class UserAppointmentServiceImplTest {
     }
 
     @Test
-    public void deleteUserAppointmentTest() {
+    void deleteUserAppointmentTest() {
         doNothing().when(userAppointmentRepository).checkIfExistsById(testUserAppointmentId);
         doNothing().when(userAppointmentRepository).deleteById(testUserAppointmentId);
         userAppointmentService.deleteUserAppointment(testUserAppointmentId);
     }
 
     @Test
-    public void deleteIfUserAppointmentIdNotFoundTest() {
+    void deleteIfUserAppointmentIdNotFoundTest() {
         doThrow(new UserAppointmentNotFoundException("UserAppointment not found with id: " + testUserAppointmentId))
                 .when(userAppointmentRepository).checkIfExistsById(testUserAppointmentId);
         assertThrows(UserAppointmentNotFoundException.class, () -> userAppointmentService

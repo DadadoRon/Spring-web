@@ -8,12 +8,13 @@
     <description>Every Java Rule in PMD</description>
 
     <rule ref="category/java/bestpractices.xml">
-    <exclude name="GuardLogStatement" />
+    <exclude name="GuardLogStatement"/>
+    <exclude name="JUnitAssertionsShouldIncludeMessage"/>
     </rule>
 
-    <rule ref="category/java/errorprone.xml" >
-    <exclude name="MissingSerialVersionUID" />
-    <exclude name="NonSerializableClass" />
+    <rule ref="category/java/errorprone.xml">
+    <exclude name="MissingSerialVersionUID"/>
+    <exclude name="NonSerializableClass"/>
     </rule>
 
 

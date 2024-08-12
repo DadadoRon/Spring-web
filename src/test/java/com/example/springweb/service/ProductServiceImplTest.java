@@ -35,7 +35,7 @@ class ProductServiceImplTest {
             .build();
 
     @Test
-    public void productByIdTest() {
+    void productByIdTest() {
         when(productRepository.findByIdRequired(testProductId)).thenReturn(testProduct);
         Product result = productService.getProductById(testProductId);
         assertNotNull(result);
@@ -44,7 +44,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void productByIdNotFoundTest() {
+    void productByIdNotFoundTest() {
         when(productRepository.findByIdRequired(testProductId))
                 .thenThrow(new ProductNotFoundException("Product not found with id:" +  testProductId));
         assertThrows(ProductNotFoundException.class, () -> productService.getProductById(testProductId));
@@ -52,7 +52,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void createProductTest() {
+    void createProductTest() {
         when(productRepository.save(testProduct)).thenReturn(testProduct);
         Product result = productService.createProduct(testProduct);
         assertEquals(testProduct, result);
@@ -60,7 +60,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void updateTest() {
+    void updateTest() {
         doNothing().when(productRepository).checkIfExistsById(testProduct.getId());
         when(productRepository.save(testProduct)).thenReturn(testProduct);
         Product result = productService.update(testProduct);
@@ -70,21 +70,21 @@ class ProductServiceImplTest {
     }
 
     @Test
-    public void updateIfNotFoundTest() {
+    void updateIfNotFoundTest() {
         doThrow(new ProductNotFoundException("Product not found with id: " + testProduct.getId()))
                 .when(productRepository).checkIfExistsById(testProduct.getId());
         assertThrows(ProductNotFoundException.class, () -> productService.update(testProduct));
     }
 
     @Test
-    public void deleteProductTest() {
+    void deleteProductTest() {
         doNothing().when(productRepository).checkIfExistsById(testProductId);
         doNothing().when(productRepository).deleteById(testProductId);
         productService.deleteProduct(testProductId);
     }
 
     @Test
-    public void deleteProductIfIdNotFoundTest() {
+    void deleteProductIfIdNotFoundTest() {
         doThrow(new ProductNotFoundException("Product not found with id: " + testProductId))
                 .when(productRepository).checkIfExistsById(testProductId);
         assertThrows(ProductNotFoundException.class, () -> productService.deleteProduct(testProductId));

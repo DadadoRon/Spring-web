@@ -178,7 +178,6 @@ public class BaseIntegrationTest {
                 UserAppointmentModels.getRandomUserAppointmentCreateDto(userId, productId);
         for (UserAppointmentByAdminCreateDto userAppointmentByAdminCreateDto : userAppointmentByAdminCreateDtos) {
             String json = objectMapper.writeValueAsString(userAppointmentByAdminCreateDto);
-            System.out.println(json);
             String jsonResult = mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
@@ -187,7 +186,6 @@ public class BaseIntegrationTest {
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
-            System.out.println(jsonResult);
             UserAppointmentDto userAppointmentDto = objectMapper.readValue(jsonResult, UserAppointmentDto.class);
             userAppointmentList.add(userAppointmentDto);
         }

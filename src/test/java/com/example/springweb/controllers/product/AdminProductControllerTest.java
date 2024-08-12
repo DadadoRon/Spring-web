@@ -108,7 +108,6 @@ class AdminProductControllerTest extends BaseIntegrationTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(newProductDto.name()));
-
     }
 
     @Test

@@ -84,7 +84,6 @@ class UserAppointmentByAdminUserControllerTest extends BaseIntegrationTest {
     @SneakyThrows
     void testUpdateUserAppointmentByIdAsAdmin() {
         Integer userAppointmentId = userAppointmentList.get(getRandomIndex(userAppointmentList.size())).getId();
-        System.out.println(userAppointmentList);
         Optional<UserAppointment> byId = userAppointmentRepository.findById(userAppointmentId);
         assertTrue(byId.isPresent());
         UserAppointment updatedUserAppointment = byId.get();
