@@ -13,6 +13,6 @@ public record UserAppointmentByAdminCreateDto(
         Integer userId,
         @NotNull(message = "ProductId cannot be empty")
         Integer productId
-) {}
+) { }
 
 

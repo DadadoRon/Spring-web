@@ -47,7 +47,7 @@ class UserRepositoryTest {
     }
 
     @AfterEach
-    void delete(){
+    void delete() {
         userRepository.deleteAll();
     }
 

@@ -19,8 +19,8 @@ public class ProductModels {
         BigDecimal bigDecimalPrice = new BigDecimal(price).setScale(2, RoundingMode.HALF_EVEN);
         return Product.builder()
                 .id(null)
-                .name(RandomStringUtils.randomAlphabetic(8,12))
-                .description(RandomStringUtils.randomAlphabetic(11,15))
+                .name(RandomStringUtils.randomAlphabetic(8, 12))
+                .description(RandomStringUtils.randomAlphabetic(11, 15))
                 .price(bigDecimalPrice)
                 .imageName(RandomStringUtils.randomAlphabetic(5, 6) + ".jpg")
                 .build();
@@ -43,8 +43,8 @@ public class ProductModels {
         int price = ThreadLocalRandom.current().nextInt(minPrice, maxPrice);
         BigDecimal bigDecimalPrice = new BigDecimal(price).setScale(2, RoundingMode.HALF_EVEN);
         return new ProductCreateDto(
-                RandomStringUtils.randomAlphabetic(8,12),
-                RandomStringUtils.randomAlphabetic(11,15),
+                RandomStringUtils.randomAlphabetic(8, 12),
+                RandomStringUtils.randomAlphabetic(11, 15),
                 bigDecimalPrice,
                 RandomStringUtils.randomAlphabetic(5, 6) + ".jpg"
                 );

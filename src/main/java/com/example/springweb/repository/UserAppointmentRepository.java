@@ -10,7 +10,7 @@ public interface UserAppointmentRepository extends JpaRepository<UserAppointment
 
     List<UserAppointment> findByUserId(Integer userId);
 
-    boolean existsByUserId (Integer userId);
+    boolean existsByUserId(Integer userId);
 
 
     default UserAppointment findByIdRequired(Integer id) {

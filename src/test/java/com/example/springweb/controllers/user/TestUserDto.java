@@ -4,4 +4,4 @@ public record TestUserDto(
         Integer id,
         String email,
         String password
-) {}
+) { }
