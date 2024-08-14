@@ -29,7 +29,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isForbidden());
     }
@@ -43,7 +43,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
@@ -58,12 +58,12 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(password);
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .header(HttpHeaders.AUTHORIZATION, randomString())
                 .content(json))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(put(UserController.REQUEST_MAPPING)

@@ -13,8 +13,8 @@ public record ProductUpdateDto(
     @Size(max = 200, message = "Description must be at most 200 characters long")
     String description,
     @DecimalMin(value = "0.0", inclusive = false)
-    @Digits(integer=3, fraction=2)
+    @Digits(integer = 3, fraction = 2)
     BigDecimal price,
     @NotBlank(message = "Image name cannot be empty")
     String imageName
-) {}
+) { }

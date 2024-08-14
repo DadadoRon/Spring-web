@@ -10,4 +10,4 @@ public record UserAppointmentByAdminUpdateDto(
         @NotNull(message = "Date cannot be empty")
         @FutureOrPresent(message = "Date should be in the present or future")
         ZonedDateTime dateTime
-) {}
+) { }

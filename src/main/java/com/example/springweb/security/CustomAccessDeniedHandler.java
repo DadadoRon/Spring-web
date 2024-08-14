@@ -3,7 +3,6 @@ package com.example.springweb.security;
 import com.example.springweb.exceptions.ApiError;
 import com.example.springweb.exceptions.ApiErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -18,8 +17,7 @@ import java.io.OutputStream;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException arg2)
-            throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException arg2) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.FORBIDDEN.getMessage())
                 .debugMessage(arg2.getMessage())
@@ -28,9 +26,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        OutputStream responseStream = response.getOutputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(responseStream, apiError);
-        responseStream.flush();
+        try (OutputStream responseStream = response.getOutputStream()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(responseStream, apiError);
+            responseStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

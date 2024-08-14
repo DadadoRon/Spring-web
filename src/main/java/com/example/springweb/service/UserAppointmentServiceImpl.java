@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @CacheConfig(cacheNames = "userAppointment")
 @RequiredArgsConstructor
-public class UserAppointmentServiceImpl implements UserAppointmentService{
+public class UserAppointmentServiceImpl implements UserAppointmentService {
     private final UserAppointmentRepository userAppointmentRepository;
     private final ProductService productService;
     private final UserService userService;
@@ -42,7 +42,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService{
 
     @Override
     public boolean checkIfExistsByUserId(Integer userId) {
-        if(userId == null) {
+        if (userId == null) {
             return false;
         }
         return userAppointmentRepository.existsByUserId(userId);

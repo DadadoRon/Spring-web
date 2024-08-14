@@ -33,15 +33,18 @@ public class ApplicationSecurity {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
+    @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .addFilterAt(authenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(AdminUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(AdminProductController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(UserAppointmentByUserController.REQUEST_MAPPING + "/**").hasAuthority(Role.USER.name())
+                        .requestMatchers(UserAppointmentByUserController.REQUEST_MAPPING + "/**")
+                            .hasAuthority(Role.USER.name())
                         .requestMatchers(UserController.REQUEST_MAPPING + "/**").hasAuthority(Role.USER.name())
-                        .requestMatchers(UserAppointmentByAdminController.REQUEST_MAPPING + "/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(UserAppointmentByAdminController.REQUEST_MAPPING + "/**")
+                            .hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

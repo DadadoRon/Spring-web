@@ -25,7 +25,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testProfileAsAdmin() {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin)))
                 .andExpect(status().isOk());
     }
 
@@ -35,7 +35,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         TestUserDto user = createUser();
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(user)))
                 .andExpect(status().isOk());
     }
 
@@ -44,11 +44,11 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testProfileAsAnonymous() {
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(anonymous)))
                 .andExpect(status().isNotFound());
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,randomString()))
+                .header(HttpHeaders.AUTHORIZATION, randomString()))
                 .andExpect(status().isNotFound());
         mockMvc.perform(get(String.format("%s/profile", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -62,7 +62,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -76,7 +76,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(user))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -89,7 +89,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(anonymous))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(anonymous))
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser.firstName()));
@@ -97,7 +97,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         String json1 = objectMapper.writeValueAsString(newUser1);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,randomString())
+                .header(HttpHeaders.AUTHORIZATION, randomString())
                 .content(json1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(newUser1.firstName()));
@@ -115,27 +115,29 @@ class CommonUserControllerTest extends BaseIntegrationTest {
     void testCacheAfterRegister() {
         String usersBeforeRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        List<User> usersBeforeRegister = objectMapper.readValue(usersBeforeRegisterResponse, new TypeReference<List<User>>() {});
+        List<User> usersBeforeRegister = objectMapper.readValue(usersBeforeRegisterResponse,
+                new TypeReference<List<User>>() { });
         UserCreateDto newUser = UserModels.getUserCreateDto(Role.USER);
         String json = objectMapper.writeValueAsString(newUser);
         mockMvc.perform(post(String.format("%s/register", CommonUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                 .content(json))
                 .andExpect(status().isOk());
         String usersAfterRegisterResponse = mockMvc.perform(get(AdminUserController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        List<User> usersAfterRegister = objectMapper.readValue(usersAfterRegisterResponse, new TypeReference<List<User>>() {});
+        List<User> usersAfterRegister = objectMapper.readValue(usersAfterRegisterResponse,
+                new TypeReference<List<User>>() { });
         assertNotEquals(usersBeforeRegister, usersAfterRegister);
     }
 }
