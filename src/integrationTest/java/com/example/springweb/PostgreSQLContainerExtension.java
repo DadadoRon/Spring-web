@@ -18,5 +18,6 @@ public class PostgreSQLContainerExtension implements BeforeAllCallback {
         System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
         System.setProperty("spring.datasource.username", postgres.getUsername());
         System.setProperty("spring.datasource.password", postgres.getPassword());
+        System.setProperty("liquibase.duplicateFileMode", "WARN");
     }
 }
