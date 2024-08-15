@@ -17,5 +17,5 @@ public record UserUpdateDto(
     @Email(message = "Email should be valid")
     String email,
     Role role
-) {}
+) { }
 

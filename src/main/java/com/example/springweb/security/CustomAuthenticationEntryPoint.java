@@ -3,7 +3,6 @@ package com.example.springweb.security;
 import com.example.springweb.exceptions.ApiError;
 import com.example.springweb.exceptions.ApiErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -17,8 +16,8 @@ import java.io.OutputStream;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.UNAUTHORIZED.getMessage())
                 .debugMessage(authException.getMessage())
@@ -27,10 +26,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        OutputStream responseStream = response.getOutputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(responseStream, apiError);
-        responseStream.flush();
+        try (OutputStream responseStream = response.getOutputStream()) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(responseStream, apiError);
+            responseStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

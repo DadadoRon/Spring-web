@@ -24,6 +24,6 @@ public record UserCreateDto(
     String password,
     @NotNull(message = "Role cannot be empty")
     Role role
-) {}
+) { }
 
 

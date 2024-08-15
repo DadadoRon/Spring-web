@@ -11,4 +11,4 @@ public record UserAppointmentByUserCreateDto(
         ZonedDateTime dateTime,
                 @NotNull(message = "ProductId cannot be empty")
         Integer productId
-) {}
+) { }

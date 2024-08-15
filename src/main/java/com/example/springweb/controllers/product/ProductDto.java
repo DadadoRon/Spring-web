@@ -8,4 +8,4 @@ public record ProductDto(
     String description,
     BigDecimal price,
     String imageName
-) {}
+) { }

@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @CacheConfig(cacheNames = "products")
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override

@@ -22,4 +22,4 @@ public record UserRegisterDto(
             message = "Password must contain at least one digit and one special character"
     )
     String password
-) {}
+) { }

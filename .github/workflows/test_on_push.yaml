@@ -14,8 +14,12 @@ jobs:
       - name: Permission
         run: chmod +x gradlew
       - name: Install dependencies
-        run: ./gradlew build
+        run: ./gradlew build -x pmdTest -x pmdTestFixtures
+      - name: Run PMD analysis
+        run: ./gradlew pmdMain
       - name: Test application
         run: ./gradlew test
+
+
 
 

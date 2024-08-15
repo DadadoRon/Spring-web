@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -33,17 +33,17 @@ public class UserServiceImplTest {
             .salt("hbjhvgcfgxfdz")
             .build();
     @Test
-    public void userByIdTest() {
+    void userByIdTest() {
         when(userRepository.findByIdRequired(testUserId)).thenReturn(testUser);
         User result = userService.getUserById(testUserId);
         assertNotNull(result);
         assertEquals(testUser.getId(), result.getId());
-        assertEquals(testUser.getFirstName(),result.getFirstName());
+        assertEquals(testUser.getFirstName(), result.getFirstName());
         verify(userRepository, times(1)).findByIdRequired(testUserId);
     }
 
     @Test
-    public void userByIdNotFoundTest() {
+    void userByIdNotFoundTest() {
         when(userRepository.findByIdRequired(testUserId))
                 .thenThrow(new UserNotFoundException("User not found with id: " + testUserId));
         assertThrows(UserNotFoundException.class, () -> userService.getUserById(testUserId));
@@ -51,7 +51,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void createUserTest() {
+    void createUserTest() {
         when(userRepository.save(testUser)).thenReturn(testUser);
         User result = userService.createUser(testUser);
         assertEquals(testUser, result);
@@ -59,7 +59,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void updateTest() {
+    void updateTest() {
         when(userRepository.findByIdRequired(testUser.getId())).thenReturn(testUser);
         when(userRepository.save(testUser)).thenReturn(testUser);
         User result = userService.update(testUser);
@@ -69,7 +69,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void updateIfIdNotFoundTest() {
+    void updateIfIdNotFoundTest() {
         doThrow(new UserNotFoundException("User not found with id: " + testUser.getId()))
                 .when(userRepository).findByIdRequired(testUser.getId());
         assertThrows(UserNotFoundException.class, () -> userService.update(testUser));
@@ -77,7 +77,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void deleteUserTest() {
+    void deleteUserTest() {
         doNothing().when(userRepository).checkIfExistsById(testUserId);
         doNothing().when(userRepository).deleteById(testUserId);
         userService.deleteUser(testUserId);
@@ -86,7 +86,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void deleteIfUserIdNotFoundTest() {
+    void deleteIfUserIdNotFoundTest() {
         doThrow(new UserNotFoundException("User not found with id: " + testUserId))
                 .when(userRepository).checkIfExistsById(testUserId);
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(testUserId));

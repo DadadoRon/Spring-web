@@ -24,6 +24,10 @@ public class AuthenticationService {
 
     @Value("${security.admin.authorization}")
     private String adminHeader;
+    private static final String ADMIN_EMAIL = "admin@mail.com";
+    private static final String ADMIN_FIRST_NAME = "Admin";
+    private static final String ADMIN_LAST_NAME = "Admin";
+    private static final int EXPECTED_AUTH_TOKENS_LENGTH = 2;
 
     public AuthenticationToken getAuthenticationToken(HttpServletRequest request) {
         try {
@@ -32,11 +36,11 @@ public class AuthenticationService {
             if (authHeader.equals(adminHeader)) {
                 return AuthenticationToken.builder()
                         .authorities(List.of(new SimpleGrantedAuthority(Role.ADMIN.name())))
-                        .principal("admin@mail.com")
+                        .principal(ADMIN_EMAIL)
                         .user(User.builder()
-                                .firstName("Admin")
-                                .lastName("Admin")
-                                .email("admin@mail.com")
+                                .firstName(ADMIN_FIRST_NAME)
+                                .lastName(ADMIN_LAST_NAME)
+                                .email(ADMIN_EMAIL)
                                 .build())
                         .authHeader(adminHeader)
                         .authenticated(true)
@@ -52,9 +56,9 @@ public class AuthenticationService {
     private AuthenticationToken getAuthenticationToken(String authHeader) {
         try {
             String[] authTokens = authHeader.split(" ");
-            if (authTokens.length != 2) return null;
+            if (authTokens.length != EXPECTED_AUTH_TOKENS_LENGTH) return null;
 
-            if (authTokens[0].equalsIgnoreCase("Basic")) {
+            if ("Basic".equalsIgnoreCase(authTokens[0])) {
                 return processBasicAuth(authTokens[1]);
             }
 
@@ -67,7 +71,7 @@ public class AuthenticationService {
 
     private AuthenticationToken processBasicAuth(String authToken) {
         String[] userCredentials = new String(Base64.getDecoder().decode(authToken)).split(":");
-        if (userCredentials.length != 2) return null;
+        if (userCredentials.length != EXPECTED_AUTH_TOKENS_LENGTH) return null;
 
         String email = userCredentials[0];
         String password = userCredentials[1];

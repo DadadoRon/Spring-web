@@ -14,9 +14,9 @@ public class UserModels {
     public static User createUser(Role role) {
         return User.builder()
                 .id(null)
-                .firstName(RandomStringUtils.randomAlphabetic(8,12))
-                .lastName(RandomStringUtils.randomAlphabetic(8,12))
-                .email(RandomStringUtils.randomAlphabetic(5,6) + "@example.com")
+                .firstName(RandomStringUtils.randomAlphabetic(8, 12))
+                .lastName(RandomStringUtils.randomAlphabetic(8, 12))
+                .email(RandomStringUtils.randomAlphabetic(5, 6) + "@example.com")
                 .password(RandomStringUtils.randomAlphabetic(8) + "@@")
                 .role(role)
                 .salt(RandomStringUtils.randomAlphabetic(16))
@@ -37,9 +37,9 @@ public class UserModels {
 
     public static UserCreateDto getUserCreateDto(Role role) {
         return new UserCreateDto(
-                RandomStringUtils.randomAlphabetic(8,12),
-                RandomStringUtils.randomAlphabetic(8,12),
-                RandomStringUtils.randomAlphabetic(5,6) + "@example.com",
+                RandomStringUtils.randomAlphabetic(8, 12),
+                RandomStringUtils.randomAlphabetic(8, 12),
+                RandomStringUtils.randomAlphabetic(5, 6) + "@example.com",
                 RandomStringUtils.randomNumeric(8) + "@@",
                 role
                 );

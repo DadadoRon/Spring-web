@@ -67,7 +67,7 @@ public class BaseIntegrationTest {
 
     @AfterEach
     void delete() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate,"users", "products", "user_appointments");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users", "products", "user_appointments");
     }
 
     public static String getAuthorizationHeader(User user) {
@@ -106,7 +106,7 @@ public class BaseIntegrationTest {
         String jsonProduct = objectMapper.writeValueAsString(productCreateDto);
         String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                 .content(jsonProduct))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -122,7 +122,7 @@ public class BaseIntegrationTest {
             String json = objectMapper.writeValueAsString(productCreateDto);
             String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -139,7 +139,7 @@ public class BaseIntegrationTest {
         String jsonUser = objectMapper.writeValueAsString(userCreateDto);
         String jsonResult = mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,(admin))
+                .header(HttpHeaders.AUTHORIZATION, (admin))
                 .content(jsonUser))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -160,7 +160,7 @@ public class BaseIntegrationTest {
             String json = objectMapper.writeValueAsString(userCreateDto);
             String jsonResult = mockMvc.perform(post(String.format("%s/create", AdminUserController.REQUEST_MAPPING))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
@@ -174,19 +174,18 @@ public class BaseIntegrationTest {
 
     public List<UserAppointmentDto> createUserAppointments(Integer userId, Integer productId) throws Exception {
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
-        List<UserAppointmentByAdminCreateDto> userAppointmentByAdminCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDto(userId, productId);
+        List<UserAppointmentByAdminCreateDto> userAppointmentByAdminCreateDtos =
+                UserAppointmentModels.getRandomUserAppointmentCreateDto(userId, productId);
         for (UserAppointmentByAdminCreateDto userAppointmentByAdminCreateDto : userAppointmentByAdminCreateDtos) {
             String json = objectMapper.writeValueAsString(userAppointmentByAdminCreateDto);
-            System.out.println(json);
             String jsonResult = mockMvc.perform(post(UserAppointmentByAdminController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(admin))
+                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
-            System.out.println(jsonResult);
             UserAppointmentDto userAppointmentDto = objectMapper.readValue(jsonResult, UserAppointmentDto.class);
             userAppointmentList.add(userAppointmentDto);
         }
@@ -195,12 +194,13 @@ public class BaseIntegrationTest {
 
     public List<UserAppointmentDto> createUserAppointments(Integer productId, TestUserDto user) throws Exception {
         List<UserAppointmentDto> userAppointmentList = new ArrayList<>();
-        List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtos = UserAppointmentModels.getRandomUserAppointmentCreateDtoByUser(productId);
+        List<UserAppointmentByUserCreateDto> userAppointmentByUserCreateDtos =
+                UserAppointmentModels.getRandomUserAppointmentCreateDtoByUser(productId);
         for (UserAppointmentByUserCreateDto userAppointmentByUserCreateDto : userAppointmentByUserCreateDtos) {
             String json = objectMapper.writeValueAsString(userAppointmentByUserCreateDto);
             String jsonResult = mockMvc.perform(post(UserAppointmentByUserController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION,getAuthorizationHeader(user))
+                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(user))
                     .content(json))
                     .andExpect(status().isOk())
                     .andReturn()

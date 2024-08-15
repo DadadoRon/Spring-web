@@ -36,7 +36,7 @@ public class UserAppointmentModels {
         return userAppointmentList;
     }
 
-    public static UserAppointmentByAdminCreateDto getUserAppointmentByAdminDto (Integer userId, Integer productId) {
+    public static UserAppointmentByAdminCreateDto getUserAppointmentByAdminDto(Integer userId, Integer productId) {
         return new UserAppointmentByAdminCreateDto(
                 ZonedDateTime.now().plusDays(10),
                 userId,
@@ -44,7 +44,8 @@ public class UserAppointmentModels {
         );
     }
 
-    public static List<UserAppointmentByAdminCreateDto> getRandomUserAppointmentCreateDto(Integer userId, Integer productId) {
+    public static List<UserAppointmentByAdminCreateDto> getRandomUserAppointmentCreateDto(
+            Integer userId, Integer productId) {
         int min = 3;
         int max = 4;
         int userAppointmentDtoListSize = ThreadLocalRandom.current().nextInt(min, max);
@@ -55,7 +56,7 @@ public class UserAppointmentModels {
         return userAppointmentByAdminCreateDtoList;
     }
 
-    public static UserAppointmentByUserCreateDto getUserAppointmentByUserDto (Integer productId) {
+    public static UserAppointmentByUserCreateDto getUserAppointmentByUserDto(Integer productId) {
         return new UserAppointmentByUserCreateDto(
                 ZonedDateTime.now().plusDays(10),
                 productId
