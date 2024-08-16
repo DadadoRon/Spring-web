@@ -79,12 +79,6 @@ dependencies {
 
     integrationTestImplementation 'org.projectlombok:lombok:1.18.28'
     integrationTestAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
-//    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    integrationTestImplementation 'org.testcontainers:postgresql'
-//    integrationTestImplementation 'org.testcontainers:testcontainers'
-//    integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-//    integrationTestImplementation 'org.apache.commons:commons-lang3'
-
 
     testFixturesImplementation 'org.apache.commons:commons-lang3'
 }
