@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.1.2'
     id 'java-test-fixtures'
+    id 'idea'
     id 'pmd'
 }
 
@@ -30,6 +31,27 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    integrationTest {
+        java.srcDir "src/integrationTest/java"
+        resources.srcDir "src/integrationTest/resources"
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+idea {
+    module {
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    }
+}
+
 ext {
     mapstructVersion = '1.5.5.Final'
     lombokMapstructBindingVersion = '0.2.0'
@@ -53,8 +75,29 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+
+    integrationTestImplementation 'org.projectlombok:lombok:1.18.28'
+    integrationTestAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
     testFixturesImplementation 'org.apache.commons:commons-lang3'
 }
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed"
+    }
+}
+
+check.dependsOn integrationTest
 
 tasks.named('test') {
     useJUnitPlatform()
