@@ -3,6 +3,7 @@ package com.example.springweb.service;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserSearch;
+import com.example.springweb.exceptions.InvalidPasswordException;
 import com.example.springweb.exceptions.UserNotFoundException;
 import com.example.springweb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -81,16 +82,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @CachePut(key = "#userId")
     @CacheEvict(allEntries = true)
-    public boolean updatePassword(Integer userId, String oldPassword, String newPassword) {
+    public void updatePassword(Integer userId, String oldPassword, String newPassword) {
         User userById = userRepository.findByIdRequired(userId);
         String salt = userById.getSalt();
         String hashedPassword = BCrypt.hashpw(oldPassword, salt);
         if (!hashedPassword.equals(userById.getPassword())) {
-            return false;
+           throw new InvalidPasswordException("Invalid old password");
         }
         userById.setPassword(BCrypt.hashpw(newPassword, salt));
         userRepository.save(userById);
-        return true;
     }
 
     @Override

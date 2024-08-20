@@ -24,7 +24,7 @@ public interface UserService {
 
     @CachePut(key = "#userId")
     @CacheEvict(allEntries = true)
-    boolean updatePassword(Integer userId, String oldPassword, String newPassword);
+    void updatePassword(Integer userId, String oldPassword, String newPassword);
 
     void deleteUser(Integer userId);
 
