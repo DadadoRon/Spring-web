@@ -22,19 +22,12 @@ public class UserController {
 
 
     @PutMapping
-    public PasswordUpdateResponseDto updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser) {
+    public void updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser) {
         Integer userId = UserContextHolder.getUser().getId();
-        boolean success = userService.updatePassword(
+        userService.updatePassword(
                 userId,
                 passwordUpdateDtoByUser.oldPassword(),
                 passwordUpdateDtoByUser.newPassword()
         );
-        String message;
-        if (success) {
-            message = "Password updated successfully.";
-        } else {
-            message = "Failed to update password";
-        }
-        return new PasswordUpdateResponseDto(success, message);
     }
 }
