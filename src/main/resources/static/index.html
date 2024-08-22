@@ -985,6 +985,31 @@
     </v-layout>
 </template>
 
+<template id="resetPassword">
+    <div class="centered-container">
+        <v-card
+                class="mx-auto"
+                max-width="344"
+                title="Enter new password"
+        >
+            <v-container>
+                <v-text-field
+                    v-model="newPassword"
+                    :type="passwordFieldType"
+                    :append-icon="passwordFieldType === 'password' ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="togglePasswordVisibility"
+                    label="New Password"
+                    required
+                    style="background-color: ghostwhite"
+                ></v-text-field>
+        <v-btn @click="resetPassword" type="submit" block class="mt-2" style="background-color: #002848; color: aliceblue">
+            Submit
+        </v-btn>
+            </v-container>
+        </v-card>
+    </div>
+</template>
+
 
 
 </body>

@@ -1,11 +1,10 @@
-
 import login from './login.js';
 import admins from './admins.js';
 import create from './create.js';
 import edit from './edit.js';
 import users from './users.js';
 import first from './first.js';
-
+import resetPassword from "./resetPassword.js";
 
 
 const routes = [
@@ -14,7 +13,9 @@ const routes = [
     { path: '/admins', component: admins },
     { path: '/create', component: create },
     { path: '/edit/:id', component: edit },
-    { path: '/users', component: users }
+    { path: '/users', component: users },
+    { path: '/resetPassword', component: resetPassword },
+
 ]
 
 const router = VueRouter.createRouter({
