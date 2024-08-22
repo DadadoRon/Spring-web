@@ -70,6 +70,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion"
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+
     testImplementation 'org.projectlombok:lombok:1.18.28'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

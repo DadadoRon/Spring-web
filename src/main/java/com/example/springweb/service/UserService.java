@@ -28,4 +28,7 @@ public interface UserService {
 
     void deleteUser(Integer userId);
 
+    void resetPassword(String email);
+
+    void initPassword(String token, String email);
 }

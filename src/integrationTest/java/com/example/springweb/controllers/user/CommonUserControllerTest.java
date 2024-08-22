@@ -140,4 +140,33 @@ class CommonUserControllerTest extends BaseIntegrationTest {
                 new TypeReference<List<User>>() { });
         assertNotEquals(usersBeforeRegister, usersAfterRegister);
     }
+
+    @Test
+    @SneakyThrows
+    void testResetPasswordAsUser() {
+        TestUserDto user = createUser();
+        String email = user.email();
+        UserResetPasswordDto userResetPasswordDto = new UserResetPasswordDto(email);
+        String json = objectMapper.writeValueAsString(userResetPasswordDto);
+        System.out.println(json);
+        mockMvc.perform(post(String.format("%s/password/reset", CommonUserController.REQUEST_MAPPING))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(user))
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void testResetPasswordAsAnonymous() {
+        String email = anonymous.getEmail();
+        UserResetPasswordDto userResetPasswordDto = new UserResetPasswordDto(email);
+        String json = objectMapper.writeValueAsString(userResetPasswordDto);
+        System.out.println(json);
+        mockMvc.perform(post(String.format("%s/password/reset", CommonUserController.REQUEST_MAPPING))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(anonymous))
+                        .content(json))
+                .andExpect(status().isNotFound());
+    }
 }

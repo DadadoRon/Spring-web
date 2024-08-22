@@ -40,4 +40,14 @@ public class CommonUserController {
             User user = userService.registerUser(userMapper.toUserForRegister(registerDto));
             return userMapper.toDto(user);
         }
+
+        @PostMapping("/password/reset")
+        public void resetPassword(@Valid @RequestBody UserResetPasswordDto userResetPasswordDto) {
+            userService.resetPassword(userResetPasswordDto.email());
+        }
+
+        @PostMapping("/password/init")
+        public void Password(@Valid @RequestBody PasswordResetTokenDto passwordResetTokenDto) {
+            userService.initPassword(passwordResetTokenDto.token(), passwordResetTokenDto.newPassword());
+        }
 }

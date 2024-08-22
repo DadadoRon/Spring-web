@@ -62,6 +62,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
+    @ExceptionHandler(value = { TokenNotFoundException.class })
+    protected ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException ex) {
+        ApiError apiError = ApiError.builder()
+                .message(ApiErrorCode.TOKEN_NOT_FOUND.getMessage())
+                .debugMessage(ex.getMessage())
+                .code(ApiErrorCode.TOKEN_NOT_FOUND.name())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
 
+    @ExceptionHandler(value = { InvalidTokenException.class })
+    protected ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+        ApiError apiError = ApiError.builder()
+                .message(ApiErrorCode.INVALID_TOKEN.getMessage())
+                .debugMessage(ex.getMessage())
+                .code(ApiErrorCode.INVALID_TOKEN.name())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
 }
 
