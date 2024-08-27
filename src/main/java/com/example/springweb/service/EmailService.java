@@ -1,51 +1,27 @@
 package com.example.springweb.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
-    private final   String to = "springweb9@gmail.com";
-    private final String from = "springweb9@gmail.com";
-    private final String password = "fjhu gilo rxod qjpz";
 
+    private final JavaMailSender emailSender;
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+    @Value("${spring.mail.username}")
+    private String from;
 
-
-    public void sendPasswordResetEmail(String to, String resetLink) {
-        final String host = "smtp.gmail.com";
-        final String smtpPort = "465";
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", smtpPort);
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
-
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, password);
-            }
-        });
-
-        session.setDebug(true);
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject("Password reset request");
-            message.setText("Click the following link to reset your password: " + resetLink);
-
-            Transport.send(message);
-        } catch (Exception e) {
-            logger.error("Failed to send password reset email to {}", to, e);
-        }
+    public void sendPasswordResetEmail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        emailSender.send(message);
     }
 }

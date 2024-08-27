@@ -1,5 +1,6 @@
 package com.example.springweb.controllers.user;
 
+import com.example.springweb.annotations.ValidationConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -18,8 +19,8 @@ public record UserRegisterDto(
     @NotEmpty(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(
-            regexp = "^(?=.*\\d)(?=.*[@$!%*?&])[\\d@$!%*?&]+$",
-            message = "Password must contain at least one digit and one special character"
+            regexp = ValidationConstants.PASSWORD_REGEXP,
+            message = ValidationConstants.PASSWORD_MESSAGE
     )
     String password
 ) { }

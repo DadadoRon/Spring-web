@@ -126,7 +126,9 @@ public class UserServiceImpl implements UserService {
                 .build();
         passwordTokenRepository.save(passwordResetToken);
         String resetLink = "http://localhost:8080/#/resetPassword?token=" + token;
-        emailService.sendPasswordResetEmail(email, resetLink);
+        String subject = "Password Reset Request";
+        emailService.sendPasswordResetEmail(email, subject, resetLink);
+
     }
 
     @Override
