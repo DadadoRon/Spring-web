@@ -97,4 +97,21 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="9" author="DadadoRon">
+        <createTable tableName="password_reset_tokens">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiry_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
