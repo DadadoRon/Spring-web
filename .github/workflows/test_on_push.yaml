@@ -14,13 +14,10 @@ jobs:
       - name: Permission
         run: chmod +x gradlew
       - name: Install dependencies
-        run: ./gradlew build -x pmdTest -x pmdTestFixtures -x pmdIntegrationTest
+        run: ./gradlew build jacocoTestReport jacocoTestCoverageVerification -x pmdTest -x pmdTestFixtures -x pmdIntegrationTest
       - name: Run PMD analysis
         run: ./gradlew pmdMain
-      - name: Test application
-        run: ./gradlew test
-      - name: IntegrationTest application
-        run: ./gradlew integrationTest
+
 
 
 

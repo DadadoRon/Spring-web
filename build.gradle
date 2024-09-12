@@ -5,6 +5,7 @@ plugins {
     id 'java-test-fixtures'
     id 'idea'
     id 'pmd'
+    id 'jacoco'
 }
 
 pmd {
@@ -12,6 +13,10 @@ pmd {
     ruleSetFiles = files("config/custom-pmd-ruleset.xml")
     ruleSets = []
     ignoreFailures = false
+}
+
+jacoco {
+    toolVersion = "0.8.12"
 }
 
 group = 'com.example'
@@ -97,9 +102,37 @@ tasks.register('integrationTest', Test) {
     testLogging {
         events "passed"
     }
+    finalizedBy jacocoTestReport
 }
 
-check.dependsOn integrationTest
+
+test {
+    testLogging {
+        events "passed"
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test, integrationTest
+    reports {
+            xml.required = false
+            csv.required = false
+            html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.1
+            }
+        }
+    }
+}
+
+check.dependsOn test, integrationTest
 
 tasks.named('test') {
     useJUnitPlatform()
