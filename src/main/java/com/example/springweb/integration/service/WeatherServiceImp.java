@@ -24,7 +24,7 @@ public class WeatherServiceImp implements WeatherService {
     @Value("${weather.api.url}")
     private String BASE_URL;
 
-
+    @Override
     public CurrentCondition getUVIndex(Double latitude, Double longitude) {
         String url = String.format("%s%s,%s?key=%s", BASE_URL, latitude, longitude, API_KEY);
         Weather response = restclient.get()
