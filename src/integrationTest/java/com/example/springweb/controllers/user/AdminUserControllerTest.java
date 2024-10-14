@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 class AdminUserControllerTest extends BaseIntegrationTest {
 
     private static List<UserDto> userList = new ArrayList<>();
@@ -215,7 +214,6 @@ class AdminUserControllerTest extends BaseIntegrationTest {
                 .content(json))
                 .andExpect(status().isUnauthorized());
     }
-
 
     @Test
     @SneakyThrows

@@ -15,39 +15,38 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.example.springweb.controllers.user.CommonUserController.REQUEST_MAPPING;
 
-
 @RestController
 @Tag(name = "Users API")
 @RequestMapping(REQUEST_MAPPING)
 @RequiredArgsConstructor
 public class CommonUserController {
-        public static final String REQUEST_MAPPING = "/api/v1/common/users";
-        private final UserService userService;
-        private final UserMapper userMapper;
+    public static final String REQUEST_MAPPING = "/api/v1/common/users";
+    private final UserService userService;
+    private final UserMapper userMapper;
 
-        @GetMapping("/profile")
-        public User findProfile() {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-                throw new UserNotFoundException("User is not found");
-            } else {
-                return UserContextHolder.getUser();
-            }
+    @GetMapping("/profile")
+    public User findProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            throw new UserNotFoundException("User is not found");
+        } else {
+            return UserContextHolder.getUser();
         }
+    }
 
-        @PostMapping("/register")
-        public UserDto register(@Valid @RequestBody UserRegisterDto registerDto) {
-            User user = userService.registerUser(userMapper.toUserForRegister(registerDto));
-            return userMapper.toDto(user);
-        }
+    @PostMapping("/register")
+    public UserDto register(@Valid @RequestBody UserRegisterDto registerDto) {
+        User user = userService.registerUser(userMapper.toUserForRegister(registerDto));
+        return userMapper.toDto(user);
+    }
 
-        @PostMapping("/password/reset")
-        public void resetPassword(@Valid @RequestBody UserResetPasswordDto userResetPasswordDto) {
-            userService.resetPassword(userResetPasswordDto.email());
-        }
+    @PostMapping("/password/reset")
+    public void resetPassword(@Valid @RequestBody UserResetPasswordDto userResetPasswordDto) {
+        userService.resetPassword(userResetPasswordDto.email());
+    }
 
-        @PostMapping("/password/init")
-        public void Password(@Valid @RequestBody PasswordResetTokenDto passwordResetTokenDto) {
-            userService.initPassword(passwordResetTokenDto.token(), passwordResetTokenDto.newPassword());
-        }
+    @PostMapping("/password/init")
+    public void Password(@Valid @RequestBody PasswordResetTokenDto passwordResetTokenDto) {
+        userService.initPassword(passwordResetTokenDto.token(), passwordResetTokenDto.newPassword());
+    }
 }

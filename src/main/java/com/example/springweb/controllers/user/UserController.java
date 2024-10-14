@@ -20,7 +20,6 @@ public class UserController {
     public static final String REQUEST_MAPPING = "/api/v1/user/users";
     private final UserService userService;
 
-
     @PutMapping
     public void updatePassword(@Valid @RequestBody PasswordUpdateDtoByUser passwordUpdateDtoByUser) {
         Integer userId = UserContextHolder.getUser().getId();

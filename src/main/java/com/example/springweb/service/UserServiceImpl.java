@@ -47,8 +47,9 @@ public class UserServiceImpl implements UserService {
     @Cacheable(key = "#userEmail")
     public User getUserByEmail(String userEmail) {
         return userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UserNotFoundException("User with email"  + userEmail +  "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with email" + userEmail + "not found"));
     }
+
     @Override
     @CachePut(key = "#user.id")
     @CacheEvict(allEntries = true)
@@ -108,7 +109,6 @@ public class UserServiceImpl implements UserService {
         userRepository.checkIfExistsById(userId);
         userRepository.deleteById(userId);
     }
-
 
     @Override
     public void resetPassword(String email) {

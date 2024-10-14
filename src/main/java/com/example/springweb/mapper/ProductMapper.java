@@ -10,7 +10,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
     ProductDto toDto(Product product);
+
     @Mapping(target = "id", ignore = true)
     Product toProductForCreate(ProductCreateDto createDto);
+
     Product toProductForUpdate(ProductUpdateDto updateDto);
 }

@@ -14,9 +14,6 @@ public enum ApiErrorCode {
     INVALID_PASSWORD("Invalid Password"),
     INVALID_TOKEN("Expired Token");
 
-
-
-
     private final String message;
 
     ApiErrorCode(String message) {

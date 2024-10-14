@@ -9,7 +9,7 @@ public record UserAppointmentByAdminCreateDto(
         @NotNull(message = "Date cannot be empty")
         @FutureOrPresent(message = "Date should be in the present or future")
         ZonedDateTime dateTime,
-                @NotNull(message = "UserId cannot be empty")
+        @NotNull(message = "UserId cannot be empty")
         Integer userId,
         @NotNull(message = "ProductId cannot be empty")
         Integer productId

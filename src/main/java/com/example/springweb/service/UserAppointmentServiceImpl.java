@@ -21,13 +21,13 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     private final ProductService productService;
     private final UserService userService;
 
-
     @Override
     @Cacheable
     public List<UserAppointment> getAllUserAppointments() {
         return userAppointmentRepository.findAll();
 
     }
+
     @Override
     @Cacheable(key = "#userAppointmentId")
     public UserAppointment getUserAppointmentById(Integer userAppointmentId) {
@@ -56,7 +56,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
         userAppointment.setUser(user);
         Product product = productService.getProductById(productId);
         userAppointment.setProduct(product);
-        return  userAppointmentRepository.save(userAppointment);
+        return userAppointmentRepository.save(userAppointment);
     }
 
     @Override

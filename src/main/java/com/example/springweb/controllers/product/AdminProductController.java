@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.example.springweb.controllers.product.AdminProductController.REQUEST_MAPPING;
 
-
 @RestController
 @Tag(name = "Products API")
 @RequestMapping(REQUEST_MAPPING)
@@ -21,7 +20,7 @@ public class AdminProductController {
     private final ProductMapper productMapper;
 
     @PostMapping
-    public ProductDto create(@Valid  @RequestBody ProductCreateDto createDto) {
+    public ProductDto create(@Valid @RequestBody ProductCreateDto createDto) {
         Product productForCreate = productMapper.toProductForCreate(createDto);
         Product product = productService.createProduct(productForCreate);
         return productMapper.toDto(product);
