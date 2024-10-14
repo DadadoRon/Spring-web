@@ -4,15 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum ApiErrorCode {
-    USER_NOT_FOUND("User Not Found"),
-    APPOINTMENT_NOT_FOUND("UserAppointment Not Found"),
-    PRODUCT_NOT_FOUND("Product Not Found"),
+    USER_NOT_FOUND("User not found"),
+    APPOINTMENT_NOT_FOUND("UserAppointment not found"),
+    PRODUCT_NOT_FOUND("Product not found"),
     TOKEN_NOT_FOUND("Token not found"),
-    VALIDATION_ERROR("Validation Error"),
+    VALIDATION_ERROR("Validation error"),
     FORBIDDEN("No permission to perform this action."),
     UNAUTHORIZED("Login required to proceed."),
-    INVALID_PASSWORD("Invalid Password"),
-    INVALID_TOKEN("Expired Token");
+    INVALID_PASSWORD("Invalid password"),
+    INVALID_TOKEN("Expired token"),
+    WEATHER_DATA_NOT_FOUND("Weather data not found");
 
 
 

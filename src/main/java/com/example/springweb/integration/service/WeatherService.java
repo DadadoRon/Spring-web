@@ -1,7 +1,7 @@
 package com.example.springweb.integration.service;
 
-import com.example.springweb.integration.models.CurrentCondition;
+import com.example.springweb.integration.models.WeatherRequest;
 
 public interface WeatherService {
-    CurrentCondition getUVIndex(Double latitude, Double longitude);
+    WeatherRequest getUVIndex(Double latitude, Double longitude);
 }

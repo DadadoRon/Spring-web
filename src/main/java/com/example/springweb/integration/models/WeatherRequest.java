@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CurrentCondition {
+public class WeatherRequest {
     @JsonProperty("uvindex")
     private Integer uvIndex;
 }

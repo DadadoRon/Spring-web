@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Weather {
     @JsonProperty("currentConditions")
-    private CurrentCondition currentConditions;
+    private WeatherRequest weatherRequest;
 }
