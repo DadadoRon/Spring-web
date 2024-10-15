@@ -15,9 +15,6 @@ public enum ApiErrorCode {
     INVALID_TOKEN("Expired token"),
     WEATHER_DATA_NOT_FOUND("Weather data not found");
 
-
-
-
     private final String message;
 
     ApiErrorCode(String message) {

@@ -12,7 +12,6 @@ public interface UserAppointmentRepository extends JpaRepository<UserAppointment
 
     boolean existsByUserId(Integer userId);
 
-
     default UserAppointment findByIdRequired(Integer id) {
         return findById(id)
                 .orElseThrow(() -> new UserAppointmentNotFoundException("UserAppointment not found with id: " + id));

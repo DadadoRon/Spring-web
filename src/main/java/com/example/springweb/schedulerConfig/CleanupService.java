@@ -1,6 +1,5 @@
 package com.example.springweb.schedulerConfig;
 
-
 import com.example.springweb.entity.PasswordResetToken;
 import com.example.springweb.repository.PasswordTokenRepository;
 import lombok.RequiredArgsConstructor;

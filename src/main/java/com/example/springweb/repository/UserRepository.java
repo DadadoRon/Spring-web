@@ -1,6 +1,5 @@
 package com.example.springweb.repository;
 
-
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserSearch;
 import com.example.springweb.exceptions.UserNotFoundException;
@@ -10,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -24,7 +22,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
            and lower(u.firstName) like lower(concat(:#{#search.firstName}, '%')) 
            """)
    List<User> findAllByAnyFieldsIgnoreCaseContaining(@Param("search") UserSearch search);
-
 
     default User findByIdRequired(Integer id) {
         return findById(id)

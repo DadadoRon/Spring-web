@@ -1,6 +1,5 @@
 package com.example.springweb.controllers.userappointment.byuser;
 
-
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
 import com.example.springweb.exceptions.ForbiddenUserException;

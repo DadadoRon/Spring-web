@@ -16,7 +16,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 @SpringBootTest
 class UserRepositoryTest {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
@@ -83,7 +82,6 @@ class UserRepositoryTest {
         assertEquals(userRepository.findAll().size(), userList.size() + 1);
         assertEquals("Tanya", updatedUser.getFirstName());
     }
-
 
     @Test
     void deleteTest() {

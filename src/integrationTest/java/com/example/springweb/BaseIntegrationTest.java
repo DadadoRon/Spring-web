@@ -39,7 +39,6 @@ import java.util.Random;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ExtendWith(PostgreSQLContainerExtension.class)
@@ -57,7 +56,7 @@ public class BaseIntegrationTest {
     public UserAppointmentRepository userAppointmentRepository;
 
     @Autowired
-    public  ObjectMapper objectMapper;
+    public ObjectMapper objectMapper;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -100,11 +99,10 @@ public class BaseIntegrationTest {
 
     public final User anonymous = UserModels.createUser(null);
 
-
     public ProductDto createProduct() throws Exception {
         ProductCreateDto productCreateDto = ProductModels.getProductDto();
         String jsonProduct = objectMapper.writeValueAsString(productCreateDto);
-        String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
+        String jsonResult = mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                 .content(jsonProduct))
@@ -120,7 +118,7 @@ public class BaseIntegrationTest {
         List<ProductCreateDto> productCreateDtoList = ProductModels.getRandomProductDtoList();
         for (ProductCreateDto productCreateDto : productCreateDtoList) {
             String json = objectMapper.writeValueAsString(productCreateDto);
-            String jsonResult =  mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
+            String jsonResult = mockMvc.perform(post(AdminProductController.REQUEST_MAPPING)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(admin))
                     .content(json))
@@ -209,6 +207,6 @@ public class BaseIntegrationTest {
             UserAppointmentDto userAppointmentDto = objectMapper.readValue(jsonResult, UserAppointmentDto.class);
             userAppointmentList.add(userAppointmentDto);
         }
-        return  userAppointmentList;
+        return userAppointmentList;
     }
 }

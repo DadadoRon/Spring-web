@@ -12,6 +12,7 @@ public interface UserAppointmentByAdminMapper {
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "id", ignore = true)
     UserAppointment toUserAppointmentForCreate(UserAppointmentByAdminCreateDto createDto);
+
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "product", ignore = true)
     UserAppointment toUserAppointmentForUpdate(UserAppointmentByAdminUpdateDto updateDto);
