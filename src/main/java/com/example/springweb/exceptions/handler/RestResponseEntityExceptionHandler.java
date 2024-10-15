@@ -1,5 +1,7 @@
-package com.example.springweb.exceptions;
+package com.example.springweb.exceptions.handler;
 
+
+import com.example.springweb.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = { UserNotFoundException.class })
+    @ExceptionHandler(value = {UserNotFoundException.class})
     protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.USER_NOT_FOUND.getMessage())
@@ -19,7 +21,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
-    @ExceptionHandler(value = { ProductNotFoundException.class })
+    @ExceptionHandler(value = {ProductNotFoundException.class})
     protected ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.PRODUCT_NOT_FOUND.getMessage())
@@ -29,7 +31,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
-    @ExceptionHandler(value = { UserAppointmentNotFoundException.class })
+    @ExceptionHandler(value = {UserAppointmentNotFoundException.class})
     protected ResponseEntity<Object> handleUserAppointmentNotFoundException(UserAppointmentNotFoundException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.APPOINTMENT_NOT_FOUND.getMessage())
@@ -39,7 +41,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
-    @ExceptionHandler(value = { ForbiddenUserException.class })
+    @ExceptionHandler(value = {ForbiddenUserException.class})
     protected ResponseEntity<Object> handleAccessDeniedException(ForbiddenUserException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.FORBIDDEN.getMessage())
@@ -49,7 +51,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 
-    @ExceptionHandler(value = { InvalidPasswordException.class })
+    @ExceptionHandler(value = {InvalidPasswordException.class})
     protected ResponseEntity<Object> handleAccessDeniedException(InvalidPasswordException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.INVALID_PASSWORD.getMessage())
@@ -59,7 +61,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
-    @ExceptionHandler(value = { TokenNotFoundException.class })
+    @ExceptionHandler(value = {TokenNotFoundException.class})
     protected ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.TOKEN_NOT_FOUND.getMessage())
@@ -69,7 +71,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
-    @ExceptionHandler(value = { InvalidTokenException.class })
+    @ExceptionHandler(value = {InvalidTokenException.class})
     protected ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
         ApiError apiError = ApiError.builder()
                 .message(ApiErrorCode.INVALID_TOKEN.getMessage())
@@ -77,6 +79,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 .code(ApiErrorCode.INVALID_TOKEN.name())
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+    @ExceptionHandler(value = {ExternalServiceException.class})
+    protected ResponseEntity<Object> handleWeatherDataNotFoundException(ExternalServiceException ex) {
+        ApiError apiError = ApiError.builder()
+                .message(ApiErrorCode.WEATHER_DATA_NOT_FOUND.getMessage())
+                .debugMessage(ex.getMessage())
+                .code(ApiErrorCode.WEATHER_DATA_NOT_FOUND.name())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 }
 

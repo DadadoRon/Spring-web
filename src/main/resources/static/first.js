@@ -3,14 +3,14 @@ export default {
     template: '#first',
     data() {
         return {
-            products:[],
+            products: [],
             cards2: [
-                { title: 'Домашний уход за кожей вокруг глаз', src: 'img/n1.png', flex: 3,  description: 'vdnvkn' },
-                { title: 'Favorite road trips', src: 'img/n2.jpg', flex: 3 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 3 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 3 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 3 },
-                { title: 'Best airlines', src: 'img/n3.jpg', flex: 3},
+                {title: 'Домашний уход за кожей вокруг глаз', src: 'img/n1.png', flex: 3, description: 'vdnvkn'},
+                {title: 'Favorite road trips', src: 'img/n2.jpg', flex: 3},
+                {title: 'Best airlines', src: 'img/n3.jpg', flex: 3},
+                {title: 'Best airlines', src: 'img/n3.jpg', flex: 3},
+                {title: 'Best airlines', src: 'img/n3.jpg', flex: 3},
+                {title: 'Best airlines', src: 'img/n3.jpg', flex: 3},
             ],
             links: [
                 'Home',
@@ -25,13 +25,13 @@ export default {
         }
     },
     methods: {
-        create(){
+        create() {
             this.$router.push({path: '/login'})
         },
-        login(){
+        login() {
             this.$router.push({path: '/login'})
         },
-        first(){
+        first() {
             this.$router.push({path: '/'})
         },
 
@@ -46,10 +46,10 @@ export default {
         }
     },
     async created() {
-        const response = await axios.get('api/v1/admin/products')
+        const response = await axios.get('api/v1/common/products')
         this.products = response.data
         for (let i = 0; i < this.products.length; i++) {
             this.products[i].reveal = false;
         }
-    }
+    },
 }
