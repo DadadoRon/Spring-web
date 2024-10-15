@@ -14,7 +14,6 @@ import java.util.List;
 
 import static com.example.springweb.controllers.product.CommonProductController.REQUEST_MAPPING;
 
-
 @RestController
 @Tag(name = "Products API")
 @RequestMapping(REQUEST_MAPPING)

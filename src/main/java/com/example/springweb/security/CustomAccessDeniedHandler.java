@@ -33,6 +33,5 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

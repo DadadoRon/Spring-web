@@ -32,6 +32,7 @@ class UserServiceImplTest {
             .role(Role.USER)
             .salt("hbjhvgcfgxfdz")
             .build();
+
     @Test
     void userByIdTest() {
         when(userRepository.findByIdRequired(testUserId)).thenReturn(testUser);

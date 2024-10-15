@@ -12,7 +12,6 @@ import java.util.List;
 
 import static com.example.springweb.controllers.user.AdminUserController.REQUEST_MAPPING;
 
-
 @RestController
 @Tag(name = "Users API")
 @RequestMapping(REQUEST_MAPPING)

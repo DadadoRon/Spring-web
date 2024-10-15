@@ -1,6 +1,5 @@
 package com.example.springweb.controllers.userappointment.byadmin;
 
-
 import com.example.springweb.controllers.ExistsDto;
 import com.example.springweb.controllers.userappointment.UserAppointmentDto;
 import com.example.springweb.entity.UserAppointment;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.springweb.controllers.userappointment.byadmin.UserAppointmentByAdminController.REQUEST_MAPPING;
-
 
 @RestController
 @Tag(name = "UserAppointments API")

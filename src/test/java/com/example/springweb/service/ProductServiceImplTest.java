@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
@@ -46,7 +45,7 @@ class ProductServiceImplTest {
     @Test
     void productByIdNotFoundTest() {
         when(productRepository.findByIdRequired(testProductId))
-                .thenThrow(new ProductNotFoundException("Product not found with id:" +  testProductId));
+                .thenThrow(new ProductNotFoundException("Product not found with id:" + testProductId));
         assertThrows(ProductNotFoundException.class, () -> productService.getProductById(testProductId));
         verify(productRepository, times(1)).findByIdRequired(testProductId);
     }

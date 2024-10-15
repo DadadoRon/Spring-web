@@ -28,7 +28,6 @@ public class AuthenticationToken implements Authentication {
 
     @Override
     public String getName() {
-
         return principal;
     }
 }

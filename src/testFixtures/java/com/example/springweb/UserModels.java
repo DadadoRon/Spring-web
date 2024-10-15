@@ -34,7 +34,6 @@ public class UserModels {
         return userList;
     }
 
-
     public static UserCreateDto getUserCreateDto(Role role) {
         return new UserCreateDto(
                 RandomStringUtils.randomAlphabetic(8, 12),
@@ -44,7 +43,6 @@ public class UserModels {
                 role
                 );
     }
-
 
     public static List<UserCreateDto> getRandomUserCreateDtoList() {
         int min = 3;

@@ -1,6 +1,5 @@
 package com.example.springweb.security;
 
-
 import com.example.springweb.controllers.product.AdminProductController;
 import com.example.springweb.controllers.user.AdminUserController;
 import com.example.springweb.controllers.user.UserController;
