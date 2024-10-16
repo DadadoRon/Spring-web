@@ -1,7 +1,8 @@
 package com.example.springweb.controllers.user;
 
 import com.example.springweb.entity.User;
-import com.example.springweb.exceptions.UserNotFoundException;
+import com.example.springweb.exceptions.ApiErrorCode;
+import com.example.springweb.exceptions.EntityNotFoundException;
 import com.example.springweb.mapper.UserMapper;
 import com.example.springweb.security.UserContextHolder;
 import com.example.springweb.service.UserService;
@@ -28,7 +29,7 @@ public class CommonUserController {
     public User findProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            throw new UserNotFoundException("User is not found");
+            throw new EntityNotFoundException("User is not found", ApiErrorCode.USER_NOT_FOUND);
         } else {
             return UserContextHolder.getUser();
         }

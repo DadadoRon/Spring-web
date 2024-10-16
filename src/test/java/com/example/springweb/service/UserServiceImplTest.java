@@ -2,7 +2,8 @@ package com.example.springweb.service;
 
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
-import com.example.springweb.exceptions.UserNotFoundException;
+import com.example.springweb.exceptions.ApiErrorCode;
+import com.example.springweb.exceptions.EntityNotFoundException;
 import com.example.springweb.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,8 +47,9 @@ class UserServiceImplTest {
     @Test
     void userByIdNotFoundTest() {
         when(userRepository.findByIdRequired(testUserId))
-                .thenThrow(new UserNotFoundException("User not found with id: " + testUserId));
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(testUserId));
+                .thenThrow(new EntityNotFoundException("User not found with id: " + testUserId,
+                        ApiErrorCode.USER_NOT_FOUND));
+        assertThrows(EntityNotFoundException.class, () -> userService.getUserById(testUserId));
         verify(userRepository, times(1)).findByIdRequired(testUserId);
     }
 
@@ -71,9 +73,9 @@ class UserServiceImplTest {
 
     @Test
     void updateIfIdNotFoundTest() {
-        doThrow(new UserNotFoundException("User not found with id: " + testUser.getId()))
+        doThrow(new EntityNotFoundException("User not found with id: " + testUser.getId(), ApiErrorCode.USER_NOT_FOUND))
                 .when(userRepository).findByIdRequired(testUser.getId());
-        assertThrows(UserNotFoundException.class, () -> userService.update(testUser));
+        assertThrows(EntityNotFoundException.class, () -> userService.update(testUser));
         verify(userRepository, times(1)).findByIdRequired(testUserId);
     }
 
@@ -88,9 +90,9 @@ class UserServiceImplTest {
 
     @Test
     void deleteIfUserIdNotFoundTest() {
-        doThrow(new UserNotFoundException("User not found with id: " + testUserId))
+        doThrow(new EntityNotFoundException("User not found with id: " + testUserId, ApiErrorCode.USER_NOT_FOUND))
                 .when(userRepository).checkIfExistsById(testUserId);
-        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(testUserId));
+        assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(testUserId));
         verify(userRepository, times(1)).checkIfExistsById(testUserId);
     }
 }

@@ -1,7 +1,8 @@
 package com.example.springweb.service;
 
 import com.example.springweb.entity.Product;
-import com.example.springweb.exceptions.ProductNotFoundException;
+import com.example.springweb.exceptions.ApiErrorCode;
+import com.example.springweb.exceptions.EntityNotFoundException;
 import com.example.springweb.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,8 +46,9 @@ class ProductServiceImplTest {
     @Test
     void productByIdNotFoundTest() {
         when(productRepository.findByIdRequired(testProductId))
-                .thenThrow(new ProductNotFoundException("Product not found with id:" + testProductId));
-        assertThrows(ProductNotFoundException.class, () -> productService.getProductById(testProductId));
+                .thenThrow(new EntityNotFoundException("Product not found with id:" + testProductId,
+                        ApiErrorCode.PRODUCT_NOT_FOUND));
+        assertThrows(EntityNotFoundException.class, () -> productService.getProductById(testProductId));
         verify(productRepository, times(1)).findByIdRequired(testProductId);
     }
 
@@ -70,9 +72,10 @@ class ProductServiceImplTest {
 
     @Test
     void updateIfNotFoundTest() {
-        doThrow(new ProductNotFoundException("Product not found with id: " + testProduct.getId()))
+        doThrow(new EntityNotFoundException("Product not found with id: " + testProduct.getId(),
+                ApiErrorCode.PRODUCT_NOT_FOUND))
                 .when(productRepository).checkIfExistsById(testProduct.getId());
-        assertThrows(ProductNotFoundException.class, () -> productService.update(testProduct));
+        assertThrows(EntityNotFoundException.class, () -> productService.update(testProduct));
     }
 
     @Test
@@ -84,8 +87,9 @@ class ProductServiceImplTest {
 
     @Test
     void deleteProductIfIdNotFoundTest() {
-        doThrow(new ProductNotFoundException("Product not found with id: " + testProductId))
+        doThrow(new EntityNotFoundException("Product not found with id: " + testProductId,
+                ApiErrorCode.PRODUCT_NOT_FOUND))
                 .when(productRepository).checkIfExistsById(testProductId);
-        assertThrows(ProductNotFoundException.class, () -> productService.deleteProduct(testProductId));
+        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(testProductId));
     }
 }

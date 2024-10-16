@@ -4,10 +4,7 @@ import com.example.springweb.entity.PasswordResetToken;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserSearch;
-import com.example.springweb.exceptions.InvalidPasswordException;
-import com.example.springweb.exceptions.InvalidTokenException;
-import com.example.springweb.exceptions.TokenNotFoundException;
-import com.example.springweb.exceptions.UserNotFoundException;
+import com.example.springweb.exceptions.*;
 import com.example.springweb.repository.PasswordTokenRepository;
 import com.example.springweb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +44,8 @@ public class UserServiceImpl implements UserService {
     @Cacheable(key = "#userEmail")
     public User getUserByEmail(String userEmail) {
         return userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UserNotFoundException("User with email" + userEmail + "not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with email" + userEmail + "not found",
+                        ApiErrorCode.USER_NOT_FOUND));
     }
 
     @Override
@@ -114,7 +112,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(String email) {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if (byEmail.isEmpty()) {
-            throw new UserNotFoundException("User not found with email: " + email);
+            throw new EntityNotFoundException("User not found with email: " + email, ApiErrorCode.USER_NOT_FOUND);
         }
         User user = byEmail.get();
         String token = UUID.randomUUID().toString();
