@@ -9,7 +9,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Optional;
 
-
 @Service
 public class WeatherServiceImp implements WeatherService {
     private final RestClient restclient;

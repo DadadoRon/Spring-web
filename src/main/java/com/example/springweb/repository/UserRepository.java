@@ -2,7 +2,8 @@ package com.example.springweb.repository;
 
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserSearch;
-import com.example.springweb.exceptions.UserNotFoundException;
+import com.example.springweb.exceptions.ApiErrorCode;
+import com.example.springweb.exceptions.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,12 +26,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     default User findByIdRequired(Integer id) {
         return findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id,
+                        ApiErrorCode.USER_NOT_FOUND));
     }
 
     default void checkIfExistsById(Integer id) {
         if (!existsById(id)) {
-            throw new UserNotFoundException("User not found with id: " + id);
+            throw new EntityNotFoundException("User not found with id: " + id, ApiErrorCode.USER_NOT_FOUND);
         }
     }
 }

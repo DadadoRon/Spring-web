@@ -4,9 +4,8 @@ import com.example.springweb.entity.Product;
 import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.example.springweb.entity.UserAppointment;
-import com.example.springweb.exceptions.ProductNotFoundException;
-import com.example.springweb.exceptions.UserAppointmentNotFoundException;
-import com.example.springweb.exceptions.UserNotFoundException;
+import com.example.springweb.exceptions.ApiErrorCode;
+import com.example.springweb.exceptions.EntityNotFoundException;
 import com.example.springweb.repository.UserAppointmentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,18 +60,20 @@ class UserAppointmentServiceImplTest {
     @Test
     void createUserAppointmentIfUserByIdNotFoundTest() {
         when(userService.getUserById(testUserAppointment.getUser().getId()))
-                .thenThrow(new UserNotFoundException(
-                        ("User not found with id: " + testUserAppointment.getUser().getId())));
-        assertThrows(UserNotFoundException.class, () -> userAppointmentService.createUserAppointment(
+                .thenThrow(new EntityNotFoundException(
+                        ("User not found with id: " + testUserAppointment.getUser().getId()),
+                        ApiErrorCode.USER_NOT_FOUND));
+        assertThrows(EntityNotFoundException.class, () -> userAppointmentService.createUserAppointment(
                 testUserAppointment, testUserAppointment.getUser().getId(), testUserAppointment.getProduct().getId()));
     }
 
     @Test
     void createUserAppointmentIfProductByIdNotFoundTest() {
         when(productService.getProductById(testUserAppointment.getProduct().getId()))
-                .thenThrow(new ProductNotFoundException(
-                        ("Product not found with id: " + testUserAppointment.getProduct().getId())));
-        assertThrows(ProductNotFoundException.class, () -> userAppointmentService.createUserAppointment(
+                .thenThrow(new EntityNotFoundException(
+                        ("Product not found with id: " + testUserAppointment.getProduct().getId()),
+                        ApiErrorCode.PRODUCT_NOT_FOUND));
+        assertThrows(EntityNotFoundException.class, () -> userAppointmentService.createUserAppointment(
                 testUserAppointment, testUserAppointment.getUser().getId(), testUserAppointment.getProduct().getId()));
     }
 
@@ -87,9 +88,10 @@ class UserAppointmentServiceImplTest {
     @Test
     void updateIfUserAppointmentByIdNotFoundTest() {
         when(userAppointmentService.getUserAppointmentById(testUserAppointmentId))
-                .thenThrow(new UserAppointmentNotFoundException(
-                        ("UserAppointment not found with id: " + testUserAppointmentId)));
-        assertThrows(UserAppointmentNotFoundException.class, () -> userAppointmentService
+                .thenThrow(new EntityNotFoundException(
+                        ("UserAppointment not found with id: " + testUserAppointmentId),
+                        ApiErrorCode.APPOINTMENT_NOT_FOUND));
+        assertThrows(EntityNotFoundException.class, () -> userAppointmentService
                 .updateUserAppointment(testUserAppointment));
     }
 
@@ -102,9 +104,10 @@ class UserAppointmentServiceImplTest {
 
     @Test
     void deleteIfUserAppointmentIdNotFoundTest() {
-        doThrow(new UserAppointmentNotFoundException("UserAppointment not found with id: " + testUserAppointmentId))
+        doThrow(new EntityNotFoundException("UserAppointment not found with id: " + testUserAppointmentId,
+                ApiErrorCode.APPOINTMENT_NOT_FOUND))
                 .when(userAppointmentRepository).checkIfExistsById(testUserAppointmentId);
-        assertThrows(UserAppointmentNotFoundException.class, () -> userAppointmentService
+        assertThrows(EntityNotFoundException.class, () -> userAppointmentService
                 .deleteUserAppointment(testUserAppointmentId));
         verify(userAppointmentRepository, times(1)).checkIfExistsById(testUserAppointmentId);
     }
