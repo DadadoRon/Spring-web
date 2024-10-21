@@ -51,5 +51,9 @@ export default {
         for (let i = 0; i < this.products.length; i++) {
             this.products[i].reveal = false;
         }
+        setTimeout(() => {
+                navigator.geolocation.getCurrentPosition(position => {
+                })
+            }, 3000)
     },
 }
