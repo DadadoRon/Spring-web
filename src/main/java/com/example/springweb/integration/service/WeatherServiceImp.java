@@ -25,7 +25,6 @@ public class WeatherServiceImp implements WeatherService {
     @Override
     public WeatherRequest getUVIndex(Double latitude, Double longitude) {
         String url = String.format("%s,%s?key=%s", latitude, longitude, weatherProperty.getKey());
-        System.out.println(url);
         Weather response = weatherRestclient.get()
                 .uri(url)
                 .retrieve()

@@ -25,7 +25,6 @@ public class AddressServiceImp implements AddressService {
     @Override
     public AddressRequest getAddress(Double latitude, Double longitude) {
         String url = String.format("?lat=%s&lon=%s", latitude, longitude);
-        System.out.println(url);
         FullAddress response = adressRestclient.get()
                 .uri(url)
                 .retrieve()
