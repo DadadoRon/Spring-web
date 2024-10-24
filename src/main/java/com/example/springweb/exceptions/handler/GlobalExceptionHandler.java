@@ -81,9 +81,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {ExternalServiceException.class})
     public ResponseEntity<ApiError> handleWeatherDataNotFoundException(ExternalServiceException ex) {
         ApiError apiError = ApiError.builder()
-                .message(ApiErrorCode.WEATHER_DATA_NOT_FOUND.getMessage())
+                .message(ex.getCode().getMessage())
                 .debugMessage(ex.getMessage())
-                .code(ApiErrorCode.WEATHER_DATA_NOT_FOUND.name())
+                .code(ex.getCode().name())
                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }

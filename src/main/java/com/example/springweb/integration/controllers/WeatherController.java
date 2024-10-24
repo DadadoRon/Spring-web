@@ -1,5 +1,6 @@
 package com.example.springweb.integration.controllers;
 
+import com.example.springweb.integration.mapper.AddressRequestMapper;
 import com.example.springweb.integration.mapper.WeatherRequestMapper;
 import com.example.springweb.integration.models.WeatherRequest;
 import com.example.springweb.integration.service.WeatherService;
@@ -17,6 +18,7 @@ import static com.example.springweb.integration.controllers.WeatherController.RE
 public class WeatherController {
     private final WeatherService weatherService;
     private final WeatherRequestMapper weatherRequestMapper;
+    private final AddressRequestMapper addressRequestMapper;
     public static final String REQUEST_MAPPING = "/api/v1/weather";
 
     @PostMapping("/uvindex")

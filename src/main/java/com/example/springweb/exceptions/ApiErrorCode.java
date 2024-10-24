@@ -13,7 +13,8 @@ public enum ApiErrorCode {
     UNAUTHORIZED("Login required to proceed."),
     INVALID_PASSWORD("Invalid password"),
     INVALID_TOKEN("Expired token"),
-    WEATHER_DATA_NOT_FOUND("Weather data not found");
+    WEATHER_DATA_NOT_FOUND("Weather data not found"),
+    ADDRESS_DATA_NOT_FOUND("Address not found");
 
     private final String message;
 
