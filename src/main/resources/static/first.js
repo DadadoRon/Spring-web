@@ -3,6 +3,11 @@ export default {
     template: '#first',
     data() {
         return {
+            uvIndex: null,
+            latitude: null,
+            longitude: null,
+            defaultLatitude: 40.714,
+            defaultLongitude: 74.006,
             products: [],
             cards2: [
                 {title: 'Домашний уход за кожей вокруг глаз', src: 'img/n1.png', flex: 3, description: 'vdnvkn'},
@@ -52,8 +57,27 @@ export default {
             this.products[i].reveal = false;
         }
         setTimeout(() => {
-                navigator.geolocation.getCurrentPosition(position => {
-                })
-            }, 3000)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        this.latitude = position.coords.latitude;
+                        this.longitude = position.coords.longitude;
+
+                        const responseWeather = await axios.post('/api/v1/weather/uvindex', {
+                            latitude: this.latitude,
+                            longitude: this.longitude
+                        });
+                        this.uvIndex = responseWeather.data.uvIndex
+                    },
+                    async (error) => {
+                        const responseWeather = await axios.post('/api/v1/weather/uvindex', {
+                            latitude: this.defaultLatitude,
+                            longitude: this.defaultLongitude,
+                        });
+                        this.uvIndex = responseWeather.data.uvIndex
+                    }
+                );
+            }
+        }, 3000)
     },
 }
