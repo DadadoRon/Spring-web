@@ -40,5 +40,8 @@ export default {
         first(){
             this.$router.push({path: '/'})
         },
+        forgotPassword() {
+            this.$router.push({path: '/resetPassword'})
+        },
     },
  }
