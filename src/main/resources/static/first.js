@@ -6,6 +6,7 @@ export default {
             uvIndex: null,
             latitude: null,
             longitude: null,
+            locality: " ",
             defaultLatitude: 40.714,
             defaultLongitude: 74.006,
             products: [],
@@ -67,14 +68,24 @@ export default {
                             latitude: this.latitude,
                             longitude: this.longitude
                         });
+                        const responseUvIndex = await axios.post('/api/v1/address/locality', {
+                            latitude: this.latitude,
+                            longitude: this.longitude
+                        });
                         this.uvIndex = responseWeather.data.uvIndex
+                        this.locality = responseUvIndex.data.locality
                     },
                     async (error) => {
                         const responseWeather = await axios.post('/api/v1/weather/uvindex', {
                             latitude: this.defaultLatitude,
                             longitude: this.defaultLongitude,
                         });
+                        const responseUvIndex = await axios.post('/api/v1/address/locality', {
+                            latitude: this.defaultLatitude,
+                            longitude: this.defaultLongitude,
+                        });
                         this.uvIndex = responseWeather.data.uvIndex
+                        this.locality = responseUvIndex.locality
                     }
                 );
             }
