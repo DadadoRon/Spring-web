@@ -217,6 +217,15 @@
 
                     <v-btn @click="login"  type="submit" block class="mt-2" style="margin-bottom: 20px; background-color: #002848; color: aliceblue">Войти</v-btn>
                     <v-btn @click="registration"  type="submit" block class="mt-2" style="background-color: ghostwhite">Регистрация</v-btn>
+                    <a
+                        class="text-caption text-decoration-none text-blue"
+                        href="#"
+                        @click.prevent="forgotPassword"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        >
+                        Forgot your password? Click here to reset it.
+                    </a>
                 </v-form>
             </v-sheet>
         </v-main>
