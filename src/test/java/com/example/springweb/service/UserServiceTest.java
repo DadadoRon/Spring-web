@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private final Integer testUserId = 1;
     private final User testUser = User.builder()
@@ -37,7 +37,7 @@ class UserServiceImplTest {
     @Test
     void userByIdTest() {
         when(userRepository.findByIdRequired(testUserId)).thenReturn(testUser);
-        User result = userService.getUserById(testUserId);
+        User result = userService.findByIdRequired(testUserId);
         assertNotNull(result);
         assertEquals(testUser.getId(), result.getId());
         assertEquals(testUser.getFirstName(), result.getFirstName());
@@ -49,14 +49,14 @@ class UserServiceImplTest {
         when(userRepository.findByIdRequired(testUserId))
                 .thenThrow(new EntityNotFoundException("User not found with id: " + testUserId,
                         ApiErrorCode.USER_NOT_FOUND));
-        assertThrows(EntityNotFoundException.class, () -> userService.getUserById(testUserId));
+        assertThrows(EntityNotFoundException.class, () -> userService.findByIdRequired(testUserId));
         verify(userRepository, times(1)).findByIdRequired(testUserId);
     }
 
     @Test
     void createUserTest() {
         when(userRepository.save(testUser)).thenReturn(testUser);
-        User result = userService.createUser(testUser);
+        User result = userService.create(testUser);
         assertEquals(testUser, result);
         verify(userRepository, times(1)).save(testUser);
     }
@@ -83,7 +83,7 @@ class UserServiceImplTest {
     void deleteUserTest() {
         doNothing().when(userRepository).checkIfExistsById(testUserId);
         doNothing().when(userRepository).deleteById(testUserId);
-        userService.deleteUser(testUserId);
+        userService.delete(testUserId);
         verify(userRepository, times(1)).checkIfExistsById(testUserId);
         verify(userRepository, times(1)).deleteById(testUserId);
     }
@@ -92,7 +92,7 @@ class UserServiceImplTest {
     void deleteIfUserIdNotFoundTest() {
         doThrow(new EntityNotFoundException("User not found with id: " + testUserId, ApiErrorCode.USER_NOT_FOUND))
                 .when(userRepository).checkIfExistsById(testUserId);
-        assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(testUserId));
+        assertThrows(EntityNotFoundException.class, () -> userService.delete(testUserId));
         verify(userRepository, times(1)).checkIfExistsById(testUserId);
     }
 }

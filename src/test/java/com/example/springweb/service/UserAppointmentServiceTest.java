@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserAppointmentServiceImplTest {
+class UserAppointmentServiceTest {
 
     @Mock
     private UserAppointmentRepository userAppointmentRepository;
@@ -33,24 +33,27 @@ class UserAppointmentServiceImplTest {
     private ProductService productService;
 
     @InjectMocks
-    private UserAppointmentServiceImpl userAppointmentService;
+    private UserAppointmentService userAppointmentService;
 
     private final Integer testUserAppointmentId = 1;
     private final UserAppointment testUserAppointment = UserAppointment.builder()
             .id(testUserAppointmentId)
             .dateTime(ZonedDateTime.parse("2024-12-03T10:15:30+01:00"))
-            .user(new User(1, "T", "T", "k@mai.com", "3001301", Role.USER, "1vd1fv"))
-            .product(new Product(1, "KOI", "YUYT", BigDecimal.valueOf(30.10), "img/n4.jpg"))
+            .user(new User(2, "T", "T", "k@mai.com", "3001301", Role.USER, "1vd1fv"))
+            .product(new Product(3, "KOI", "YUYT", BigDecimal.valueOf(30.10), "img/n4.jpg"))
             .build();
 
     @Test
     void createUserAppointmentTest() {
-        when(userService.getUserById(testUserAppointment.getUser().getId())).thenReturn(testUserAppointment.getUser());
-        when(productService.getProductById(testUserAppointment.getProduct().getId()))
+        when(userService.findByIdRequired(testUserAppointment.getUser().getId()))
+                .thenReturn(testUserAppointment.getUser());
+        when(productService.findByIdRequired(testUserAppointment.getProduct().getId()))
                  .thenReturn(testUserAppointment.getProduct());
-        when(userAppointmentRepository.save(testUserAppointment)).thenReturn(testUserAppointment);
+        when(userAppointmentRepository.save(testUserAppointment))
+                .thenReturn(testUserAppointment);
         UserAppointment result = userAppointmentService.createUserAppointment(testUserAppointment,
                 testUserAppointment.getUser().getId(), testUserAppointment.getProduct().getId());
+        System.out.println(result);
         assertEquals(testUserAppointment, result);
         assertEquals(testUserAppointment.getUser(), result.getUser());
         assertEquals(testUserAppointment.getProduct(), result.getProduct());
@@ -59,7 +62,7 @@ class UserAppointmentServiceImplTest {
 
     @Test
     void createUserAppointmentIfUserByIdNotFoundTest() {
-        when(userService.getUserById(testUserAppointment.getUser().getId()))
+        when(userService.findByIdRequired(testUserAppointment.getUser().getId()))
                 .thenThrow(new EntityNotFoundException(
                         ("User not found with id: " + testUserAppointment.getUser().getId()),
                         ApiErrorCode.USER_NOT_FOUND));
@@ -69,7 +72,7 @@ class UserAppointmentServiceImplTest {
 
     @Test
     void createUserAppointmentIfProductByIdNotFoundTest() {
-        when(productService.getProductById(testUserAppointment.getProduct().getId()))
+        when(productService.findByIdRequired(testUserAppointment.getProduct().getId()))
                 .thenThrow(new EntityNotFoundException(
                         ("Product not found with id: " + testUserAppointment.getProduct().getId()),
                         ApiErrorCode.PRODUCT_NOT_FOUND));
@@ -79,27 +82,27 @@ class UserAppointmentServiceImplTest {
 
     @Test
     void updateUserAppointmentTest() {
-       when(userAppointmentService.getUserAppointmentById(testUserAppointmentId)).thenReturn(testUserAppointment);
+       when(userAppointmentService.findByIdRequired(testUserAppointmentId)).thenReturn(testUserAppointment);
        when(userAppointmentRepository.save(testUserAppointment)).thenReturn(testUserAppointment);
-       UserAppointment result = userAppointmentService.updateUserAppointment(testUserAppointment);
+       UserAppointment result = userAppointmentService.update(testUserAppointment);
        assertEquals(testUserAppointment, result);
     }
 
     @Test
     void updateIfUserAppointmentByIdNotFoundTest() {
-        when(userAppointmentService.getUserAppointmentById(testUserAppointmentId))
+        when(userAppointmentService.findByIdRequired(testUserAppointmentId))
                 .thenThrow(new EntityNotFoundException(
                         ("UserAppointment not found with id: " + testUserAppointmentId),
                         ApiErrorCode.APPOINTMENT_NOT_FOUND));
         assertThrows(EntityNotFoundException.class, () -> userAppointmentService
-                .updateUserAppointment(testUserAppointment));
+                .update(testUserAppointment));
     }
 
     @Test
     void deleteUserAppointmentTest() {
         doNothing().when(userAppointmentRepository).checkIfExistsById(testUserAppointmentId);
         doNothing().when(userAppointmentRepository).deleteById(testUserAppointmentId);
-        userAppointmentService.deleteUserAppointment(testUserAppointmentId);
+        userAppointmentService.delete(testUserAppointmentId);
     }
 
     @Test
@@ -108,7 +111,7 @@ class UserAppointmentServiceImplTest {
                 ApiErrorCode.APPOINTMENT_NOT_FOUND))
                 .when(userAppointmentRepository).checkIfExistsById(testUserAppointmentId);
         assertThrows(EntityNotFoundException.class, () -> userAppointmentService
-                .deleteUserAppointment(testUserAppointmentId));
+                .delete(testUserAppointmentId));
         verify(userAppointmentRepository, times(1)).checkIfExistsById(testUserAppointmentId);
     }
 }

@@ -27,7 +27,7 @@ public class UserAppointmentByAdminController {
 
     @GetMapping
     public List<UserAppointmentDto> findAll() {
-        return userAppointmentService.getAllUserAppointments().stream()
+        return userAppointmentService.findAll().stream()
             .map(userAppointmentMapper::toDto)
             .toList();
     }
@@ -49,13 +49,13 @@ public class UserAppointmentByAdminController {
 
     @PutMapping
     public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByAdminUpdateDto updateDto) {
-        UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
+        UserAppointment userAppointment = userAppointmentService.update(
                 userAppointmentByAdminMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentMapper.toDto(userAppointment);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUserAppointmentById(@PathVariable Integer id) {
-        userAppointmentService.deleteUserAppointment(id);
+        userAppointmentService.delete(id);
     }
 }
