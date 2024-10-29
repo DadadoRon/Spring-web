@@ -14,12 +14,10 @@ import java.util.List;
 
 @Service
 @CacheConfig(cacheNames = "userappointment")
-//@SuperBuilder
 public class UserAppointmentService extends BaseService<UserAppointment, Integer> {
     private final UserAppointmentRepository userAppointmentRepository;
     private final ProductService productService;
     private final UserService userService;
-//    private final UserAppointmentService self;
 
     public UserAppointmentService(UserAppointmentRepository userAppointmentRepository, ProductService productService,
                                   UserService userService) {
@@ -27,7 +25,6 @@ public class UserAppointmentService extends BaseService<UserAppointment, Integer
         this.userAppointmentRepository = userAppointmentRepository;
         this.productService = productService;
         this.userService = userService;
-//        this.self = self;
     }
 
     @Cacheable(key = "#userAppointmentId")
@@ -58,8 +55,6 @@ public class UserAppointmentService extends BaseService<UserAppointment, Integer
     }
 
     @Override
-    @CachePut(key = "#userAppointment.id")
-    @CacheEvict(allEntries = true)
     public UserAppointment update(UserAppointment userAppointment) {
             Integer userAppointmentId = userAppointment.getId();
             UserAppointment byId = findByIdRequired(userAppointmentId);
@@ -67,13 +62,12 @@ public class UserAppointmentService extends BaseService<UserAppointment, Integer
             Product product = byId.getProduct();
             userAppointment.setUser(user);
             userAppointment.setProduct(product);
-            return userAppointmentRepository.save(userAppointment);
+            return super.update(userAppointment);
     }
 
     @Override
-    @CacheEvict(key = "#userAppointmentId", allEntries = true)
     public void delete(Integer userAppointmentId) {
         userAppointmentRepository.checkIfExistsById(userAppointmentId);
-        userAppointmentRepository.deleteById(userAppointmentId);
+        super.delete(userAppointmentId);
     }
 }

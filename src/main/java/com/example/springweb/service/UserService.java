@@ -21,7 +21,6 @@ import java.util.UUID;
 
 @Service
 @CacheConfig(cacheNames = "users")
-//@SuperBuilder
 public class UserService extends BaseService<User, Integer> {
     private final UserRepository userRepository;
     private final EmailService emailService;
@@ -58,14 +57,13 @@ public class UserService extends BaseService<User, Integer> {
         return userRepository.save(user);
     }
 
-    @CachePut(key = "#user.id")
-    @CacheEvict(allEntries = true)
+    @Override
     public User create(User user) {
         String salt = BCrypt.gensalt();
         String hashed = BCrypt.hashpw(user.getPassword(), salt);
         user.setSalt(salt);
         user.setPassword(hashed);
-        return userRepository.save(user);
+        return super.create(user);
     }
 
     public List<User> search(UserSearch search) {
@@ -73,14 +71,12 @@ public class UserService extends BaseService<User, Integer> {
     }
 
     @Override
-    @CachePut(key = "#user.id")
-    @CacheEvict(allEntries = true)
     public User update(User user) {
         Integer userId = user.getId();
         User userByIdRequired = userRepository.findByIdRequired(userId);
         user.setPassword(userByIdRequired.getPassword());
         user.setSalt(userByIdRequired.getSalt());
-        return userRepository.save(user);
+        return super.update(user);
     }
 
     @CachePut(key = "#userId")
@@ -97,10 +93,9 @@ public class UserService extends BaseService<User, Integer> {
     }
 
     @Override
-    @CacheEvict(key = "#userId", allEntries = true)
     public void delete(Integer userId) {
         userRepository.checkIfExistsById(userId);
-        userRepository.deleteById(userId);
+        super.delete(userId);
     }
 
     public void resetPassword(String email) {
