@@ -25,14 +25,14 @@ public class CommonProductController {
 
     @GetMapping
     public List<ProductDto> findAll() {
-        return productService.getAllProducts().stream()
+        return productService.findAll().stream()
                 .map(productMapper::toDto)
                 .toList();
     }
 
     @GetMapping("/{id}")
     public ProductDto findAll(@PathVariable Integer id) {
-        Product product = productService.getProductById(id);
+        Product product = productService.findByIdRequired(id);
         return productMapper.toDto(product);
     }
 }

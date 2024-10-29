@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceImplTest {
+class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
 
     @InjectMocks
-    private ProductServiceImpl productService;
+    private ProductService productService;
 
     private final Integer testProductId = 1;
 
@@ -37,7 +37,7 @@ class ProductServiceImplTest {
     @Test
     void productByIdTest() {
         when(productRepository.findByIdRequired(testProductId)).thenReturn(testProduct);
-        Product result = productService.getProductById(testProductId);
+        Product result = productService.findByIdRequired(testProductId);
         assertNotNull(result);
         assertEquals(testProduct.getId(), result.getId());
         verify(productRepository, times(1)).findByIdRequired(testProductId);
@@ -48,14 +48,14 @@ class ProductServiceImplTest {
         when(productRepository.findByIdRequired(testProductId))
                 .thenThrow(new EntityNotFoundException("Product not found with id:" + testProductId,
                         ApiErrorCode.PRODUCT_NOT_FOUND));
-        assertThrows(EntityNotFoundException.class, () -> productService.getProductById(testProductId));
+        assertThrows(EntityNotFoundException.class, () -> productService.findByIdRequired(testProductId));
         verify(productRepository, times(1)).findByIdRequired(testProductId);
     }
 
     @Test
     void createProductTest() {
         when(productRepository.save(testProduct)).thenReturn(testProduct);
-        Product result = productService.createProduct(testProduct);
+        Product result = productService.create(testProduct);
         assertEquals(testProduct, result);
         verify(productRepository, times(1)).save(testProduct);
     }
@@ -82,7 +82,7 @@ class ProductServiceImplTest {
     void deleteProductTest() {
         doNothing().when(productRepository).checkIfExistsById(testProductId);
         doNothing().when(productRepository).deleteById(testProductId);
-        productService.deleteProduct(testProductId);
+        productService.delete(testProductId);
     }
 
     @Test
@@ -90,6 +90,6 @@ class ProductServiceImplTest {
         doThrow(new EntityNotFoundException("Product not found with id: " + testProductId,
                 ApiErrorCode.PRODUCT_NOT_FOUND))
                 .when(productRepository).checkIfExistsById(testProductId);
-        assertThrows(EntityNotFoundException.class, () -> productService.deleteProduct(testProductId));
+        assertThrows(EntityNotFoundException.class, () -> productService.delete(testProductId));
     }
 }

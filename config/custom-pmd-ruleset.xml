@@ -10,6 +10,7 @@
     <rule ref="category/java/bestpractices.xml">
     <exclude name="GuardLogStatement"/>
     <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+    <exclude name="AbstractClassWithoutAbstractMethod"/>
     </rule>
 
     <rule ref="category/java/errorprone.xml">

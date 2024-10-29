@@ -23,20 +23,20 @@ public class AdminUserController {
 
     @GetMapping
     public List<UserDto> findAll() {
-        return userService.getAllUsers().stream()
+        return userService.findAll().stream()
                 .map(userMapper::toDto)
                 .toList();
     }
 
     @GetMapping("/{id}")
     public UserDto findAll(@PathVariable Integer id) {
-        User user = userService.getUserById(id);
+        User user = userService.findByIdRequired(id);
         return userMapper.toDto(user);
     }
 
     @PostMapping("/create")
     public UserDto create(@Valid @RequestBody UserCreateDto createDto) {
-        User user = userService.createUser(userMapper.toUserForCreate(createDto));
+        User user = userService.create(userMapper.toUserForCreate(createDto));
         return userMapper.toDto(user);
     }
 
@@ -55,7 +55,7 @@ public class AdminUserController {
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Integer id) {
-        userService.deleteUser(id);
+        userService.delete(id);
     }
 }
 

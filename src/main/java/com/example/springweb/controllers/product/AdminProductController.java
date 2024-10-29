@@ -22,7 +22,7 @@ public class AdminProductController {
     @PostMapping
     public ProductDto create(@Valid @RequestBody ProductCreateDto createDto) {
         Product productForCreate = productMapper.toProductForCreate(createDto);
-        Product product = productService.createProduct(productForCreate);
+        Product product = productService.create(productForCreate);
         return productMapper.toDto(product);
     }
 
@@ -34,6 +34,6 @@ public class AdminProductController {
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Integer id) {
-        productService.deleteProduct(id);
+        productService.delete(id);
     }
 }

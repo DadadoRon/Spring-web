@@ -49,12 +49,12 @@ public class UserAppointmentByUserController {
     public UserAppointmentDto update(@Valid @RequestBody UserAppointmentByUserUpdateDto updateDto) {
         Integer userId = UserContextHolder.getUser().getId();
         Integer userAppointmentId = updateDto.id();
-        UserAppointment userAppointmentById = userAppointmentService.getUserAppointmentById(userAppointmentId);
+        UserAppointment userAppointmentById = userAppointmentService.findByIdRequired(userAppointmentId);
         Integer userIdFromUserAppointment = userAppointmentById.getUser().getId();
         if (!userId.equals(userIdFromUserAppointment)) {
             throw new ForbiddenUserException("You are not authorized to update this appointment");
         }
-        UserAppointment userAppointment = userAppointmentService.updateUserAppointment(
+        UserAppointment userAppointment = userAppointmentService.update(
                 userAppointmentByUserMapper.toUserAppointmentForUpdate(updateDto));
         return userAppointmentMapper.toDto(userAppointment);
     }
@@ -62,11 +62,11 @@ public class UserAppointmentByUserController {
     @DeleteMapping("/{id}")
     public void deleteUserAppointmentById(@PathVariable Integer id) {
         Integer userId = UserContextHolder.getUser().getId();
-        UserAppointment userAppointmentById = userAppointmentService.getUserAppointmentById(id);
+        UserAppointment userAppointmentById = userAppointmentService.findByIdRequired(id);
         Integer userIdFromUserAppointment = userAppointmentById.getUser().getId();
         if (!userId.equals(userIdFromUserAppointment)) {
             throw new ForbiddenUserException("You are not authorized to update this appointment");
         }
-        userAppointmentService.deleteUserAppointment(id);
+        userAppointmentService.delete(id);
     }
 }
