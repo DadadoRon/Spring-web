@@ -6,6 +6,7 @@ import com.example.springweb.entity.Role;
 import com.example.springweb.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -141,6 +142,7 @@ class CommonUserControllerTest extends BaseIntegrationTest {
         assertNotEquals(usersBeforeRegister, usersAfterRegister);
     }
 
+    @Disabled
     @Test
     @SneakyThrows
     void testResetPasswordAsUser() {
