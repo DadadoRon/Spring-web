@@ -3,7 +3,9 @@ package com.example.springweb.repository;
 import com.example.springweb.exceptions.ApiErrorCode;
 import com.example.springweb.exceptions.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
+@NoRepositoryBean
 public interface BaseRepository<T> extends JpaRepository<T, Integer> {
 
     String entityName();
